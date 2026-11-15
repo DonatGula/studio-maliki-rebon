@@ -583,6 +583,9 @@ main{position:relative;z-index:1}
               <label class="saklar">Warna sorotan / kata kunci<input type="color" id="gWarna" value="#FFD400" style="width:30px;height:24px;border:none;background:none;padding:0"></label>
               <label class="saklar">Zoom singkat di kata kunci<input type="checkbox" id="gZoom"></label>
               <label class="saklar">Progress bar di bawah<input type="checkbox" id="gProgres"></label>
+              <label class="saklar">Emoji otomatis di atas subtitle<input type="checkbox" id="gEmoji" checked></label>
+              <label class="saklar">Judul pembuka 3 detik <em style="font-style:normal;color:var(--redup);font-size:12px">&nbsp;saat banner mati</em><input type="checkbox" id="gJudulBuka" checked></label>
+              <div class="bidang" style="margin:10px 0 0"><label>Watermark pojok kanan bawah <em>opsional, mis. @akunmu</em></label><input class="input" id="gWatermark" maxlength="40"></div>
               <div class="bidang" style="margin:10px 0 0"><label>Nama akun di bawah judul <em>opsional, mis. @akunmu</em></label><input class="input" id="gAkun" maxlength="40"></div>
             </div>
 
@@ -595,6 +598,15 @@ main{position:relative;z-index:1}
               <div class="bidang" style="margin:0"><label>Penguat suara asli <span class="nilai" id="nSuara">100%</span></label>
                 <div class="pil" id="pSuara"><button data-v="80">80%</button><button data-v="100" class="aktif">100%</button><button data-v="125">125%</button><button data-v="150">150%</button><button data-v="200">200%</button></div></div>
               <input type="file" id="fileAset" accept="audio/*" hidden>
+            </div>
+
+            <div class="sub-bagian">
+              <div class="bidang"><label>B-roll <em>video sisipan ±2,4 dtk tiap ±8 dtk, zoom pelan & sedikit gelap</em></label>
+                <div class="pil" id="pBroll"><button data-v="" class="aktif">Tanpa</button><button data-v="file">File saya</button><button data-v="pixabay">Pixabay</button></div></div>
+              <div class="bidang" id="bBrollFile" style="display:none"><label>Video/foto milikmu <em>dipakai bergiliran</em></label>
+                <div class="unggah-mini"><button class="tombol kedua kecil" data-aset="broll">Tambah file</button><span id="nBroll">belum ada</span></div></div>
+              <div class="bidang" id="bBrollPix" style="display:none;margin:0"><label>API key Pixabay <em><a href="https://pixabay.com/api/docs/" target="_blank" style="color:var(--biru)">Ambil kunci gratis ↗</a> · hanya video film (bukan animasi) · “Video dari Pixabay” otomatis masuk caption</em></label>
+                <input class="input" type="password" id="PIXABAY_API_KEY" placeholder="kunci Pixabay" autocomplete="off"></div>
             </div>
           </div>
           <div class="ponsel">
@@ -1336,11 +1348,11 @@ const PRESET_G = {
             bannerKotak: 'rgba(11,15,23,.78)', bannerWarna: '#22D3EE', progres: true},
 };
 const G = {rasio: '9:16', latar: 'hitam', fokus: 'auto', layout: 'tunggal', banner: true, awalan: '', akhiran: '', subtitle: true,
-  preset: 'sorot', font: 'Archivo Black', ukuran: 'sedang', huruf: 'kapital', posisi_y: 72, warna: '#FFD400', zoom: false, progres: false, akun: '',
-  musik: '', volume_musik: 18, sfx: '', suara: 100};
+  preset: 'sorot', font: 'Archivo Black', ukuran: 'sedang', huruf: 'kapital', posisi_y: 72, warna: '#FFD400', zoom: true, progres: true, akun: '',
+  musik: '', volume_musik: 18, sfx: '', suara: 100, emoji: true, judul_buka: true, watermark: '', broll: '', broll_file: []};
 function pilihPreset(id) {
   const p = PRESET_G[id]; if (!p) return;
-  Object.assign(G, {preset: id, font: p.font, huruf: p.huruf, warna: p.warna, ukuran: 'sedang', zoom: !!p.zoom, progres: !!p.progres});
+  Object.assign(G, {preset: id, font: p.font, huruf: p.huruf, warna: p.warna, ukuran: 'sedang', zoom: p.zoom ?? true, progres: p.progres ?? true});
   if (p.latar) G.latar = p.latar;
   terapkanGaya({});
 }
@@ -1366,13 +1378,23 @@ $('#gWarna').oninput = (e) => { G.warna = e.target.value; segarkanG(); };
 $('#gZoom').onchange = (e) => { G.zoom = e.target.checked; segarkanG(); };
 $('#gProgres').onchange = (e) => { G.progres = e.target.checked; segarkanG(); };
 $('#gAkun').oninput = (e) => { G.akun = e.target.value; segarkanG(); };
+$('#gEmoji').onchange = (e) => { G.emoji = e.target.checked; };
+$('#gJudulBuka').onchange = (e) => { G.judul_buka = e.target.checked; };
+$('#gWatermark').oninput = (e) => { G.watermark = e.target.value; };
+$$('#pBroll button').forEach((b) => b.onclick = () => {
+  $$('#pBroll button').forEach((x) => x.classList.toggle('aktif', x === b)); G.broll = b.dataset.v;
+  $('#bBrollFile').style.display = G.broll === 'file' ? '' : 'none'; $('#bBrollPix').style.display = G.broll === 'pixabay' ? '' : 'none';
+});
+$('#PIXABAY_API_KEY').onchange = async (e) => { if (e.target.value) { await api('/api/pengaturan', {PIXABAY_API_KEY: e.target.value}); e.target.value = ''; e.target.placeholder = 'tersimpan ✓'; toast('Kunci Pixabay tersimpan'); } };
 $('#gVolMusik').oninput = (e) => { G.volume_musik = +e.target.value; segarkanG(); };
 let jenisAset = '';
-$$('[data-aset]').forEach((b) => b.onclick = () => { jenisAset = b.dataset.aset; $('#fileAset').click(); });
+$$('[data-aset]').forEach((b) => b.onclick = () => { jenisAset = b.dataset.aset; $('#fileAset').accept = jenisAset === 'broll' ? 'video/*,image/*' : 'audio/*'; $('#fileAset').click(); });
 $('#fileAset').onchange = async (e) => {
   const f = e.target.files[0]; if (!f) return;
   const r = await fetch('/api/unggah', {method: 'POST', headers: {'X-Nama-File': f.name, 'X-Jenis': 'aset'}, body: f});
-  const j = await r.json(); G[jenisAset] = j.jalur.split(/[\\/]/).pop();
+  const j = await r.json(); const nm = j.jalur.split(/[\\/]/).pop();
+  if (jenisAset === 'broll') { G.broll_file = [...(G.broll_file || []), nm]; $('#nBroll').textContent = G.broll_file.join(', '); e.target.value = ''; toast('Tersimpan: ' + f.name); return; }
+  G[jenisAset] = nm;
   $(jenisAset === 'musik' ? '#nMusik' : '#nSfx').textContent = f.name; e.target.value = ''; toast('Tersimpan: ' + f.name);
 };
 function segarkanG() {
@@ -1385,6 +1407,10 @@ function terapkanGaya(g) {
   if (!G.preset) G.preset = {kotak: 'terbaca', garis: 'minimal'}[G.gaya_sub] || 'sorot';  // gaya.json versi lama
   $$('#gridPreset .preset').forEach((b) => b.classList.toggle('aktif', b.dataset.preset === G.preset));
   $('#gZoom').checked = !!G.zoom; $('#gProgres').checked = !!G.progres; $('#gAkun').value = G.akun || '';
+  $('#gEmoji').checked = G.emoji !== false; $('#gJudulBuka').checked = G.judul_buka !== false; $('#gWatermark').value = G.watermark || '';
+  $$('#pBroll button').forEach((x) => x.classList.toggle('aktif', x.dataset.v === (G.broll || '')));
+  $('#bBrollFile').style.display = G.broll === 'file' ? '' : 'none'; $('#bBrollPix').style.display = G.broll === 'pixabay' ? '' : 'none';
+  $('#nBroll').textContent = (G.broll_file || []).join(', ') || 'belum ada';
   $$('#tRasio .tile').forEach((t) => t.classList.toggle('aktif', t.dataset.v === G.rasio));
   const set = (id, v) => $$(id + ' button').forEach((b) => b.classList.toggle('aktif', b.dataset.v === String(v)));
   set('#pLatar', G.latar); set('#pFokus', G.fokus); set('#pLayout', G.layout); set('#pFont', G.font);

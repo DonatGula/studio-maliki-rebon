@@ -7,7 +7,15 @@ Aplikasi desktop untuk:
 Semua diproses di laptopmu: tanpa watermark, tanpa kuota, dan video tidak diunggah ke mana pun.
 AI-nya pakai milikmu sendiri (BYOK): Lokal (gratis tanpa kunci), Gemini (ada kuota gratis), Ollama (gratis, offline), atau langganan Claude/ChatGPT lewat Claude Code, Codex, OpenCode.
 
-## Pasang (macOS)
+## Unduh installer (tanpa Terminal) — versi 2.0
+- 🍎 **Download for MacBook** (Apple Silicon): [Studio-Maliki-Mac.dmg](https://github.com/malikisaputra-source/studio-maliki/releases/latest/download/Studio-Maliki-Mac.dmg) — buka, seret ke Applications, pertama kali klik kanan → Buka.
+- 🪟 **Download for Windows** 10/11 (tahap uji): [Studio-Maliki-Windows.exe](https://github.com/malikisaputra-source/studio-maliki/releases/latest/download/Studio-Maliki-Windows.exe) — jalankan, ikuti wizard. Layar biru SmartScreen → Info selengkapnya → Tetap jalankan.
+- 📱 **Download for Android** 10+ (Klip HP): [KlipHP-Android.apk](https://github.com/malikisaputra-source/studio-maliki/releases/latest/download/KlipHP-Android.apk)
+
+Versi baru? Unduh dan pasang lagi: Mac pilih "Ganti", Windows otomatis jadi wizard pembaruan. Hasil kerjamu tidak terhapus.
+Cara membuat installer sendiri: [`pemasang/README.md`](pemasang/README.md).
+
+## Pasang dari kode (macOS)
 1. Unduh ZIP dari GitHub (tombol **Code → Download ZIP**) lalu ekstrak.
 2. (Opsional, untuk Motion) Pasang Node.js LTS dari https://nodejs.org
 3. Klik dua kali **`Pasang Studio Maliki.command`**.
@@ -17,7 +25,7 @@ AI-nya pakai milikmu sendiri (BYOK): Lokal (gratis tanpa kunci), Gemini (ada kuo
 Studio terbuka di **jendela sendiri** (WebKit bawaan macOS), jadi tidak butuh Chrome. Menutup jendela atau menekan
 **Matikan Studio** akan menghentikan mesinnya.
 
-## Pasang (Windows 10/11)
+## Pasang dari kode (Windows 10/11)
 1. Unduh ZIP dari GitHub (tombol **Code → Download ZIP**) lalu ekstrak.
 2. (Opsional, untuk Motion) Pasang Node.js LTS dari https://nodejs.org
 3. Klik dua kali **`Pasang Studio Maliki (Windows).bat`**.

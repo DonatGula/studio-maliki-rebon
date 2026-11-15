@@ -28,13 +28,30 @@ from urllib.parse import unquote, urlparse
 AKAR = Path(__file__).resolve().parent
 ALAT = AKAR.parent
 KLIP = ALAT / "klip"
+if not os.environ.get("STUDIO_PY") and (ALAT / "BUNDEL").exists():
+    # Versi installer Windows: <app>\python\python.exe dan <app>\bin\uv.exe di samping folder alat
+    _py = ALAT.parent / "python" / ("python.exe" if os.name == "nt" else "bin/python3.12")
+    if _py.exists():
+        os.environ["STUDIO_PY"] = str(_py)
+        os.environ.setdefault("PYTHONDONTWRITEBYTECODE", "1")
+    _uv = ALAT.parent / "bin" / ("uv.exe" if os.name == "nt" else "uv")
+    if _uv.exists():
+        os.environ.setdefault("STUDIO_UV", str(_uv))
 MOTION = ALAT / "motion"
 SUARA = ALAT / "suara"
+if os.environ.get("STUDIO_PY"):
+    # Versi installer: folder aplikasi hanya-baca → Motion (npm install, naskah, hasil) dijalankan dari salinan di folder data.
+    _m = Path(os.environ.get("STUDIO_DATA", Path.home() / "Studio Maliki")) / ".mesin" / "motion"
+    try:
+        shutil.copytree(MOTION, _m, dirs_exist_ok=True, ignore=shutil.ignore_patterns("node_modules", "naskah", "hasil"))
+        MOTION = _m
+    except OSError:
+        pass
 DATA = Path(os.environ.get("STUDIO_DATA", Path.home() / "Studio Maliki"))
 ENV = DATA / "pengaturan.env"
 PORT = int(os.environ.get("STUDIO_PORT", "8787"))
 KUNCI = ["SUARA", "VOXCPM_MODE", "VOXCPM_DESAIN", "AI", "LANGGANAN", "OPENCODE_MODEL", "CLAUDE_CODE_MODEL", "CODEX_MODEL", "GEMINI_API_KEY", "GEMINI_MODEL",
-         "OPENAI_BASE_URL", "OPENAI_API_KEY", "OPENAI_MODEL", "SUARA_MAC", "TEMA"]
+         "OPENAI_BASE_URL", "OPENAI_API_KEY", "OPENAI_MODEL", "SUARA_MAC", "TEMA", "PIXABAY_API_KEY"]
 BAWAAN = {"SUARA": "bawaan", "VOXCPM_MODE": "bawaan", "AI": "lokal", "LANGGANAN": "claude-code", "GEMINI_MODEL": "gemini-3.8-flash",
           "OPENAI_BASE_URL": "http://localhost:11434/v1", "OPENAI_MODEL": "gemma3:4b", "SUARA_MAC": "Damayanti"}
 
@@ -64,7 +81,7 @@ def simpan_pengaturan(baru: dict) -> None:
 def samarkan(p: dict) -> dict:
     """Kunci tidak pernah dikirim balik utuh ke halaman."""
     out = dict(p)
-    for k in ("GEMINI_API_KEY", "OPENAI_API_KEY"):
+    for k in ("GEMINI_API_KEY", "OPENAI_API_KEY", "PIXABAY_API_KEY"):
         v = out.get(k, "")
         out[k] = ("••••" + v[-4:]) if v else ""
     return out
@@ -138,8 +155,17 @@ class Kerja:
 KERJA = Kerja()
 
 
+# Versi installer (.dmg/.exe): Python + semua paket sudah dibundel, peluncur mengisi STUDIO_PY.
+PY_BUNDEL = os.environ.get("STUDIO_PY") if os.environ.get("STUDIO_PY") and Path(os.environ["STUDIO_PY"]).exists() else None
+
+
+def jalankan_skrip(skrip: Path) -> list[str]:
+    """Perintah untuk menjalankan skrip alat: Python bawaan installer, atau `uv run` (versi folder)."""
+    return [PY_BUNDEL, str(skrip)] if PY_BUNDEL else [cari_uv(), "run", "-q", str(skrip)]
+
+
 def cari_uv() -> str:
-    for c in (shutil.which("uv"), str(Path.home() / ".local/bin/uv"), str(Path.home() / ".local/bin/uv.exe"),
+    for c in (os.environ.get("STUDIO_UV"), shutil.which("uv"), str(Path.home() / ".local/bin/uv"), str(Path.home() / ".local/bin/uv.exe"),
               "/opt/homebrew/bin/uv"):
         if c and Path(c).exists():
             return c
@@ -280,9 +306,8 @@ def sistem_detail() -> dict:
 def siapkan(komponen: str) -> dict:
     """Pasang/siapkan komponen dari wizard (progres tampil di layar)."""
     if komponen == "klip":
-        uv = cari_uv()
-        langkah = [([uv, "sync", "--script", str(KLIP / "klip.py")], KLIP),
-                   ([uv, "run", "-q", str(KLIP / "klip.py"), "--uji-ai", "lokal"], KLIP)]
+        langkah = [] if PY_BUNDEL else [([cari_uv(), "sync", "--script", str(KLIP / "klip.py")], KLIP)]
+        langkah.append((jalankan_skrip(KLIP / "klip.py") + ["--uji-ai", "lokal"], KLIP))
 
         def setelah(k: Kerja):
             (DATA / ".siap-klip").write_text("ok")
@@ -338,7 +363,7 @@ def uji_ai(penyedia: str) -> dict:
     env["PYTHONIOENCODING"] = "utf-8"
     nyata = penyedia_ai(penyedia)
     try:
-        r = subprocess.run([cari_uv(), "run", "-q", str(KLIP / "klip.py"), "--uji-ai", nyata], capture_output=True, text=True,
+        r = subprocess.run([*jalankan_skrip(KLIP / "klip.py"), "--uji-ai", nyata], capture_output=True, text=True,
                            encoding="utf-8", errors="replace", env=env, timeout=240, cwd=KLIP,
                            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
     except subprocess.TimeoutExpired:
@@ -357,7 +382,7 @@ def mulai_klip(d: dict) -> dict:
     if not sumber:
         raise ValueError("Isi link YouTube atau pilih file video dulu.")
     folder = proyek_baru("klip")
-    cmd = [cari_uv(), "run", "-q", str(KLIP / "klip.py"), sumber, "--keluar", str(folder),
+    cmd = [*jalankan_skrip(KLIP / "klip.py"), sumber, "--keluar", str(folder),
            "--jumlah", str(int(d.get("jumlah", 3))), "--durasi", str(int(d.get("durasi", 30))),
            "--ai", penyedia_ai(d.get("ai")), "--model", d.get("model", "small"),
            "--warna", d.get("warna", "#FFB020")]
@@ -390,6 +415,8 @@ def mulai_render_klip(d: dict) -> dict:
         if gaya.get(k):
             p = (DATA / "aset" / Path(gaya[k]).name)
             gaya[k] = str(p) if p.exists() else ""
+    gaya["broll_file"] = [str(DATA / "aset" / Path(x).name) for x in (gaya.get("broll_file") or [])
+                          if (DATA / "aset" / Path(x).name).exists()]
     # judul banner hasil suntingan pengguna
     if d.get("judul"):
         daftar = json.loads((folder / "klip.json").read_text(encoding="utf-8"))
@@ -398,7 +425,7 @@ def mulai_render_klip(d: dict) -> dict:
                 x["judul_banner"] = d["judul"][str(x["no"])]
         (folder / "klip.json").write_text(json.dumps(daftar, ensure_ascii=False, indent=2), encoding="utf-8")
     (folder / "gaya-permintaan.json").write_text(json.dumps(gaya, ensure_ascii=False), encoding="utf-8")
-    cmd = [cari_uv(), "run", "-q", str(KLIP / "klip.py"), "--render", "--keluar", str(folder),
+    cmd = [*jalankan_skrip(KLIP / "klip.py"), "--render", "--keluar", str(folder),
            "--pilih", ",".join(map(str, pilih)), "--gaya", str(folder / "gaya-permintaan.json")]
 
     def setelah(k: Kerja):
@@ -487,7 +514,7 @@ def jejak_klip(nama: str, no: int) -> dict:
         return {"jejak": []}
     if d.get("jejak"):
         return {"jejak": d["jejak"]}
-    r = subprocess.run([cari_uv(), "run", "-q", str(KLIP / "klip.py"), "--keluar", str(folder), "--jejak", str(no)],
+    r = subprocess.run([*jalankan_skrip(KLIP / "klip.py"), "--keluar", str(folder), "--jejak", str(no)],
                        capture_output=True, text=True, cwd=KLIP, timeout=300,
                        creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
     try:
@@ -513,7 +540,7 @@ def daftar_proyek() -> list[dict]:
 
 
 def cek_sistem() -> dict:
-    return {"uv": bool(shutil.which("uv") or (Path.home() / ".local/bin/uv").exists()),
+    return {"uv": bool(PY_BUNDEL or os.environ.get("STUDIO_UV") or shutil.which("uv") or (Path.home() / ".local/bin/uv").exists()),
             "node": bool(shutil.which("node") or Path("/usr/local/bin/node").exists()),
             "mac": sys.platform == "darwin", "win": os.name == "nt", "data": str(DATA),
             "cli": {n: bool(cari_cli(n)) for n in ("claude", "codex", "opencode")},

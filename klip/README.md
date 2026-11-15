@@ -97,3 +97,14 @@ Gratis dengan **Lisensi Nonkomersial Maliki Studio 1.0**: boleh dipakai untuk be
 boleh diubah dan dibagikan gratis dengan kredit utuh; **dilarang dijual, dijual ulang, disewakan, diunggah ke marketplace, atau dipakai
 untuk jasa berbayar ke pihak lain**. Teks lengkap: [`LISENSI.md`](../LISENSI.md). Pustaka pihak ketiga (Remotion, faster-whisper, VoxCPM2,
 font OFL, dll.) tetap mengikuti lisensinya masing-masing.
+
+## Baru di versi 0.9 (sama dengan aplikasi Klip HP)
+- **Momen dari kalimat utuh**: tiap momen punya skor (60–99), judul, dan alasan, mis. "pembuka kuat · ada pertanyaan".
+- **Bingkai ikut pembicara**: alat mencari wajah yang gerak mulutnya paling seirama dengan suara, jadi pendengar yang tertawa tidak diikuti.
+  Saat kamera di video asli berpindah, bingkai ikut pindah seketika. Kamera tidak bergeser lewat ruang kosong dan tidak kembali ke tengah.
+  Deteksi wajah memakai YuNet (`model/`).
+- **Subtitle**: kata kunci berwarna hijau, emoji otomatis (`emoji/`, Twemoji CC-BY 4.0), judul pembuka 3 detik, zoom halus di kata pemikat,
+  progress bar, dan watermark opsional (`--watermark @akunmu`).
+- **B-roll**: `--broll file --broll-file a.mp4 b.jpg` memakai file milikmu. `--broll pixabay` memakai API key Pixabay milikmu
+  (`PIXABAY_API_KEY` di `.env`; gratis di pixabay.com/api/docs). Pixabay hanya mengambil video film (bukan animasi), dengan kueri dari kamus kata benda,
+  cache 24 jam, dan "Video dari Pixabay" ditambahkan ke caption. Sisipan diberi zoom pelan dan sedikit digelapkan.
