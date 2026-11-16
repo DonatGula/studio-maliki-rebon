@@ -1222,9 +1222,17 @@ def render(file: Path, klip: Klip, kal: list[Kalimat], out: Path, kerja: Path, w
 
     # transisi sapuan menutupi setiap pergantian ke/dari B-roll (penuh tepat di titik potong)
     if g.get("transisi"):
-        for sp in g.get("_sisipan") or []:
-            hiasan("sapuan", sp["a"] - 0.3)
-            hiasan("sapuan", sp["b"] - 0.3)
+        # tiga pita (indigo, cyan, lime) digambar ffmpeg sendiri (tanpa berkas): menyapu kanan→kiri 0,6 dtk,
+        # menutup penuh tepat di titik potong. Sumber `color` tak berujung → tidak ada antrean input yang bisa macet.
+        n_sw = 0
+        for titik in [x for sp in (g.get("_sisipan") or []) for x in (sp["a"], sp["b"])]:
+            for i, warna in enumerate(("0xC6FF3D", "0x22D3EE", "0x5B5BF6")):
+                t0 = titik - 0.3 + i * 0.06
+                graf.append(f"color=c={warna}:s=1300x1920:r=30[sw{n_sw}]")
+                graf.append(f"[{v}][sw{n_sw}]overlay=x='W-(t-{t0:.3f})/0.6*(W+1300)':y=0:"
+                            f"enable='between(t,{t0:.3f},{t0 + 0.6:.3f})':eof_action=pass:shortest=1[vs{n_sw}]")
+                v = f"vs{n_sw}"
+                n_sw += 1
     # hiasan judul pembuka: coretan neon / pita kertas sobek
     if klip.judul and g.get("judul_buka", True) and not (g.get("banner", True) and klip.judul):
         if c.get("judul") == "neon":
