@@ -71,6 +71,31 @@ jobs:
             & $ff -v error -y -ss 1 -i $f.FullName -frames:v 1 "$out.png"
           }
 
+      - name: Motion dari naskah tempelan (harus memakai naskah ini, bukan contoh.json)
+        shell: pwsh
+        run: |
+          $p = Start-Process "$env:APP\python\python.exe" -ArgumentList "`"$env:APP\alat\studio\studio.py`"",'--tanpa-buka' `
+               -WorkingDirectory "$env:APP\alat\studio" -PassThru -RedirectStandardOutput "$env:GITHUB_WORKSPACE\studio2.out" -RedirectStandardError "$env:GITHUB_WORKSPACE\studio2.err"
+          $u = $null
+          foreach ($i in 1..40) { Start-Sleep 3; foreach ($port in 8787..8792) { try { $r = Invoke-RestMethod "http://127.0.0.1:$port/api/status" -TimeoutSec 2; if ($r.PSObject.Properties.Name -contains 'jenis') { $u = "http://127.0.0.1:$port"; break } } catch {} }; if ($u) { break } }
+          if (-not $u) { throw "Studio tidak menyala" }
+          $naskah = @{ judul = 'UJI WINDOWS 777'; gaya = 'garis'; handle = '@uji'; adegan = @(
+            @{ judul = 'NASKAH UJI WINDOWS'; teks = 'Ini naskah uji dari GitHub Actions.'; kunci = @('uji'); ikon = '🧪' },
+            @{ judul = 'ADEGAN KEDUA UJI'; teks = 'Kalau ini muncul, naskahnya terbaca.'; kunci = @('terbaca'); ikon = '✅' }) } | ConvertTo-Json -Depth 5 -Compress
+          $body = @{ naskah = $naskah; gaya = 'garis'; ai = 'lokal' } | ConvertTo-Json -Depth 5 -Compress
+          $r = Invoke-RestMethod "$u/api/motion" -Method Post -Body ([Text.Encoding]::UTF8.GetBytes($body)) -ContentType 'application/json'
+          Write-Host "Proyek: $($r.proyek)"
+          foreach ($i in 1..240) { Start-Sleep 5; $s = Invoke-RestMethod "$u/api/status"; if ($s.status -ne 'jalan') { break } }
+          $s.log | Select-Object -Last 25
+          Write-Host "Status: $($s.status)"
+          $mp4 = Get-ChildItem "$env:USERPROFILE\Studio Maliki" -Recurse -Filter *.mp4 | Where-Object { $_.FullName -like '*motion*' } | Sort-Object LastWriteTime | Select-Object -Last 1
+          if (-not $mp4) { throw "Video Motion tidak terbentuk" }
+          $ff = & "$env:APP\python\python.exe" -c "import imageio_ffmpeg;print(imageio_ffmpeg.get_ffmpeg_exe())"
+          & $ff -v error -y -ss 1.5 -i $mp4.FullName -frames:v 1 motion-1.png
+          & $ff -v error -y -sseof -2 -i $mp4.FullName -frames:v 1 motion-2.png
+          Copy-Item $mp4.FullName motion.mp4
+          Stop-Process $p.Id -Force
+
       - name: Simpan hasil uji
         if: always()
         uses: actions/upload-artifact@v4
@@ -79,6 +104,9 @@ jobs:
           path: |
             hasil-*/klip-*.mp4
             hasil-*.png
+            motion*.png
+            motion.mp4
+            studio2.*
             studio.out
             studio.err
             pasang.log

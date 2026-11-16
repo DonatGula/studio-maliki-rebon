@@ -385,10 +385,30 @@ def ambil_json(teks: str):
 
 
 # ── 5. Bingkai: deteksi wajah ───────────────────────────────────────────────
-def info_wajah(file: Path, a: float, b: float, w: int, h: int) -> dict:
-    """Median posisi & ukuran wajah (0..1) di rentang klip. Tanpa wajah → tengah."""
+_YUNET: dict = {}
+
+
+def wajah_di(fr, w: int, h: int) -> list[tuple[float, float, float]]:
+    """Semua wajah di satu frame: (x tengah, y tengah, lebar) dalam 0..1. YuNet bila modelnya ada, Haar sebagai cadangan."""
     import cv2
-    det = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+    lb = 640
+    tb = int(h * lb / w)
+    kecil = cv2.resize(fr, (lb, tb))
+    model = Path(__file__).resolve().parent / "model" / "face_detection_yunet_2023mar.onnx"
+    if model.exists() and hasattr(cv2, "FaceDetectorYN"):
+        det = _YUNET.get((lb, tb))
+        if det is None:
+            det = _YUNET[(lb, tb)] = cv2.FaceDetectorYN.create(str(model), "", (lb, tb), 0.6, 0.3, 50)
+        _, f = det.detect(kecil)
+        return [((x + fw / 2) / lb, (y + fh / 2) / tb, fw / lb) for x, y, fw, fh, *_ in (f if f is not None else [])]
+    haar = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+    g = cv2.cvtColor(kecil, cv2.COLOR_BGR2GRAY)
+    return [((x + fw / 2) / lb, (y + fh / 2) / tb, fw / lb) for x, y, fw, fh in haar.detectMultiScale(g, 1.1, 5, minSize=(24, 24))]
+
+
+def info_wajah(file: Path, a: float, b: float, w: int, h: int) -> dict:
+    """Median posisi & ukuran wajah terbesar (0..1) di rentang klip. Tanpa wajah → tengah."""
+    import cv2
     cap = cv2.VideoCapture(str(file))
     xs, ys, ss = [], [], []
     t = a
@@ -398,13 +418,10 @@ def info_wajah(file: Path, a: float, b: float, w: int, h: int) -> dict:
         ok, fr = cap.read()
         if not ok:
             break
-        g = cv2.cvtColor(cv2.resize(fr, (w // 2, h // 2)), cv2.COLOR_BGR2GRAY)
-        f = det.detectMultiScale(g, 1.1, 5, minSize=(30, 30))
-        if len(f):
-            x, y, fw, fh = max(f, key=lambda r: r[2] * r[3])
-            xs.append((x + fw / 2) / (w / 2))
-            ys.append((y + fh / 2) / (h / 2))
-            ss.append(fw / (w / 2))
+        f = wajah_di(fr, w, h)
+        if f:
+            x, y, s_ = max(f, key=lambda r: r[2])
+            xs.append(x); ys.append(y); ss.append(s_)
         t += langkah
     cap.release()
     if not xs:
@@ -416,7 +433,6 @@ def dua_wajah(file: Path, a: float, b: float, w: int, h: int) -> list[dict] | No
     """Dua orang (kiri & kanan) untuk layout Split Podcast: semua wajah dikumpulkan lalu dibelah di celah x terbesar.
     None bila hanya satu orang terlihat (layout jatuh ke tunggal)."""
     import cv2
-    det = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
     cap = cv2.VideoCapture(str(file))
     semua: list[tuple[float, float, float]] = []
     t, langkah = a, max((b - a) / 16, 0.6)
@@ -425,9 +441,7 @@ def dua_wajah(file: Path, a: float, b: float, w: int, h: int) -> list[dict] | No
         ok, fr = cap.read()
         if not ok:
             break
-        g = cv2.cvtColor(cv2.resize(fr, (w // 2, h // 2)), cv2.COLOR_BGR2GRAY)
-        for x, y, fw, fh in det.detectMultiScale(g, 1.1, 5, minSize=(30, 30)):
-            semua.append(((x + fw / 2) / (w / 2), (y + fh / 2) / (h / 2), fw / (w / 2)))
+        semua.extend(wajah_di(fr, w, h))
         t += langkah
     cap.release()
     if len(semua) < 4:
@@ -772,7 +786,8 @@ def baris_judul(teks: str, c: dict, panjang: float) -> str:
         kata = teks.split()
         if len(kata) >= 2:  # kata kedua miring, seperti majalah
             kata[1] = "{\\i1}" + kata[1] + "{\\i0}"
-        return (f"Dialogue: 2,{t(0)},{t(sl)},JudulSerif,,0,0,0,,{{\\an5\\move(540,890,540,840,0,350)\\fad(250,300)}}"
+        uk = max(min(int(2600 / max(len(teks), 1)), 104), 58)
+        return (f"Dialogue: 2,{t(0)},{t(sl)},JudulSerif,,0,0,0,,{{\\an5\\move(540,890,540,840,0,350)\\fs{uk}\\fad(250,300)}}"
                 + " ".join(kata))
     if j == "kotak":
         return (f"Dialogue: 2,{t(0)},{t(sl)},JudulKotak,,0,0,0,,{{\\an5\\pos(540,840)\\fscx80\\fscy80\\t(0,150,\\fscx100\\fscy100)"
@@ -1199,7 +1214,8 @@ def render(file: Path, klip: Klip, kal: list[Kalimat], out: Path, kerja: Path, w
             return
         masukan_extra.extend(["-framerate", "30", "-start_number", "0", "-i", str(ANIM_DIR / nama / "%02d.webp")])
         tpad = f",tpad=stop_mode=clone:stop_duration={tahan:.2f}" if tahan > 0 else ""
-        graf.append(f"[{n_in}:v]format=rgba,scale=1080:1920{tpad},setpts=PTS-STARTPTS+{max(mulai, 0):.2f}/TB[an{n_in}]")
+        tunda = f",tpad=start_duration={mulai:.3f}:start_mode=add:color=black@0" if mulai > 0 else ""
+        graf.append(f"[{n_in}:v]format=rgba,scale=1080:1920{tpad}{tunda},setpts=PTS-STARTPTS[an{n_in}]")
         graf.append(f"[{v}][an{n_in}]overlay=eof_action=pass[va{n_in}]")
         v = f"va{n_in}"
         n_in += 1
@@ -1231,7 +1247,8 @@ def render(file: Path, klip: Klip, kal: list[Kalimat], out: Path, kerja: Path, w
         graf.append(f"color=c={c['warna']}:s=1080x10:r=30:d={durasi:.2f}[pb]")
         graf.append(f"[{v}][pb]overlay=x='-W+W*t/{durasi:.2f}':y=H-10:eof_action=pass[vp]")
         v = "vp"
-    if g.get("subtitle", True) or g.get("banner", True) or c.get("akun"):
+    if g.get("subtitle", True) or g.get("banner", True) or c.get("akun") or (g.get("judul_buka", True) and klip.judul) \
+            or c.get("watermark"):
         ass = kerja / f"{out.stem}.ass"
         tulis_ass(kal, klip, ass, g, bar_atas)
         fdir = kerja / "font"

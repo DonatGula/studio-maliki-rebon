@@ -108,7 +108,10 @@ const fileProps = resolve('hasil', `${nama}.props.json`);
 writeFileSync(fileProps, JSON.stringify(naskah, null, 2));
 const keluar = resolve('hasil', `${nama}-${naskah.gaya}.mp4`);
 log(`Render gaya "${naskah.gaya}" → ${keluar}`);
-execFileSync(process.execPath, [...REMOTION, 'render', 'src/index.ts', 'Motion', keluar, `--props=${fileProps}`, '--log=error'], {
+// --props memakai jalur RELATIF (tanpa huruf drive & spasi "Studio Maliki"): di Windows jalur absolut bisa gagal dibaca
+// dan Remotion diam-diam memakai naskah contoh.json.
+const propsRel = join('hasil', `${nama}.props.json`).split('\\').join('/');
+execFileSync(process.execPath, [...REMOTION, 'render', 'src/index.ts', 'Motion', keluar, `--props=${propsRel}`, '--log=error'], {
   stdio: 'inherit',
 });
 log('Selesai: ' + keluar);
