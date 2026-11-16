@@ -44,6 +44,9 @@ if os.environ.get("STUDIO_PY"):
     _m = Path(os.environ.get("STUDIO_DATA", Path.home() / "Studio Maliki")) / ".mesin" / "motion"
     try:
         shutil.copytree(MOTION, _m, dirs_exist_ok=True, ignore=shutil.ignore_patterns("node_modules", "naskah", "hasil"))
+        # buat.mjs memanggil ../suara/suara.py (VoxCPM) → folder suara harus ikut di sebelah motion
+        if SUARA.exists():
+            shutil.copytree(SUARA, _m.parent / "suara", dirs_exist_ok=True, ignore=shutil.ignore_patterns("__pycache__", ".venv"))
         MOTION = _m
     except OSError:
         pass
