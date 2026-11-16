@@ -744,18 +744,34 @@ def buka_folder(f: Path) -> None:
 def server_hidup(url: str) -> bool:
     import urllib.request
     try:
-        urllib.request.urlopen(url + "/api/status", timeout=1)
-        return True
+        with urllib.request.urlopen(url + "/api/status", timeout=1) as r:  # hanya Studio Maliki yang dianggap
+            d = json.loads(r.read().decode("utf-8", "replace") or "null")
+            return isinstance(d, dict) and {"jenis", "status", "log"} <= d.keys()
     except Exception:  # noqa: BLE001
         return False
 
 
 def main():
+    global PORT
     DATA.mkdir(parents=True, exist_ok=True)
+    # Port 8787 bisa dipakai aplikasi lain (mis. server pengembangan). Cari Studio yang sudah jalan,
+    # kalau tidak ada, pakai port kosong pertama dari 8787–8806.
+    sudah, srv = False, None
+    for p in range(PORT, PORT + 20):
+        url = f"http://127.0.0.1:{p}"
+        if server_hidup(url):
+            PORT, sudah = p, True
+            break
+        try:
+            srv = ThreadingHTTPServer(("127.0.0.1", p), H)
+            PORT = p
+            break
+        except OSError:
+            print(f"Port {p} sedang dipakai aplikasi lain, coba port berikutnya.")
     url = f"http://127.0.0.1:{PORT}"
-    sudah = server_hidup(url)
     if not sudah:
-        srv = ThreadingHTTPServer(("127.0.0.1", PORT), H)
+        if srv is None:
+            raise SystemExit("Tidak ada port kosong di 8787–8806. Tutup aplikasi lain lalu buka Studio lagi.")
         threading.Thread(target=srv.serve_forever, daemon=True).start()
         print(f"Studio Maliki jalan di {url}")
     if "--tanpa-buka" in sys.argv:
