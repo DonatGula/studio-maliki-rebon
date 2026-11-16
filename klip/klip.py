@@ -412,6 +412,39 @@ def info_wajah(file: Path, a: float, b: float, w: int, h: int) -> dict:
     return {"ada": True, "x": float(np.median(xs)), "y": float(np.median(ys)), "s": float(np.median(ss))}
 
 
+def dua_wajah(file: Path, a: float, b: float, w: int, h: int) -> list[dict] | None:
+    """Dua orang (kiri & kanan) untuk layout Split Podcast: semua wajah dikumpulkan lalu dibelah di celah x terbesar.
+    None bila hanya satu orang terlihat (layout jatuh ke tunggal)."""
+    import cv2
+    det = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+    cap = cv2.VideoCapture(str(file))
+    semua: list[tuple[float, float, float]] = []
+    t, langkah = a, max((b - a) / 16, 0.6)
+    while t < b:
+        cap.set(cv2.CAP_PROP_POS_MSEC, t * 1000)
+        ok, fr = cap.read()
+        if not ok:
+            break
+        g = cv2.cvtColor(cv2.resize(fr, (w // 2, h // 2)), cv2.COLOR_BGR2GRAY)
+        for x, y, fw, fh in det.detectMultiScale(g, 1.1, 5, minSize=(30, 30)):
+            semua.append(((x + fw / 2) / (w / 2), (y + fh / 2) / (h / 2), fw / (w / 2)))
+        t += langkah
+    cap.release()
+    if len(semua) < 4:
+        return None
+    xs = sorted(p[0] for p in semua)
+    celah, belah = max((xs[i + 1] - xs[i], (xs[i + 1] + xs[i]) / 2) for i in range(len(xs) - 1))
+    if celah < 0.12:
+        return None
+    hasil = []
+    for sisi in ([p for p in semua if p[0] < belah], [p for p in semua if p[0] >= belah]):
+        if len(sisi) < 2:
+            return None
+        hasil.append({"x": float(np.median([p[0] for p in sisi])), "y": float(np.median([p[1] for p in sisi])),
+                      "s": float(np.median([p[2] for p in sisi]))})
+    return hasil
+
+
 _JEJAK_SIAP: dict[tuple[float, float], list] = {}  # jejak tersimpan di klip.json (dipakai pratinjau Studio & render)
 
 
@@ -685,7 +718,17 @@ PRESET = {
                     bayang=0, latar="blur", banner_kotak="&H00000000", progres=True),
     "maliki":  dict(font="Space Grotesk", tebal=1, huruf="biasa", per=3, uk=72, warna="#22D3EE", mode="warna",
                     kotak="&H38170F0B", tepi=16, bayang=0, banner_kotak="&H38170F0B", banner_warna="#22D3EE", progres=True),
+    # 2.1 — kotak sorot mengikuti kata aktif, hook neon + coretan, judul serif elegan, judul kertas sobek
+    "lime":    dict(font="Montserrat ExtraBold", tebal=0, huruf="kapital", per=3, uk=76, warna="#C6FF3D", mode="kotak", tepi=4, bayang=0),
+    "neon":    dict(font="Bangers", tebal=0, huruf="kapital", per=2, uk=108, warna="#FF4FA3", mode="pop", tepi=8, bayang=0,
+                    judul="neon"),
+    "elegan":  dict(font="Georgia", tebal=1, huruf="biasa", per=4, uk=68, warna="#FFD400", mode="warna", tepi=3, bayang=3,
+                    judul="serif"),
+    "sobek":   dict(font="Archivo Black", tebal=0, huruf="kapital", per=3, uk=74, warna="#FF4FA3", mode="warna", tepi=6, bayang=2,
+                    judul="sobek"),
 }
+GAYA_JUDUL = ("kuning", "neon", "serif", "kotak", "sobek")  # gaya judul pembuka 3 dtk
+ANIM_DIR = Path(__file__).resolve().parent / "anim"  # hiasan animasi transparan (WebP 540×960, 30 fps) dari Remotion
 LAMA = {"sorot": "sorot", "kotak": "terbaca", "garis": "minimal"}  # gaya_sub versi lama → preset
 
 
@@ -705,8 +748,40 @@ def gaya_akhir(g: dict) -> dict:
         if k in g:
             c[k] = g[k]
     c.setdefault("emoji", True)
+    c.setdefault("judul", "kuning")
+    if g.get("gaya_judul") in GAYA_JUDUL:
+        c["judul"] = g["gaya_judul"]
     c["uk"] = int(c["uk"] * UKURAN.get(g.get("ukuran", "sedang"), 1.0))
     return c
+
+
+def lama_judul(c: dict) -> float:
+    return 2.5 if c.get("judul") == "sobek" else 3.0
+
+
+def baris_judul(teks: str, c: dict, panjang: float) -> str:
+    """Satu baris Dialogue ASS untuk judul pembuka sesuai gaya (animasi masuk lewat tag ASS)."""
+    t = waktu_ass
+    j = c.get("judul", "kuning")
+    sl = min(lama_judul(c), panjang)
+    if j == "neon":
+        uk = max(min(int(5200 / max(len(teks), 1)), 210), 120)  # boleh 2 baris
+        return (f"Dialogue: 2,{t(0)},{t(sl)},JudulNeon,,0,0,0,,{{\\an5\\pos(540,840)\\frz-4\\fs{uk}\\fscx30\\fscy30"
+                f"\\t(0,180,\\fscx110\\fscy110)\\t(180,320,\\fscx100\\fscy100)\\fad(0,250)}}{teks.upper()}")
+    if j == "serif":
+        kata = teks.split()
+        if len(kata) >= 2:  # kata kedua miring, seperti majalah
+            kata[1] = "{\\i1}" + kata[1] + "{\\i0}"
+        return (f"Dialogue: 2,{t(0)},{t(sl)},JudulSerif,,0,0,0,,{{\\an5\\move(540,890,540,840,0,350)\\fad(250,300)}}"
+                + " ".join(kata))
+    if j == "kotak":
+        return (f"Dialogue: 2,{t(0)},{t(sl)},JudulKotak,,0,0,0,,{{\\an5\\pos(540,840)\\fscx80\\fscy80\\t(0,150,\\fscx100\\fscy100)"
+                f"\\fad(0,250)}}{teks.upper()}")
+    if j == "sobek":  # teks di atas pita kertas (anim/sobek): masuk 0,3 dtk, keluar 2,1 dtk
+        uk = max(min(int(1500 / max(len(teks), 1)), 92), 48)
+        return (f"Dialogue: 2,{t(0.3)},{t(min(2.1, sl))},JudulSobek,,0,0,0,,{{\\an5\\pos(540,880)\\frz3\\fs{uk}\\fad(120,120)}}"
+                f"{teks.upper()}")
+    return f"Dialogue: 2,{t(0)},{t(sl)},Judul,,0,0,0,,{{\\fad(150,250)}}{teks}"
 
 
 def _norm(t: str) -> str:
@@ -791,6 +866,12 @@ def tulis_ass(kal: list[Kalimat], klip: Klip, out: Path, g: dict, bar_atas: int)
         banner = f"Style: Banner,{fb},{max(int(uk * 0.85), 54)},{bw},{bw},&H00000000,&H00000000,{tb},0,0,0,100,100,0,0,1,5,0,8,80,80,{banner_v},1"
     judul_style = (f"Style: Judul,{fb},54,&H000D0705,&H000D0705,{warna_ass('#FFD400')},{warna_ass('#FFD400')},1,0,0,0,100,100,0,0,3,"
                    f"20,0,8,110,110,{int(1920 * 0.14)},1")
+    judul_style += (
+        f"\nStyle: JudulNeon,Bangers,110,{warna_ass('#FF4FA3')},{warna_ass('#FF4FA3')},&H00111111,{warna_ass('#C6FF3D')},0,0,0,0,"
+        f"100,100,2,0,1,10,8,5,70,70,0,1"
+        f"\nStyle: JudulSerif,Georgia,104,&H00FFFFFF,&H00FFFFFF,&H00000000,&H78000000,1,0,0,0,100,100,0,0,1,0,4,5,90,90,0,1"
+        f"\nStyle: JudulKotak,Archivo Black,72,&H00FFFFFF,&H00FFFFFF,&H00111111,&H00111111,0,0,0,0,100,100,0,0,3,22,0,5,100,100,0,1"
+        f"\nStyle: JudulSobek,Archivo Black,84,&H00111111,&H00111111,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,120,120,0,1")
     tanda_style = "Style: Tanda,Montserrat,30,&H33FFFFFF,&H33FFFFFF,&H00000000,&H64000000,1,0,0,0,100,100,0,0,1,1,2,3,40,40,46,1"
     akun_style = f"Style: Akun,{font},34,&H40FFFFFF,&H40FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,1,0,1,2,0,8,80,80,{banner_v + int(uk * 1.1)},1"
     kepala = f"""[Script Info]
@@ -818,7 +899,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         baris.append(f"Dialogue: 1,{waktu_ass(0)},{waktu_ass(b - a)},Banner,,0,0,0,,{ubah_huruf(teks, 'kapital')}")
     elif g.get("judul_buka", True) and klip.judul:  # judul pembuka 3 dtk (bila banner tidak dipakai)
         teks = bersih(tanpa_emoji(klip.judul))
-        baris.append(f"Dialogue: 2,{waktu_ass(0)},{waktu_ass(min(3.0, b - a))},Judul,,0,0,0,,{{\\fad(150,250)}}{teks}")
+        baris.append(baris_judul(teks, c, b - a))
     if c.get("watermark"):
         baris.append(f"Dialogue: 2,{waktu_ass(0)},{waktu_ass(b - a)},Tanda,,0,0,0,,{bersih(tanpa_emoji(str(c['watermark'])))[:40]}")
     if c.get("akun"):
@@ -852,6 +933,9 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                                    if x is aktif else t)
                     elif mode == "terbaca":
                         isi.append("{\\c" + putih + "&}" + t + "{\\r}" if x is aktif else hijau)
+                    elif mode == "kotak":  # kotak warna di belakang kata aktif (tepi tebal sewarna = blok), teks gelap
+                        isi.append("{\\c&H00111111&\\3c" + sorot + "&\\bord18\\shad0\\fscx104\\fscy104}" + t + "{\\r}"
+                                   if x is aktif else hijau)
                     elif mode in ("pop", "komik"):
                         warna = "{\\c" + HIJAU + "&}" if kk else ""
                         if x is aktif:
@@ -1027,13 +1111,24 @@ def render(file: Path, klip: Klip, kal: list[Kalimat], out: Path, kerja: Path, w
     rasio = g.get("rasio", "9:16")
     layout = g.get("layout", "tunggal")
     fokus = g.get("fokus", "auto")
-    wajah = info_wajah(file, klip.mulai, klip.selesai, w, h) if layout != "tunggal" else None
+    wajah = info_wajah(file, klip.mulai, klip.selesai, w, h) if layout in ("facecam", "pip") else None
+    dua = dua_wajah(file, klip.mulai, klip.selesai, w, h) if layout == "split" else None
+    if layout == "split" and not dua:
+        log("   Split Podcast: hanya satu orang terlihat → bingkai tunggal")
     cx = FOKUS.get(fokus, 0.5)
     durasi = klip.selesai - klip.mulai
     graf = []
     bar_atas = 0
 
-    if layout == "facecam" and wajah:
+    if layout == "split" and dua:
+        # dua pembicara ditumpuk: kiri di atas, kanan di bawah, garis pemisah tipis
+        graf.append("[0:v]split=2[va][vb]")
+        for lbl, p in (("atas", dua[0]), ("bawah", dua[1])):
+            zoom = min(max(p["s"] * 3.0, 0.3), 1.0)
+            graf.append(f"[{'va' if lbl == 'atas' else 'vb'}]{potong(w, h, 1080 / 958, p['x'], p['y'], zoom)},"
+                        f"scale=1080:958:flags=lanczos,setsar=1[{lbl}]")
+        graf.append("color=c=0x111111:s=1080x4:d=1[gp];[atas][gp][bawah]vstack=inputs=3[vid]")
+    elif layout == "facecam" and wajah:
         # atas 40%: wajah diperbesar · bawah 60%: isi layar (gameplay/presentasi)
         zoom = min(max(wajah["s"] * 3.2, 0.25), 1.0)
         graf.append(f"[0:v]split=2[va][vb]")
@@ -1096,6 +1191,30 @@ def render(file: Path, klip: Klip, kal: list[Kalimat], out: Path, kerja: Path, w
         graf.append(f"[{v}][br{i}]overlay=enable='between(t,{sp['a']:.2f},{sp['b']:.2f})':eof_action=pass[vb{i}]")
         v = f"vb{i}"
         n_in += 1
+
+    def hiasan(nama: str, mulai: float, tahan: float = 0.0) -> None:
+        """Tempel animasi transparan anim/<nama>/NN.webp mulai detik `mulai` (frame terakhir ditahan `tahan` dtk)."""
+        nonlocal v, n_in
+        if not (ANIM_DIR / nama / "00.webp").exists():
+            return
+        masukan_extra.extend(["-framerate", "30", "-start_number", "0", "-i", str(ANIM_DIR / nama / "%02d.webp")])
+        tpad = f",tpad=stop_mode=clone:stop_duration={tahan:.2f}" if tahan > 0 else ""
+        graf.append(f"[{n_in}:v]format=rgba,scale=1080:1920{tpad},setpts=PTS-STARTPTS+{max(mulai, 0):.2f}/TB[an{n_in}]")
+        graf.append(f"[{v}][an{n_in}]overlay=eof_action=pass[va{n_in}]")
+        v = f"va{n_in}"
+        n_in += 1
+
+    # transisi sapuan menutupi setiap pergantian ke/dari B-roll (penuh tepat di titik potong)
+    if g.get("transisi"):
+        for sp in g.get("_sisipan") or []:
+            hiasan("sapuan", sp["a"] - 0.3)
+            hiasan("sapuan", sp["b"] - 0.3)
+    # hiasan judul pembuka: coretan neon / pita kertas sobek
+    if klip.judul and g.get("judul_buka", True) and not (g.get("banner", True) and klip.judul):
+        if c.get("judul") == "neon":
+            hiasan("neon", 0.0, tahan=max(lama_judul(c) - 1.5, 0))
+        elif c.get("judul") == "sobek":
+            hiasan("sobek", 0.0)
     # emoji otomatis (gambar Twemoji) di atas baris subtitle
     if c.get("emoji") and g.get("subtitle", True):
         rencana = rencana_emoji(kal, klip, c["per"])

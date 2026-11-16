@@ -563,7 +563,7 @@ main{position:relative;z-index:1}
               </div></div>
             <div class="bidang" id="bLatar"><label>Latar bar</label><div class="pil" id="pLatar"><button data-v="hitam" class="aktif">Hitam polos</button><button data-v="blur">Video diburamkan</button></div></div>
             <div class="bidang"><label>Titik fokus horizontal</label><div class="pil" id="pFokus"><button data-v="auto" class="aktif">Otomatis (wajah)</button><button data-v="kiri">Kiri</button><button data-v="tengah">Tengah</button><button data-v="kanan">Kanan</button></div></div>
-            <div class="bidang"><label>Layout streamer / facecam</label><div class="pil" id="pLayout"><button data-v="tunggal" class="aktif">Satu video</button><button data-v="facecam">Wajah atas · layar bawah</button><button data-v="pip">Wajah di pojok (PiP)</button></div></div>
+            <div class="bidang"><label>Layout streamer / facecam</label><div class="pil" id="pLayout"><button data-v="tunggal" class="aktif">Satu video</button><button data-v="facecam">Wajah atas · layar bawah</button><button data-v="pip">Wajah di pojok (PiP)</button><button data-v="split">Split podcast (2 orang)</button></div></div>
 
             <div class="sub-bagian">
               <label class="saklar" style="border:none;padding-top:0">Banner judul hook<input type="checkbox" id="gBanner" checked></label>
@@ -585,6 +585,8 @@ main{position:relative;z-index:1}
               <label class="saklar">Progress bar di bawah<input type="checkbox" id="gProgres"></label>
               <label class="saklar">Emoji otomatis di atas subtitle<input type="checkbox" id="gEmoji" checked></label>
               <label class="saklar">Judul pembuka 3 detik <em style="font-style:normal;color:var(--redup);font-size:12px">&nbsp;saat banner mati</em><input type="checkbox" id="gJudulBuka" checked></label>
+              <div class="bidang"><label>Gaya judul pembuka</label><div class="pil" id="pJudul" style="flex-wrap:wrap"><button data-v="kuning" class="aktif">Kotak kuning</button><button data-v="neon">Hook neon</button><button data-v="serif">Serif elegan</button><button data-v="kotak">Kotak hitam</button><button data-v="sobek">Kertas sobek</button></div></div>
+              <label class="saklar">Transisi sapuan saat B-roll masuk/keluar<input type="checkbox" id="gTransisi"></label>
               <div class="bidang" style="margin:10px 0 0"><label>Watermark pojok kanan bawah <em>opsional, mis. @akunmu</em></label><input class="input" id="gWatermark" maxlength="40"></div>
               <div class="bidang" style="margin:10px 0 0"><label>Nama akun di bawah judul <em>opsional, mis. @akunmu</em></label><input class="input" id="gAkun" maxlength="40"></div>
             </div>
@@ -1346,19 +1348,24 @@ const PRESET_G = {
             latar: 'blur', bannerKotak: '#000000', progres: true},
   maliki:  {nama: 'Merek Maliki', ket: 'gaya situs /kode', font: 'Space Grotesk', huruf: 'biasa', per: 3, uk: 72, warna: '#22D3EE', mode: 'warna', kotak: 'rgba(11,15,23,.78)',
             bannerKotak: 'rgba(11,15,23,.78)', bannerWarna: '#22D3EE', progres: true},
+  lime:    {nama: 'Lime Box', ket: 'kotak ikut kata aktif', font: 'Montserrat ExtraBold', huruf: 'kapital', per: 3, uk: 76, warna: '#C6FF3D', mode: 'kotak', tepi: 4, judul: 'kotak'},
+  neon:    {nama: 'Hook Neon', ket: 'judul stiker + coretan', font: 'Bangers', huruf: 'kapital', per: 2, uk: 108, warna: '#FF4FA3', mode: 'pop', tepi: 8, judul: 'neon'},
+  elegan:  {nama: 'Serif Elegan', ket: 'judul majalah, kalem', font: 'Georgia', huruf: 'biasa', per: 4, uk: 68, warna: '#FFD400', mode: 'warna', tepi: 3, judul: 'serif'},
+  sobek:   {nama: 'Kertas Sobek', ket: 'judul di pita kertas', font: 'Archivo Black', huruf: 'kapital', per: 3, uk: 74, warna: '#FF4FA3', mode: 'warna', tepi: 6, judul: 'sobek'},
 };
 const G = {rasio: '9:16', latar: 'hitam', fokus: 'auto', layout: 'tunggal', banner: true, awalan: '', akhiran: '', subtitle: true,
   preset: 'sorot', font: 'Archivo Black', ukuran: 'sedang', huruf: 'kapital', posisi_y: 72, warna: '#FFD400', zoom: true, progres: true, akun: '',
-  musik: '', volume_musik: 18, sfx: '', suara: 100, emoji: true, judul_buka: true, watermark: '', broll: '', broll_file: []};
+  musik: '', volume_musik: 18, sfx: '', suara: 100, emoji: true, judul_buka: true, gaya_judul: 'kuning', transisi: false, watermark: '', broll: '', broll_file: []};
 function pilihPreset(id) {
   const p = PRESET_G[id]; if (!p) return;
-  Object.assign(G, {preset: id, font: p.font, huruf: p.huruf, warna: p.warna, ukuran: 'sedang', zoom: p.zoom ?? true, progres: p.progres ?? true});
+  Object.assign(G, {preset: id, font: p.font, huruf: p.huruf, warna: p.warna, ukuran: 'sedang', zoom: p.zoom ?? true, progres: p.progres ?? true, gaya_judul: p.judul || 'kuning'});
+  if (p.judul) G.banner = false;  // judul bergaya tampil saat banner mati
   if (p.latar) G.latar = p.latar;
   terapkanGaya({});
 }
 $('#gridPreset').innerHTML = Object.entries(PRESET_G).map(([id, p]) => {
   const hrf = (t) => p.huruf === 'kapital' ? t.toUpperCase() : p.huruf === 'kecil' ? t.toLowerCase() : t;
-  const w = (t, on) => `<span style="${on ? (p.mode === 'tebal' ? 'font-family:Montserrat;font-weight:700' : p.mode === 'terbaca' ? 'color:#fff' : `color:${p.warna}`) : ''}">${hrf(t)}</span>`;
+  const w = (t, on) => `<span style="${on ? (p.mode === 'tebal' ? 'font-family:Montserrat;font-weight:700' : p.mode === 'terbaca' ? 'color:#fff' : p.mode === 'kotak' ? `background:${p.warna};color:#111;padding:0 5px;border-radius:5px` : `color:${p.warna}`) : ''}">${hrf(t)}</span>`;
   const kot = p.kotak ? `background:${p.kotak};padding:2px 8px;border-radius:4px;${p.mode === 'terbaca' ? 'color:' + p.warna : ''}` : '';
   const tepi = p.tepi >= 6 ? '-webkit-text-stroke:1.2px #000;paint-order:stroke fill;' : '';
   return `<button class="preset" data-preset="${id}"><span class="contoh"><span style="font-family:'${p.font}';${kot}${tepi}">${w('ini', false)} ${w('contoh', true)} ${w('Klip', p.mode === 'pop' || p.mode === 'komik')}</span></span>
@@ -1366,7 +1373,7 @@ $('#gridPreset').innerHTML = Object.entries(PRESET_G).map(([id, p]) => {
 }).join('');
 $('#gridPreset').onclick = (e) => { const b = e.target.closest('[data-preset]'); if (b) pilihPreset(b.dataset.preset); };
 function pilG(id, kunci) { pil(id, (v) => { G[kunci] = isNaN(+v) || kunci === 'font' ? v : +v; segarkanG(); }); }
-['#pLatar:latar', '#pFokus:fokus', '#pLayout:layout', '#pFont:font', '#pUkuran:ukuran', '#pHuruf:huruf', '#pSuara:suara']
+['#pLatar:latar', '#pFokus:fokus', '#pLayout:layout', '#pJudul:gaya_judul', '#pFont:font', '#pUkuran:ukuran', '#pHuruf:huruf', '#pSuara:suara']
   .forEach((x) => { const [id, k] = x.split(':'); pilG(id, k); });
 $('#tRasio').onclick = (e) => { const b = e.target.closest('.tile'); if (!b) return; $$('#tRasio .tile').forEach((t) => t.classList.toggle('aktif', t === b)); G.rasio = b.dataset.v; segarkanG(); };
 $('#gBanner').onchange = (e) => { G.banner = e.target.checked; segarkanG(); };
@@ -1380,6 +1387,7 @@ $('#gProgres').onchange = (e) => { G.progres = e.target.checked; segarkanG(); };
 $('#gAkun').oninput = (e) => { G.akun = e.target.value; segarkanG(); };
 $('#gEmoji').onchange = (e) => { G.emoji = e.target.checked; };
 $('#gJudulBuka').onchange = (e) => { G.judul_buka = e.target.checked; };
+$('#gTransisi').onchange = (e) => { G.transisi = e.target.checked; };
 $('#gWatermark').oninput = (e) => { G.watermark = e.target.value; };
 $$('#pBroll button').forEach((b) => b.onclick = () => {
   $$('#pBroll button').forEach((x) => x.classList.toggle('aktif', x === b)); G.broll = b.dataset.v;
@@ -1407,13 +1415,13 @@ function terapkanGaya(g) {
   if (!G.preset) G.preset = {kotak: 'terbaca', garis: 'minimal'}[G.gaya_sub] || 'sorot';  // gaya.json versi lama
   $$('#gridPreset .preset').forEach((b) => b.classList.toggle('aktif', b.dataset.preset === G.preset));
   $('#gZoom').checked = !!G.zoom; $('#gProgres').checked = !!G.progres; $('#gAkun').value = G.akun || '';
-  $('#gEmoji').checked = G.emoji !== false; $('#gJudulBuka').checked = G.judul_buka !== false; $('#gWatermark').value = G.watermark || '';
+  $('#gEmoji').checked = G.emoji !== false; $('#gJudulBuka').checked = G.judul_buka !== false; $('#gTransisi').checked = !!G.transisi; $('#gWatermark').value = G.watermark || '';
   $$('#pBroll button').forEach((x) => x.classList.toggle('aktif', x.dataset.v === (G.broll || '')));
   $('#bBrollFile').style.display = G.broll === 'file' ? '' : 'none'; $('#bBrollPix').style.display = G.broll === 'pixabay' ? '' : 'none';
   $('#nBroll').textContent = (G.broll_file || []).join(', ') || 'belum ada';
   $$('#tRasio .tile').forEach((t) => t.classList.toggle('aktif', t.dataset.v === G.rasio));
   const set = (id, v) => $$(id + ' button').forEach((b) => b.classList.toggle('aktif', b.dataset.v === String(v)));
-  set('#pLatar', G.latar); set('#pFokus', G.fokus); set('#pLayout', G.layout); set('#pFont', G.font);
+  set('#pLatar', G.latar); set('#pFokus', G.fokus); set('#pLayout', G.layout); set('#pJudul', G.gaya_judul || 'kuning'); set('#pFont', G.font);
   set('#pUkuran', G.ukuran); set('#pHuruf', G.huruf); set('#pSuara', G.suara);
   $('#gBanner').checked = G.banner; $('#gSub').checked = G.subtitle; $('#gAwalan').value = G.awalan || ''; $('#gAkhiran').value = G.akhiran || '';
   $('#gPosY').value = G.posisi_y; $('#gWarna').value = G.warna; $('#gVolMusik').value = G.volume_musik;
@@ -1452,7 +1460,8 @@ function gambarKanvas() {
   }
   const gb = (r, x, y, w, h, cx = cxAuto, cy = 0.5, sk = 1) => { if (!siap) { ctx.fillStyle = '#151c2c'; ctx.fillRect(x, y, w, h); return; } const [a, b, c, d] = potongG(vw, vh, r, cx, cy, sk); ctx.drawImage(v, a, b, c, d, x, y, w, h); };
   let bar = 0;
-  if (G.layout === 'facecam') { gb(1080 / 768, 0, 0, W, 768 * S, 0.5, 0.35, 0.5); gb(1080 / 1152, 0, 768 * S, W, 1152 * S, 0.5); }
+  if (G.layout === 'split') { gb(1080 / 958, 0, 0, W, 958 * S, 0.3, 0.4, 0.55); ctx.fillStyle = '#111'; ctx.fillRect(0, 958 * S, W, 4 * S); gb(1080 / 958, 0, 962 * S, W, 958 * S, 0.7, 0.4, 0.55); }
+  else if (G.layout === 'facecam') { gb(1080 / 768, 0, 0, W, 768 * S, 0.5, 0.35, 0.5); gb(1080 / 1152, 0, 768 * S, W, 1152 * S, 0.5); }
   else if (G.layout === 'pip') { gb(9 / 16, 0, 0, W, H, 0.5); const k = 380 * S, x = W - k - 60 * S, y = 220 * S; ctx.fillStyle = '#22d3ee'; ctx.fillRect(x - 6 * S, y - 6 * S, k + 12 * S, k + 12 * S); gb(1, x, y, k, k, 0.5, 0.35, 0.45); }
   else if (G.rasio === '9:16') gb(9 / 16, 0, 0, W, H);
   else {
@@ -1494,6 +1503,7 @@ function gambarKanvas() {
       if ((P.mode === 'pop' || P.mode === 'komik') && i === kunciI) warna = G.warna;
       if (P.mode === 'terbaca') warna = i === aktifI ? '#fff' : G.warna;
       if (P.mode === 'karaoke') warna = i <= aktifI ? G.warna : '#fff';
+      if (P.mode === 'kotak' && i === aktifI) { const lw = ctx.measureText(t).width; ctx.fillStyle = G.warna; ctx.beginPath(); ctx.roundRect(x - 10 * S, y - uk * 0.95, lw + 20 * S, uk * 1.25, 10 * S); ctx.fill(); warna = '#111'; }
       if (!P.kotak && P.tepi) { ctx.lineWidth = P.tepi * 2 * S; ctx.strokeStyle = '#000'; ctx.strokeText(t, x, y); }
       if (!P.tepi && !P.kotak) { ctx.shadowColor = 'rgba(0,0,0,.6)'; ctx.shadowBlur = 8 * S; ctx.shadowOffsetY = 3 * S; }
       ctx.fillStyle = warna; ctx.fillText(t, x, y); ctx.shadowColor = 'transparent'; x += lebar[i];
