@@ -123,7 +123,12 @@ def transkrip(file: Path, model: str, bahasa: str | None) -> list[Kalimat]:
     raw = subprocess.run([ffmpeg(), "-v", "error", "-i", str(file), "-ac", "1", "-ar", str(sr), "-f", "s16le", "-"],
                          capture_output=True, check=True).stdout
     audio = np.frombuffer(raw, dtype=np.int16).astype(np.float32) / 32768
-    segs, info = m.transcribe(audio, language=bahasa, word_timestamps=True, vad_filter=True)
+    # Akurasi bahasa Indonesia lisan: beam search, tanpa "condition_on_previous_text" (mencegah salah dengar yang
+    # menular ke kalimat berikutnya / pengulangan), dan prompt awal berisi gaya bahasa sehari-hari sebagai petunjuk ejaan.
+    petunjuk = ("Percakapan santai bahasa Indonesia: nggak, enggak, gimana, kayak, banget, sih, dong, kok, gue, lo, "
+                "YouTube, podcast, konten, viral.") if (bahasa or "id") == "id" else None
+    segs, info = m.transcribe(audio, language=bahasa, word_timestamps=True, vad_filter=True, beam_size=5,
+                              condition_on_previous_text=False, initial_prompt=petunjuk)
     hasil = []
     for s in segs:
         kata = [Kata(w.start, w.end, w.word.strip()) for w in (s.words or []) if w.word.strip()]
@@ -1349,7 +1354,7 @@ def muat_transkrip(file: Path, a, kerja: Path) -> list[Kalimat]:
         log("Transkrip diambil dari cache.")
         return [Kalimat(k["mulai"], k["selesai"], k["teks"], [Kata(**x) for x in k["kata"]])
                 for k in json.loads(cache.read_text(encoding="utf-8"))]
-    kal = transkrip(file, a.model, a.bahasa)
+    kal = transkrip(file, a.model, None if a.bahasa in ("auto", "", None) else a.bahasa)
     cache.write_text(json.dumps([asdict(k) for k in kal], ensure_ascii=False), encoding="utf-8")
     return kal
 
@@ -1483,7 +1488,7 @@ def main() -> None:
     p.add_argument("--jumlah", type=int, default=3, help="jumlah klip (default 3)")
     p.add_argument("--durasi", type=int, default=30, help="target detik per klip (default 30)")
     p.add_argument("--model", default="small", help="model whisper: tiny/base/small/medium/large-v3")
-    p.add_argument("--bahasa", default=None, help="kode bahasa, mis. id atau en (default otomatis)")
+    p.add_argument("--bahasa", default="id", help="kode bahasa, mis. id atau en; 'auto' = deteksi otomatis (default id)")
     p.add_argument("--keluar", default="hasil-klip", help="folder hasil")
     p.add_argument("--tanpa-wajah", action="store_true", help="bingkai tengah, jangan ikuti wajah")
     p.add_argument("--tanpa-subtitle", action="store_true")
