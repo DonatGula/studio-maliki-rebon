@@ -35,10 +35,10 @@ jobs:
         run: |
           # pengganggu di 8787, meniru server pengembangan lain → Studio harus pindah port
           $peng = Start-Process python -ArgumentList '-m','http.server','8787','--bind','127.0.0.1' -PassThru -WindowStyle Hidden
-          $p = Start-Process "$env:APP\python\python.exe" -ArgumentList "`"$env:APP\alat\studio\studio.py`"",'--tanpa-buka' `
+          $p = Start-Process "$env:APP\python\python.exe" -ArgumentList '-u',"`"$env:APP\alat\studio\studio.py`"",'--tanpa-buka' `
                -WorkingDirectory "$env:APP\alat\studio" -PassThru -RedirectStandardOutput "$env:GITHUB_WORKSPACE\studio.out" -RedirectStandardError "$env:GITHUB_WORKSPACE\studio.err"
           $ok = $false
-          foreach ($i in 1..40) {
+          foreach ($i in 1..60) {
             Start-Sleep 3
             foreach ($port in 8787..8792) {
               try { $r = Invoke-RestMethod "http://127.0.0.1:$port/api/status" -TimeoutSec 2
@@ -74,7 +74,7 @@ jobs:
       - name: Motion dari naskah tempelan (harus memakai naskah ini, bukan contoh.json)
         shell: pwsh
         run: |
-          $p = Start-Process "$env:APP\python\python.exe" -ArgumentList "`"$env:APP\alat\studio\studio.py`"",'--tanpa-buka' `
+          $p = Start-Process "$env:APP\python\python.exe" -ArgumentList '-u',"`"$env:APP\alat\studio\studio.py`"",'--tanpa-buka' `
                -WorkingDirectory "$env:APP\alat\studio" -PassThru -RedirectStandardOutput "$env:GITHUB_WORKSPACE\studio2.out" -RedirectStandardError "$env:GITHUB_WORKSPACE\studio2.err"
           $u = $null
           foreach ($i in 1..40) { Start-Sleep 3; foreach ($port in 8787..8792) { try { $r = Invoke-RestMethod "http://127.0.0.1:$port/api/status" -TimeoutSec 2; if ($r.PSObject.Properties.Name -contains 'jenis') { $u = "http://127.0.0.1:$port"; break } } catch {} }; if ($u) { break } }

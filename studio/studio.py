@@ -747,6 +747,18 @@ def buka_folder(f: Path) -> None:
         subprocess.run(["xdg-open", str(f)])
 
 
+class ServerStudio(ThreadingHTTPServer):
+    """Di Windows, SO_REUSEADDR membuat dua program bisa memakai port yang sama (Studio mengira port kosong,
+    padahal permintaan masuk ke aplikasi lain). Pakai SO_EXCLUSIVEADDRUSE agar port yang terpakai benar-benar ditolak."""
+    allow_reuse_address = os.name != "nt"
+
+    def server_bind(self):
+        import socket
+        if os.name == "nt" and hasattr(socket, "SO_EXCLUSIVEADDRUSE"):
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+        super().server_bind()
+
+
 def server_hidup(url: str) -> bool:
     import urllib.request
     try:
@@ -769,7 +781,7 @@ def main():
             PORT, sudah = p, True
             break
         try:
-            srv = ThreadingHTTPServer(("127.0.0.1", p), H)
+            srv = ServerStudio(("127.0.0.1", p), H)
             PORT = p
             break
         except OSError:
