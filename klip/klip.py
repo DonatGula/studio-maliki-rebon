@@ -937,11 +937,14 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                 for j, x in enumerate(grup):
                     dur = ((grup[j + 1].mulai if j + 1 < len(grup) else x.selesai) - x.mulai)
                     isi.append("{\\kf" + str(max(int(dur * 100), 1)) + "}" + teks[j])
-                baris.append(f"Dialogue: 0,{waktu_ass(grup[0].mulai - a)},{waktu_ass(grup[-1].selesai - a)},Utama,,0,0,0,,{' '.join(isi)}")
+                if grup[-1].selesai - grup[0].mulai >= 0.02:
+                    baris.append(f"Dialogue: 0,{waktu_ass(grup[0].mulai - a)},{waktu_ass(grup[-1].selesai - a)},Utama,,0,0,0,,{' '.join(isi)}")
                 continue
             for j, aktif in enumerate(grup):
                 m = aktif.mulai - a
                 sl = (grup[j + 1].mulai if j + 1 < len(grup) else grup[-1].selesai) - a
+                if sl - m < 0.02:  # baris berdurasi nol membuat libass menghilangkan judul pembuka → lewati
+                    continue
                 isi = []
                 for x, t in zip(grup, teks):
                     kk = _norm(x.teks) in kunci
