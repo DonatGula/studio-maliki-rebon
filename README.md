@@ -7,12 +7,12 @@ Aplikasi desktop untuk:
 Semua diproses di laptopmu: tanpa watermark, tanpa kuota, dan video tidak diunggah ke mana pun.
 AI-nya pakai milikmu sendiri (BYOK): Lokal (gratis tanpa kunci), Gemini (ada kuota gratis), Ollama (gratis, offline), atau langganan Claude/ChatGPT lewat Claude Code, Codex, OpenCode.
 
-## Unduh installer (tanpa Terminal) — versi 3.0
+## Unduh installer (tanpa Terminal) — versi 2.1
 - 🍎 **Download for MacBook** (Apple Silicon): [Studio-Maliki-Mac.dmg](https://github.com/malikisaputra-source/unduh/releases/latest/download/Studio-Maliki-Mac.dmg) — buka, seret ke Applications, pertama kali klik kanan → Buka.
 - 🪟 **Download for Windows** 10/11 (tahap uji): [Studio-Maliki-Windows.exe](https://github.com/malikisaputra-source/unduh/releases/latest/download/Studio-Maliki-Windows.exe) — jalankan, ikuti wizard. Layar biru SmartScreen → Info selengkapnya → Tetap jalankan.
 - 📱 **Download for Android** 10+ (Klip HP): [KlipHP-Android.apk](https://github.com/malikisaputra-source/unduh/releases/latest/download/KlipHP-Android.apk)
 
-Baru di 3.0: Studio tetap bisa dibuka walau port 8787 dipakai aplikasi lain; gaya Lime Box, Hook Neon, Serif Elegan, Kertas Sobek (judul pembuka beranimasi), layout Split Podcast, transisi sapuan B-roll.
+Baru di 2.1: gaya Lime Box, Hook Neon, Serif Elegan, Kertas Sobek (judul pembuka beranimasi), layout Split Podcast, transisi sapuan B-roll.
 
 Versi baru? Unduh dan pasang lagi: Mac pilih "Ganti", Windows otomatis jadi wizard pembaruan. Hasil kerjamu tidak terhapus.
 Cara membuat installer sendiri: [`pemasang/README.md`](pemasang/README.md).
