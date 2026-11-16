@@ -107,6 +107,7 @@ jobs:
             motion*.png
             motion.mp4
             motion-log.txt
+            pemasang/hasil/Pasang-Studio-Maliki-*-windows.exe
             studio2.*
             studio.out
             studio.err
