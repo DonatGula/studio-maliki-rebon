@@ -36,7 +36,7 @@ jobs:
           # pengganggu di 8787, meniru server pengembangan lain → Studio harus pindah port
           $peng = Start-Process python -ArgumentList '-m','http.server','8787','--bind','127.0.0.1' -PassThru -WindowStyle Hidden
           $p = Start-Process "$env:APP\python\python.exe" -ArgumentList "`"$env:APP\alat\studio\studio.py`"",'--tanpa-buka' `
-               -WorkingDirectory "$env:APP\alat\studio" -PassThru -RedirectStandardOutput studio.out -RedirectStandardError studio.err
+               -WorkingDirectory "$env:APP\alat\studio" -PassThru -RedirectStandardOutput "$env:GITHUB_WORKSPACE\studio.out" -RedirectStandardError "$env:GITHUB_WORKSPACE\studio.err"
           $ok = $false
           foreach ($i in 1..40) {
             Start-Sleep 3
@@ -46,7 +46,8 @@ jobs:
             }
             if ($ok) { break }
           }
-          Get-Content studio.out, studio.err -ErrorAction SilentlyContinue
+          Get-Content "$env:GITHUB_WORKSPACE\studio.out", "$env:GITHUB_WORKSPACE\studio.err" -ErrorAction SilentlyContinue
+          if (-not $ok) { & "$env:APP\python\python.exe" -c "import sys,webview,cv2,faster_whisper;print(sys.version)" }
           if (-not $ok) { throw "Studio tidak menyala" }
           Stop-Process $p.Id -Force; Stop-Process $peng.Id -Force
 
