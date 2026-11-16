@@ -86,7 +86,7 @@ jobs:
           $r = Invoke-RestMethod "$u/api/motion" -Method Post -Body ([Text.Encoding]::UTF8.GetBytes($body)) -ContentType 'application/json'
           Write-Host "Proyek: $($r.proyek)"
           foreach ($i in 1..240) { Start-Sleep 5; $s = Invoke-RestMethod "$u/api/status"; if ($s.status -ne 'jalan') { break } }
-          $s.log | Select-Object -Last 25
+          $s.log | Out-File -Encoding utf8 "$env:GITHUB_WORKSPACE\motion-log.txt"; $s.log | Select-String -Pattern 'Error|error|rror:|Adegan|Render|Module|resolve|ENOENT' | Select-Object -First 30
           Write-Host "Status: $($s.status)"
           $mp4 = Get-ChildItem "$env:USERPROFILE\Studio Maliki" -Recurse -Filter *.mp4 | Where-Object { $_.FullName -like '*motion*' } | Sort-Object LastWriteTime | Select-Object -Last 1
           if (-not $mp4) { throw "Video Motion tidak terbentuk" }
@@ -106,6 +106,7 @@ jobs:
             hasil-*.png
             motion*.png
             motion.mp4
+            motion-log.txt
             studio2.*
             studio.out
             studio.err
