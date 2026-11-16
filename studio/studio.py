@@ -462,7 +462,7 @@ def mulai_motion(d: dict) -> dict:
         data = json.loads(naskah_teks)
         data["gaya"] = gaya
         (MOTION / "naskah").mkdir(exist_ok=True)
-        (MOTION / "naskah" / f"{nama}.json").write_text(json.dumps(data, ensure_ascii=False, indent=2))
+        (MOTION / "naskah" / f"{nama}.json").write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     else:
         langkah.append(([node, "naskah.mjs", topik, f"--ai={ai}", f"--gaya={gaya}", f"--nama={nama}"], MOTION))
     if d.get("gambar") and ai != "lokal":

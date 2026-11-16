@@ -1340,9 +1340,9 @@ def muat_transkrip(file: Path, a, kerja: Path) -> list[Kalimat]:
     if cache.exists():
         log("Transkrip diambil dari cache.")
         return [Kalimat(k["mulai"], k["selesai"], k["teks"], [Kata(**x) for x in k["kata"]])
-                for k in json.loads(cache.read_text())]
+                for k in json.loads(cache.read_text(encoding="utf-8"))]
     kal = transkrip(file, a.model, a.bahasa)
-    cache.write_text(json.dumps([asdict(k) for k in kal], ensure_ascii=False))
+    cache.write_text(json.dumps([asdict(k) for k in kal], ensure_ascii=False), encoding="utf-8")
     return kal
 
 
