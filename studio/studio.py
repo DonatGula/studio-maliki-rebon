@@ -44,6 +44,9 @@ if os.environ.get("STUDIO_PY"):
     _m = Path(os.environ.get("STUDIO_DATA", Path.home() / "Studio Maliki")) / ".mesin" / "motion"
     try:
         shutil.copytree(MOTION, _m, dirs_exist_ok=True, ignore=shutil.ignore_patterns("node_modules", "naskah", "hasil"))
+        # src/Akar.tsx mengimpor naskah/contoh.json (props bawaan) → wajib ada, walau folder naskah lain tidak disalin
+        (_m / "naskah").mkdir(parents=True, exist_ok=True)
+        shutil.copy2(MOTION / "naskah" / "contoh.json", _m / "naskah" / "contoh.json")
         # buat.mjs memanggil ../suara/suara.py (VoxCPM) → folder suara harus ikut di sebelah motion
         if SUARA.exists():
             shutil.copytree(SUARA, _m.parent / "suara", dirs_exist_ok=True, ignore=shutil.ignore_patterns("__pycache__", ".venv"))
