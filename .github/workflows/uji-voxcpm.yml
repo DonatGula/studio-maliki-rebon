@@ -1,0 +1,36 @@
+# Uji suara AI VoxCPM2 di Windows (CPU, tanpa GPU) — mencari penyebab crash 0xC0000005.
+name: Uji VoxCPM Windows
+on:
+  workflow_dispatch:
+jobs:
+  uji:
+    runs-on: windows-latest
+    timeout-minutes: 90
+    env:
+      PYTHONFAULTHANDLER: '1'
+      HF_HOME: D:\hf
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Pasang & cek model
+        shell: pwsh
+        run: uv run -q suara\suara.py --cek 2>&1 | Tee-Object cek.txt
+      - name: Versi paket
+        if: always()
+        shell: pwsh
+        run: uv run -q --with voxcpm --with soundfile python -c "import torch,sys,platform;print(sys.version, torch.__version__, torch.backends.mkldnn.is_available(), platform.processor())" 2>&1 | Tee-Object versi.txt
+      - name: Buat suara
+        if: always()
+        shell: pwsh
+        run: |
+          '["Halo semuanya, ini uji suara.","Kalimat kedua untuk uji."]' | Out-File -Encoding utf8NoBOM daftar.json
+          uv run -q suara\suara.py --daftar daftar.json --folder keluar 2>&1 | Tee-Object buat.txt
+          Write-Host "exit=$LASTEXITCODE"
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hasil-voxcpm
+          path: |
+            *.txt
+            keluar/*.wav
