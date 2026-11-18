@@ -34,7 +34,16 @@ def log(m: str) -> None:
 
 
 def muat():
+    import os
     from voxcpm import VoxCPM
+    try:
+        # Di CPU, VoxCPM2 memakai bfloat16. CPU laptop tanpa dukungan bf16 bawaan (mis. Intel AVX2) bisa crash
+        # (Windows: 0xC0000005). float32 aman di semua CPU. Atur VOXCPM_CPU_DTYPE=bfloat16 untuk kembali ke bawaan.
+        import voxcpm.model.voxcpm2 as _v2
+        _asli = _v2.pick_runtime_dtype
+        _v2.pick_runtime_dtype = lambda dev, dt: os.environ.get("VOXCPM_CPU_DTYPE", "float32") if str(dev) == "cpu" else _asli(dev, dt)
+    except Exception as e:  # versi voxcpm lain: biarkan bawaan
+        log(f"(lewati penyesuaian dtype: {e})")
     log(f"Memuat {MODEL} (pertama kali mengunduh ±5 GB)…")
     t = time.time()
     m = VoxCPM.from_pretrained(MODEL, load_denoiser=False)

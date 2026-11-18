@@ -5,10 +5,17 @@ on:
 jobs:
   uji:
     runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dtype: [bfloat16, float32]
     timeout-minutes: 90
     env:
       PYTHONFAULTHANDLER: '1'
       HF_HOME: D:\hf
+      VOXCPM_CPU_DTYPE: ${{ matrix.dtype }}
+      ATEN_CPU_CAPABILITY: avx2
+      ONEDNN_MAX_CPU_ISA: AVX2
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
@@ -30,7 +37,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: hasil-voxcpm
+          name: hasil-voxcpm-${{ matrix.dtype }}
           path: |
             *.txt
             keluar/*.wav
