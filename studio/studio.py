@@ -407,6 +407,56 @@ def mulai_klip(d: dict) -> dict:
     return {"proyek": folder.name}
 
 
+def _folder_klip(nama: str) -> Path:
+    f = DATA / "klip" / re.sub(r"[^\w-]", "", nama or "")
+    if not (f / "transkrip.json").exists():
+        raise ValueError("Proyek tidak ditemukan. Analisis videonya dulu.")
+    return f
+
+
+def kalimat_klip(d: dict) -> dict:
+    """Kalimat transkrip yang masuk rentang satu klip (untuk disunting sebelum render)."""
+    f = _folder_klip(d.get("nama"))
+    klip = next((x for x in json.loads((f / "klip.json").read_text(encoding="utf-8")) if x["no"] == int(d.get("no", 0))), None)
+    if not klip:
+        raise ValueError("Klip tidak ditemukan.")
+    tr = json.loads((f / "transkrip.json").read_text(encoding="utf-8"))
+    out = [{"i": i, "mulai": k["mulai"], "teks": " ".join(w["teks"] for w in k.get("kata", [])) or k["teks"]}
+           for i, k in enumerate(tr) if k["selesai"] > klip["mulai"] and k["mulai"] < klip["selesai"]]
+    return {"kalimat": out}
+
+
+def simpan_subtitle(d: dict) -> dict:
+    """Ganti teks kalimat. Jumlah kata sama -> waktu tiap kata tetap; berbeda -> waktu dibagi rata sepanjang kalimat."""
+    f = _folder_klip(d.get("nama"))
+    tr = json.loads((f / "transkrip.json").read_text(encoding="utf-8"))
+    n = 0
+    for x in d.get("kalimat") or []:
+        i = int(x.get("i", -1))
+        if not 0 <= i < len(tr):
+            continue
+        kata_baru = str(x.get("teks", "")).split()
+        k = tr[i]
+        lama = k.get("kata") or []
+        if [w["teks"] for w in lama] == kata_baru:
+            continue
+        if kata_baru and len(kata_baru) == len(lama):
+            for w, t in zip(lama, kata_baru):
+                w["teks"] = t
+        elif kata_baru:
+            a, b = (lama[0]["mulai"], lama[-1]["selesai"]) if lama else (k["mulai"], k["selesai"])
+            dur = max(b - a, 0.05) / len(kata_baru)
+            k["kata"] = [{"mulai": round(a + j * dur, 3), "selesai": round(a + (j + 1) * dur, 3), "teks": t}
+                         for j, t in enumerate(kata_baru)]
+        else:
+            k["kata"] = []
+        k["teks"] = " ".join(kata_baru)
+        n += 1
+    if n:
+        (f / "transkrip.json").write_text(json.dumps(tr, ensure_ascii=False), encoding="utf-8")
+    return {"diubah": n}
+
+
 def mulai_render_klip(d: dict) -> dict:
     nama = re.sub(r"[^\w-]", "", d.get("nama", ""))
     folder = DATA / "klip" / nama
@@ -702,6 +752,10 @@ class H(BaseHTTPRequestHandler):
                     webbrowser.open(url)
                     return self._json({"ok": True})
                 return self._json({"galat": "Alamat tidak diizinkan."}, 400)
+            if jalur == "/api/klip-kalimat":
+                return self._json(kalimat_klip(d))
+            if jalur == "/api/klip-subtitle":
+                return self._json(simpan_subtitle(d))
             if jalur == "/api/klip-render":
                 return self._json(mulai_render_klip(d))
             if jalur == "/api/hapus-proyek":

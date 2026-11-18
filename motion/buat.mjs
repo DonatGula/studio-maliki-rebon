@@ -113,7 +113,7 @@ log(`Render gaya "${naskah.gaya}" → ${keluar}`);
 const propsRel = join('hasil', `${nama}.props.json`).split('\\').join('/');
 // Keluaran Remotion ditangkap lalu dicetak ulang, supaya alasan gagal (mis. Chrome Headless Shell tidak bisa diunduh/dijalankan)
 // selalu terlihat di log Studio — sebelumnya hanya muncul "status 1, stderr null".
-const r = spawnSync(process.execPath, [...REMOTION, 'render', 'src/index.ts', 'Motion', keluar, `--props=${propsRel}`, '--log=verbose'],
+const r = spawnSync(process.execPath, [...REMOTION, 'render', 'src/index.ts', 'Motion', keluar, `--props=${propsRel}`, '--timeout=180000', '--log=verbose'],
   {encoding: 'utf8', maxBuffer: 64 * 1024 * 1024});
 const keluaran = `${r.stdout ?? ''}${r.stderr ?? ''}`.split(/\r?\n/).filter((x) => x.trim());
 if (r.status !== 0 || !existsSync(keluar)) {

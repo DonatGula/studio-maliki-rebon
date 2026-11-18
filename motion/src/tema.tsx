@@ -11,13 +11,13 @@ import {loadFont as fFraunces} from '@remotion/google-fonts/Fraunces';
 import {loadFont as fJakarta} from '@remotion/google-fonts/PlusJakartaSans';
 import {loadFont as fGrotesk} from '@remotion/google-fonts/SpaceGrotesk';
 
-const ARCHIVO = fArchivo().fontFamily;
-const SERIF = fSerif().fontFamily;
-const INTER = fInter().fontFamily;
-const DMMONO = fDMMono().fontFamily;
-const FRAUNCES = fFraunces().fontFamily;
-const JAKARTA = fJakarta().fontFamily;
-const GROTESK = fGrotesk().fontFamily;
+const ARCHIVO = fArchivo('normal', {subsets: ['latin']}).fontFamily;
+const SERIF = fSerif('normal', {subsets: ['latin']}).fontFamily;
+const INTER = fInter('normal', {subsets: ['latin']}).fontFamily;
+const DMMONO = fDMMono('normal', {subsets: ['latin']}).fontFamily;
+const FRAUNCES = fFraunces('normal', {subsets: ['latin']}).fontFamily;
+const JAKARTA = fJakarta('normal', {subsets: ['latin']}).fontFamily;
+const GROTESK = fGrotesk('normal', {subsets: ['latin']}).fontFamily;
 
 export type ModeJudul = 'naik' | 'ketik' | 'zoom' | 'stiker' | 'sorot' | 'pil' | 'kotak';
 export type ModeIkon = 'polos' | 'polaroid' | 'kaca' | 'lingkaran' | 'kartu' | 'cahaya';

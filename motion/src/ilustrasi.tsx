@@ -15,14 +15,14 @@ import {loadFont as fTangan} from '@remotion/google-fonts/Gaegu';
 import {loadFont as fRubik} from '@remotion/google-fonts/Rubik';
 import type {LatarProps, Tema} from './tema';
 
-const PIXEL = fPixel().fontFamily;
-const KAPUR = fKapur().fontFamily;
-const KOMIK = fKomik().fontFamily;
-const CLAY = fClay().fontFamily;
-const TEKNO = fTekno().fontFamily;
-const BATA = fBata().fontFamily;
-const TANGAN = fTangan().fontFamily;
-const RUBIK = fRubik().fontFamily;
+const PIXEL = fPixel('normal', {subsets: ['latin']}).fontFamily;
+const KAPUR = fKapur('normal', {subsets: ['latin']}).fontFamily;
+const KOMIK = fKomik('normal', {subsets: ['latin']}).fontFamily;
+const CLAY = fClay('normal', {subsets: ['latin']}).fontFamily;
+const TEKNO = fTekno('normal', {subsets: ['latin']}).fontFamily;
+const BATA = fBata('normal', {subsets: ['latin']}).fontFamily;
+const TANGAN = fTangan('normal', {subsets: ['latin']}).fontFamily;
+const RUBIK = fRubik('normal', {subsets: ['latin']}).fontFamily;
 
 // ── Filter SVG: dipasang sekali di Video, dipakai lewat CSS filter:url(#…) ──
 const garis = (warna: string, tebal: number, dalam: number) => (

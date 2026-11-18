@@ -1316,7 +1316,9 @@ function gambarKlip() {
       <div class="aksi"><button class="tombol utama kecil" data-putar="${k.no}">▶ Putar</button>
         <button class="tombol kedua kecil" data-s="${jam(k.mulai)} - ${jam(k.selesai)}">Salin timestamp</button>
         <button class="tombol kedua kecil" data-s="${esc(`${k.judul}\n${jam(k.mulai)} - ${jam(k.selesai)}\n${k.caption}`)}">Salin detail</button>
-        <button class="tombol kedua kecil" data-trans="${k.no}">Transkrip ▾</button></div>
+        <button class="tombol kedua kecil" data-trans="${k.no}">Transkrip ▾</button>
+        <button class="tombol kedua kecil" data-sub="${k.no}">✎ Edit subtitle</button></div>
+      <div class="sunting-sub" id="ss-${k.no}" hidden></div>
       <div class="trans" id="tr-${k.no}">${esc(k.kutipan)}</div>
       ${k.file ? `<div class="k-hasil"><video src="${base + k.file}?v=${Date.now()}" controls preload="metadata" playsinline></video><div><div class="eyebrow" style="margin-bottom:8px">sudah dirender</div>
         <a class="tombol utama kecil" href="${base + k.file}" download data-jenis="klip" data-nama="${h.nama}" data-file="${k.file}">Unduh MP4</a></div></div>` : ''}
@@ -1325,6 +1327,22 @@ function gambarKlip() {
   $$('.ikh').forEach((it) => it.onclick = () => $('#kk-' + it.dataset.ke)?.scrollIntoView({behavior: 'smooth', block: 'center'}));
   $$('[data-s]', $('#daftarKlip')).forEach((b) => b.onclick = () => salin(b.dataset.s));
   $$('[data-trans]').forEach((b) => b.onclick = () => $('#tr-' + b.dataset.trans).classList.toggle('buka'));
+  $$('[data-sub]').forEach((b) => b.onclick = async () => {
+    const box = $('#ss-' + b.dataset.sub);
+    if (!box.hidden) { box.hidden = true; return; }
+    try {
+      const r = await api('/api/klip-kalimat', {nama: KLIP.h.nama, no: +b.dataset.sub});
+      box.innerHTML = `<div class="catatan" style="margin:8px 0">Betulkan kata yang salah dengar. Waktu kata tetap ikut ucapan; setelah disimpan, render ulang klipnya.</div>` +
+        r.kalimat.map((x) => `<div class="bidang" style="margin:6px 0"><label>${jam(x.mulai)}</label><textarea class="input" rows="2" data-ki="${x.i}" style="width:100%;resize:vertical">${esc(x.teks)}</textarea></div>`).join('') +
+        `<button class="tombol utama kecil" data-simpansub="${b.dataset.sub}">Simpan subtitle</button>`;
+      box.hidden = false;
+      box.querySelector('[data-simpansub]').onclick = async () => {
+        const kal = [...box.querySelectorAll('[data-ki]')].map((t) => ({i: +t.dataset.ki, teks: t.value.trim()}));
+        try { const h = await api('/api/klip-subtitle', {nama: KLIP.h.nama, kalimat: kal}); toast(`Subtitle disimpan (${h.diubah} kalimat diubah). Render ulang untuk melihat hasilnya.`); box.hidden = true; }
+        catch (e) { toast(e.message, true); }
+      };
+    } catch (e) { toast(e.message, true); }
+  });
   $$('[data-judul]').forEach((sp) => sp.oninput = () => { KLIP.judul[sp.dataset.judul] = sp.textContent.trim(); gambarKanvas(); });
   $$('[data-putar]').forEach((b) => b.onclick = () => {
     const k = klips.find((x) => x.no === +b.dataset.putar); const v = $('#vSumber'); if (!v) return;
