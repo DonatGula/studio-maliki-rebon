@@ -99,6 +99,19 @@ jobs:
           Copy-Item $mp4.FullName motion.mp4
           Stop-Process $p.Id -Force
 
+      - name: Motion saat VoxCPM crash (harus beralih ke suara Windows, bukan gagal)
+        shell: pwsh
+        run: |
+          $m = "$env:USERPROFILE\Studio Maliki\.mesin\motion"
+          Set-Location $m
+          '{"judul":"UJI VOX","gaya":"kaca","handle":"@uji","adegan":[{"judul":"SUARA CADANGAN","teks":"Ini suara cadangan Windows.","kunci":["cadangan"],"ikon":"🔊"}]}' | Out-File -Encoding utf8NoBOM naskah\ujivox.json
+          $env:UV = (Get-Command node).Source
+          node buat.mjs naskah/ujivox.json --suara=voxcpm 2>&1 | Tee-Object "$env:GITHUB_WORKSPACE\motion-vox-log.txt" | Select-String -Pattern 'PERINGATAN|Adegan|Render|GAGAL|Error' | Select-Object -First 20
+          $out = Get-ChildItem hasil -Filter 'ujivox-*.mp4' | Select-Object -First 1
+          if (-not $out) { throw "Video tidak terbentuk saat VoxCPM gagal" }
+          if (-not (Select-String -Path "$env:GITHUB_WORKSPACE\motion-vox-log.txt" -Pattern 'Beralih ke suara "windows"' -Quiet)) { throw "Tidak beralih ke suara windows" }
+          Copy-Item $out.FullName "$env:GITHUB_WORKSPACE\motion-vox.mp4"
+
       - name: Simpan hasil uji
         if: always()
         uses: actions/upload-artifact@v4
@@ -110,6 +123,7 @@ jobs:
             motion*.png
             motion.mp4
             motion-log.txt
+            motion-vox*
             pemasang/hasil/Pasang-Studio-Maliki-*-windows.exe
             studio2.*
             studio.out

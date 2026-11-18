@@ -19,7 +19,7 @@ naskah.handle = typeof naskah.handle === 'string' ? naskah.handle : (process.env
 
 const WIN = process.platform === 'win32';
 const REMOTION = [join('node_modules', '@remotion', 'cli', 'remotion-cli.js')]; // tanpa npx/shell: aman di Windows
-const modeSuara = opsi.suara ?? (process.platform === 'darwin' ? 'say' : WIN ? 'windows' : 'tanpa');
+let modeSuara = opsi.suara ?? (process.platform === 'darwin' ? 'say' : WIN ? 'windows' : 'tanpa');
 const suaraMac = opsi['suara-mac'] ?? 'Damayanti';
 
 const log = (m) => console.log('• ' + m);
@@ -62,7 +62,13 @@ if (modeSuara === 'voxcpm') {
   if (process.env.VOXCPM_REFERENSI) args.push('--referensi', process.env.VOXCPM_REFERENSI);
   if (process.env.VOXCPM_DESAIN) args.push('--desain', process.env.VOXCPM_DESAIN);
   log('Membuat suara dengan VoxCPM2 (AI lokal)…');
-  execFileSync(uv, args, {stdio: 'inherit'});
+  try {
+    execFileSync(uv, args, {stdio: 'inherit'});
+  } catch (e) {
+    // Mis. di Windows torch bisa crash (status 3221225477 = 0xC0000005). Jangan gagalkan video: pakai suara bawaan.
+    modeSuara = process.platform === 'darwin' ? 'say' : WIN ? 'windows' : 'tanpa';
+    log(`PERINGATAN: VoxCPM gagal (status ${e.status ?? e.code}). Beralih ke suara "${modeSuara}".`);
+  }
 }
 
 naskah.adegan.forEach((a, i) => {
