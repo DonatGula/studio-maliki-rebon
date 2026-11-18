@@ -1,7 +1,7 @@
 // kredit-maliki: Template oleh Maliki Saputra (@malikisaputra) — https://malikisaputra.biz.id · Lisensi Nonkomersial Maliki Studio 1.0 (alat/LISENSI.md): dilarang dijual ulang.
 // Motion Maliki — naskah JSON → suara → subtitle → animasi → MP4 9:16.
 // Pakai: node buat.mjs naskah/contoh.json [--gaya=neon] [--suara=say|rekaman|tanpa] [--suara-mac=Damayanti]
-import {execFileSync} from 'node:child_process';
+import {execFileSync, spawnSync} from 'node:child_process';
 import {readFileSync, writeFileSync, mkdirSync, existsSync, copyFileSync, rmSync} from 'node:fs';
 import {basename, dirname, join, resolve} from 'node:path';
 import {svgAman} from './svg-aman.mjs';
@@ -111,7 +111,16 @@ log(`Render gaya "${naskah.gaya}" → ${keluar}`);
 // --props memakai jalur RELATIF (tanpa huruf drive & spasi "Studio Maliki"): di Windows jalur absolut bisa gagal dibaca
 // dan Remotion diam-diam memakai naskah contoh.json.
 const propsRel = join('hasil', `${nama}.props.json`).split('\\').join('/');
-execFileSync(process.execPath, [...REMOTION, 'render', 'src/index.ts', 'Motion', keluar, `--props=${propsRel}`, '--log=error'], {
-  stdio: 'inherit',
-});
+// Keluaran Remotion ditangkap lalu dicetak ulang, supaya alasan gagal (mis. Chrome Headless Shell tidak bisa diunduh/dijalankan)
+// selalu terlihat di log Studio — sebelumnya hanya muncul "status 1, stderr null".
+const r = spawnSync(process.execPath, [...REMOTION, 'render', 'src/index.ts', 'Motion', keluar, `--props=${propsRel}`, '--log=verbose'],
+  {encoding: 'utf8', maxBuffer: 64 * 1024 * 1024});
+const keluaran = `${r.stdout ?? ''}${r.stderr ?? ''}`.split(/\r?\n/).filter((x) => x.trim());
+if (r.status !== 0 || !existsSync(keluar)) {
+  console.log(keluaran.slice(-80).join('\n'));
+  if (r.error) console.log('Galat menjalankan Remotion: ' + r.error.message);
+  console.log(`• Render GAGAL (kode ${r.status}). Node ${process.version}, ${process.platform}. Baris di atas berisi alasannya.`);
+  process.exit(1);
+}
+console.log(keluaran.filter((x) => /error|warn|gagal/i.test(x)).slice(-10).join('\n'));
 log('Selesai: ' + keluar);

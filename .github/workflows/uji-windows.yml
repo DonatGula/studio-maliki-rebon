@@ -12,6 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
       - name: Pasang Inno Setup 6
         shell: pwsh
         run: if (-not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) { choco install innosetup -y --no-progress }
@@ -79,10 +82,10 @@ jobs:
           $u = $null
           foreach ($i in 1..40) { Start-Sleep 3; foreach ($port in 8787..8792) { try { $r = Invoke-RestMethod "http://127.0.0.1:$port/api/status" -TimeoutSec 2; if ($r.PSObject.Properties.Name -contains 'jenis') { $u = "http://127.0.0.1:$port"; break } } catch {} }; if ($u) { break } }
           if (-not $u) { throw "Studio tidak menyala" }
-          $naskah = @{ judul = 'UJI WINDOWS 777'; gaya = 'garis'; handle = '@uji'; adegan = @(
+          $naskah = @{ judul = 'UJI WINDOWS 777'; gaya = 'kaca'; handle = '@uji'; adegan = @(
             @{ judul = 'NASKAH UJI WINDOWS'; teks = 'Ini naskah uji dari GitHub Actions.'; kunci = @('uji'); ikon = '🧪' },
             @{ judul = 'ADEGAN KEDUA UJI'; teks = 'Kalau ini muncul, naskahnya terbaca.'; kunci = @('terbaca'); ikon = '✅' }) } | ConvertTo-Json -Depth 5 -Compress
-          $body = @{ naskah = $naskah; gaya = 'garis'; ai = 'lokal' } | ConvertTo-Json -Depth 5 -Compress
+          $body = @{ naskah = $naskah; gaya = 'kaca'; ai = 'lokal' } | ConvertTo-Json -Depth 5 -Compress
           $r = Invoke-RestMethod "$u/api/motion" -Method Post -Body ([Text.Encoding]::UTF8.GetBytes($body)) -ContentType 'application/json'
           Write-Host "Proyek: $($r.proyek)"
           foreach ($i in 1..240) { Start-Sleep 5; $s = Invoke-RestMethod "$u/api/status"; if ($s.status -ne 'jalan') { break } }
