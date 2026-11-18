@@ -63,11 +63,11 @@ if (modeSuara === 'voxcpm') {
   if (process.env.VOXCPM_DESAIN) args.push('--desain', process.env.VOXCPM_DESAIN);
   log('Membuat suara dengan VoxCPM2 (AI lokal)…');
   try {
-    execFileSync(uv, args, {stdio: 'inherit'});
+    execFileSync(uv, args, {stdio: 'inherit', env: {...process.env, PYTHONFAULTHANDLER: '1', PYTHONUTF8: '1'}});
   } catch (e) {
     // Mis. di Windows torch bisa crash (status 3221225477 = 0xC0000005). Jangan gagalkan video: pakai suara bawaan.
     modeSuara = process.platform === 'darwin' ? 'say' : WIN ? 'windows' : 'tanpa';
-    log(`PERINGATAN: VoxCPM gagal (status ${e.status ?? e.code}). Beralih ke suara "${modeSuara}".`);
+    log(`PERINGATAN: VoxCPM gagal (status ${e.status ?? e.code}). Beralih ke suara "${modeSuara}". Kirim log ini + RAM/CPU/GPU laptopmu ke #lapor-bug supaya bisa kami perbaiki.`);
   }
 }
 
