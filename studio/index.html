@@ -1166,18 +1166,27 @@ function gambarLangkah(jenis, log, status) {
   const lg = $('#log' + id); lg.textContent = log.join('\n'); lg.scrollTop = lg.scrollHeight;
 }
 let pantau = null;
+let SIBUK = null; // proses yang sedang berjalan: tombol tetap bisa diklik dan menjelaskan kenapa harus menunggu
 let idTerakhir = 0;
 function mulaiPantau(jenis) {
   const id = jenis === 'motion' ? 'Motion' : 'Klip';
   $('#proses' + id).classList.add('tampil');
   if (jenis !== 'render') $('#hasil' + id).classList.remove('tampil');
   if (jenis === 'klip') { $('#studioRender').classList.remove('tampil'); $('#h-klip').classList.remove('ada-hasil'); $('#sumberRingkas').hidden = true; window.perbaruiBarRender?.(); }
-  $('#tbl' + id).disabled = true; clearInterval(pantau); document.body.classList.add('bekerja');
+  SIBUK = jenis; clearInterval(pantau); document.body.classList.add('bekerja');
+  let gagalPantau = 0;
   pantau = setInterval(async () => {
-    const s = await api('/api/status');
+    let s;
+    try { s = await api('/api/status'); gagalPantau = 0; }
+    catch (e) {
+      // Studio tidak menjawab: jangan biarkan tombol terkunci diam-diam (laporan: "Cari momen tidak bisa diklik").
+      if (++gagalPantau >= 5) { clearInterval(pantau); pantau = null; SIBUK = null; document.body.classList.remove('bekerja');
+        toast('Studio tidak menjawab. Tutup lalu buka lagi aplikasinya, kemudian coba lagi.', true); }
+      return;
+    }
     gambarLangkah(jenis, s.log, s.status);
     if (s.status !== 'jalan') {
-      clearInterval(pantau); pantau = null; $('#tbl' + id).disabled = false; idTerakhir = s.id; document.body.classList.remove('bekerja');
+      clearInterval(pantau); pantau = null; SIBUK = null; idTerakhir = s.id; document.body.classList.remove('bekerja');
       if (s.status === 'selesai') { toast('Selesai ✓'); tampilHasil(s.hasil); }
       else { toast(s.status === 'batal' ? 'Dibatalkan' : 'Gagal — buka "Lihat log"', s.status !== 'batal'); $('#proses' + id + ' details').open = true; }
     }
@@ -1192,6 +1201,8 @@ $('#tblMatikan').onclick = async () => {
 $$('[data-batal]').forEach((b) => b.onclick = () => api('/api/batal', {}));
 
 $('#tblKlip').onclick = async () => {
+  if (SIBUK) return toast(`Masih memproses ${SIBUK === 'motion' ? 'Motion' : 'klip'} — tunggu selesai atau tekan Batalkan dulu.`, true);
+  if (!$('#sumber').value.trim()) return toast('Tempel link YouTube atau pilih file video dulu.', true);
   try {
     const khusus = nilaiPil('#pilRentang') === 'khusus';
     if (nilaiPil('#pilSub') === 'srt' && !SRT) return toast('Pilih berkas .srt dulu.', true);
@@ -1203,6 +1214,7 @@ $('#tblKlip').onclick = async () => {
   } catch (e) { toast(e.message, true); }
 };
 $('#tblMotion').onclick = async () => {
+  if (SIBUK) return toast(`Masih memproses ${SIBUK === 'motion' ? 'Motion' : 'klip'} — tunggu selesai atau tekan Batalkan dulu.`, true);
   try {
     const isi = nilaiPil('#pilIsi');
     await api('/api/motion', {topik: isi === 'topik' ? $('#topik').value : '', naskah: isi === 'naskah' ? $('#naskahJSON').value : '',
