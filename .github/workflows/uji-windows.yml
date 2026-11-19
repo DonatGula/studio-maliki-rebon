@@ -112,6 +112,17 @@ jobs:
           if (-not (Select-String -Path "$env:GITHUB_WORKSPACE\motion-vox-log.txt" -Pattern 'Beralih ke suara "windows"' -Quiet)) { throw "Tidak beralih ke suara windows" }
           Copy-Item $out.FullName "$env:GITHUB_WORKSPACE\motion-vox.mp4"
 
+      - name: Motion naskah tanpa judul (gaya kapital, laporan toUpperCase)
+        shell: pwsh
+        run: |
+          $m = "$env:USERPROFILE\Studio Maliki\.mesin\motion"
+          Set-Location $m
+          '{"adegan":[{"teks":"Adegan ini tidak punya judul.","kunci":"judul"},{"judul":null,"teks":"Adegan kedua juga tanpa judul."}]}' | Out-File -Encoding utf8NoBOM naskah\ujijudul.json
+          node buat.mjs naskah/ujijudul.json --gaya=piksel --suara=tanpa 2>&1 | Tee-Object "$env:GITHUB_WORKSPACE\motion-judul-log.txt" | Select-String -Pattern 'Adegan|Render|GAGAL|TypeError' | Select-Object -First 20
+          $out = Get-ChildItem hasil -Filter 'ujijudul-*.mp4' | Select-Object -First 1
+          if (-not $out) { throw "Video naskah tanpa judul tidak terbentuk" }
+          Copy-Item $out.FullName "$env:GITHUB_WORKSPACE\motion-judul.mp4"
+
       - name: Simpan hasil uji
         if: always()
         uses: actions/upload-artifact@v4
@@ -123,6 +134,7 @@ jobs:
             motion*.png
             motion.mp4
             motion-log.txt
+            motion-judul*
             motion-vox*
             pemasang/hasil/Pasang-Studio-Maliki-*-windows.exe
             studio2.*

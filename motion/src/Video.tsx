@@ -37,7 +37,7 @@ const warnaAdegan = (t: Tema, i: number, aksenProp?: string) => {
   return {bg: pn?.bg, teks: pn?.teks ?? t.teks, aksen: aksenProp ?? pn?.aksen ?? t.aksen,
     redup: pn ? (pn.teks === '#fff' || pn.teks === '#faf6ef' ? '#ffffffaa' : '#00000088') : t.redup};
 };
-const huruf = (t: Tema, s: string) => (t.kapital ? s.toUpperCase() : s);
+const huruf = (t: Tema, s?: string) => (t.kapital ? String(s ?? '').toUpperCase() : String(s ?? ''));
 const kontras = (hex: string) => {
   let h = hex.replace('#', '');
   if (h.length === 3) h = h.split('').map((c) => c + c).join('');
@@ -79,7 +79,7 @@ const Subtitle: React.FC<{a: Adegan; t: Tema; w: ReturnType<typeof warnaAdegan>}
   const mulai = bobot.map((b) => { const m = (acc / jumlah) * total; acc += b; return m; });
   const aktif = Math.max(0, mulai.findIndex((m, i) => f >= m && (i === kata.length - 1 || f < mulai[i + 1])));
   const grup = Math.floor(aktif / 4) * 4;
-  const kunci = new Set((a.kunci ?? []).map((k) => k.toLowerCase()));
+  const kunci = new Set((a.kunci ?? []).map((k) => String(k).toLowerCase()));
   const kotak = t.sub === 'kotak';
   const pil = t.sub === 'pil';
   return (

@@ -14,6 +14,14 @@ const nama = basename(fileNaskah, '.json');
 if (opsi.gaya) naskah.gaya = opsi.gaya;
 // SVG objek per adegan (gambar.mjs atau naskah tempelan): saring lagi sebelum dirender
 naskah.adegan.forEach((a, i) => { if (a.gambar) a.gambar = svgAman(a.gambar, `s${i + 1}`) || undefined; });
+// Naskah dari AI kadang tanpa "judul"/"teks" atau berisi non-teks: rapikan supaya Animasi tidak crash (toUpperCase of undefined).
+naskah.adegan.forEach((a) => {
+  a.teks = typeof a.teks === 'string' ? a.teks : String(a.teks ?? '');
+  if (typeof a.judul !== 'string' || !a.judul.trim()) a.judul = a.teks.split(/\s+/).filter(Boolean).slice(0, 4).join(' ');
+  if (a.kunci && !Array.isArray(a.kunci)) a.kunci = [String(a.kunci)];
+  if (Array.isArray(a.kunci)) a.kunci = a.kunci.map(String);
+});
+if (typeof naskah.judul !== 'string') naskah.judul = String(naskah.judul ?? naskah.adegan[0]?.judul ?? '');
 // nama akun hanya dari naskah/pengaturan pengguna — jangan sampai ikut nilai bawaan contoh.json (@malikisaputra)
 naskah.handle = typeof naskah.handle === 'string' ? naskah.handle : (process.env.HANDLE || '');
 

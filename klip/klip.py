@@ -115,10 +115,41 @@ class Kalimat:
     kata: list[Kata]
 
 
+def muat_model_whisper(model: str) -> str:
+    """Unduh model Whisper dengan coba-ulang. Koneksi ke huggingface.co sering putus/diblok di sebagian
+    jaringan (laporan: httpcore error di langkah Transkrip), jadi coba lagi lalu pakai cermin hf-mirror.com."""
+    import time
+    try:
+        from faster_whisper.utils import _MODELS
+        from huggingface_hub import snapshot_download
+    except Exception:
+        return model
+    repo = _MODELS.get(model)
+    if not repo:
+        return model  # path lokal / nama repo langsung
+    pola = ["config.json", "preprocessor_config.json", "model.bin", "tokenizer.json", "vocabulary.*"]
+    try:  # sudah pernah diunduh: jangan sentuh internet
+        return snapshot_download(repo, allow_patterns=pola, local_files_only=True)
+    except Exception:
+        pass
+    galat = None
+    for ujung in [None, None, "https://hf-mirror.com"]:
+        try:
+            if ujung:
+                log(f"Unduhan model dari huggingface.co gagal, mencoba cermin {ujung}…")
+            return snapshot_download(repo, allow_patterns=pola, endpoint=ujung, etag_timeout=30)
+        except Exception as e:
+            galat = e
+            log(f"Unduh model gagal ({type(e).__name__}): {str(e)[:160]}")
+            time.sleep(3)
+    raise RuntimeError("Model subtitle (Whisper) gagal diunduh. Cek koneksi internet (coba Wi-Fi/hotspot lain "
+                       "atau matikan VPN/DNS pemblokir), lalu ulangi.") from galat
+
+
 def transkrip(file: Path, model: str, bahasa: str | None) -> list[Kalimat]:
     from faster_whisper import WhisperModel
     log(f"Transkripsi dengan faster-whisper model '{model}' (pertama kali akan mengunduh model)…")
-    m = WhisperModel(model, device="cpu", compute_type="int8")
+    m = WhisperModel(muat_model_whisper(model), device="cpu", compute_type="int8")
     sr = 16000  # decode sendiri dengan ffmpeg bawaan → tidak bergantung versi PyAV
     raw = subprocess.run([ffmpeg(), "-v", "error", "-i", str(file), "-ac", "1", "-ar", str(sr), "-f", "s16le", "-"],
                          capture_output=True, check=True).stdout
