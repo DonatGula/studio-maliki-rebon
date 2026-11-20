@@ -52,7 +52,7 @@ jobs:
           Get-Content "$env:GITHUB_WORKSPACE\studio.out", "$env:GITHUB_WORKSPACE\studio.err" -ErrorAction SilentlyContinue
           if (-not $ok) { & "$env:APP\python\python.exe" -c "import sys,webview,cv2,faster_whisper;print(sys.version)" }
           if (-not $ok) { throw "Studio tidak menyala" }
-          Stop-Process $p.Id -Force; Stop-Process $peng.Id -Force
+          Stop-Process $p.Id -Force -ErrorAction SilentlyContinue; Stop-Process $peng.Id -Force -ErrorAction SilentlyContinue
 
       - name: Unduh YouTube tanpa Node.js (laporan pengguna Windows "gagal mengunduh")
         shell: pwsh
