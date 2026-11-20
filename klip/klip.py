@@ -70,7 +70,10 @@ def muat_transkrip(file: Path, a, kerja: Path) -> list[Kalimat]:
 
 
 def analisis(a, keluar: Path, kerja: Path) -> None:
-    file, heatmap, judul = ambil_sumber(a.sumber, kerja)
+    try:
+        file, heatmap, judul = ambil_sumber(a.sumber, kerja)
+    except RuntimeError as e:
+        sys.exit(str(e))
     panjang, w, h = info_video(file)
     log(f"Video: {judul} — {panjang:.0f} detik, {w}x{h}. Heatmap YouTube: {'ada' if heatmap else 'tidak ada'}.")
     semua = muat_transkrip(file, a, kerja)

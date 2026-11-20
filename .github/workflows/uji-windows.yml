@@ -60,9 +60,12 @@ jobs:
           $env:PATH = ($env:PATH -split ';' | Where-Object { -not (Test-Path (Join-Path $_ 'node.exe')) }) -join ';'
           if (Get-Command node -ErrorAction SilentlyContinue) { throw "node masih ada di PATH" }
           & "$env:APP\python\python.exe" -c "import sys;sys.path.insert(0,r'$env:APP\alat\klip');from klipkit.sumber import _runtime_js;print(_runtime_js())"
-          & "$env:APP\python\python.exe" "$env:APP\alat\klip\klip.py" "https://www.youtube.com/watch?v=jNQXAC9IVRw" --hanya-analisis --jumlah 1 --durasi 10 --model tiny --keluar yt
-          if ($LASTEXITCODE -ne 0) { throw "Unduh YouTube gagal" }
-          Get-ChildItem yt
+          # IP GitHub sering diblokir YouTube ("bukan bot"): lolos bila terunduh ATAU pesan blokir yang jelas muncul
+          $out = & "$env:APP\python\python.exe" "$env:APP\alat\klip\klip.py" "https://www.youtube.com/watch?v=jNQXAC9IVRw" --hanya-analisis --jumlah 1 --durasi 10 --model tiny --keluar yt 2>&1 | Out-String
+          Write-Host $out
+          if ($LASTEXITCODE -eq 0) { Get-ChildItem yt; Write-Host "TERUNDUH" }
+          elseif ($out -match 'YouTube meminta verifikasi') { Write-Host "DIBLOKIR (pesan jelas tampil)" }
+          else { throw "Unduh YouTube gagal tanpa pesan yang jelas" }
 
       - name: Render 1 klip (gaya Hook Neon + Kertas Sobek)
         shell: pwsh

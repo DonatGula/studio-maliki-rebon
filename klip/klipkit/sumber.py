@@ -15,6 +15,54 @@ from .umum import *  # noqa: F401,F403
 from .umum import AKAR
 
 # ── 1. Sumber video ─────────────────────────────────────────────────────────
+DIBLOKIR = ("not a bot", "sign in to confirm", "confirm your age", "login_required", "429")
+PESAN_BLOKIR = ("YouTube meminta verifikasi (\"bukan bot\") dan menolak unduhan dari koneksi ini. Coba: matikan VPN/proxy, "
+                "buka youtube.com di Firefox/Chrome dan pastikan sudah login lalu ulangi, ganti jaringan (Wi-Fi/hotspot), "
+                "atau unduh videonya sendiri dan seret file-nya ke Studio.")
+
+
+def _browser_cookies() -> list[str]:
+    """Browser yang cookies YouTube-nya bisa dipinjam yt-dlp. Firefox dulu: Chrome/Edge di Windows mengenkripsi
+    cookies (app-bound) sehingga sering tidak terbaca."""
+    import os
+    pilih = os.environ.get("KLIP_COOKIES_BROWSER")
+    if pilih:
+        return [b.strip() for b in pilih.split(",") if b.strip()]
+    if sys.platform == "darwin":
+        return ["firefox", "chrome", "safari", "brave", "edge"]
+    return ["firefox", "chrome", "edge", "brave"]
+
+
+def _unduh(yt_dlp, url: str, opsi: dict) -> dict:
+    """Unduh tanpa login; bila YouTube memblokir ("bukan bot"), coba ulang memakai cookies file (KLIP_COOKIES, untuk
+    server) atau cookies browser pengguna. Cookies hanya dibaca lokal oleh yt-dlp, tidak disimpan/dikirim ke tempat lain."""
+    import os
+    from yt_dlp.utils import DownloadError
+    percobaan = [{}]
+    if os.environ.get("KLIP_COOKIES") and Path(os.environ["KLIP_COOKIES"]).exists():
+        percobaan.insert(0, {"cookiefile": os.environ["KLIP_COOKIES"]})
+    percobaan += [{"cookiesfrombrowser": (b,)} for b in _browser_cookies()]
+    galat = ""
+    for i, tambah in enumerate(percobaan):
+        if i and not any(k in galat.lower() for k in DIBLOKIR):
+            break  # gagal bukan karena blokir → cookies tidak membantu
+        if "cookiesfrombrowser" in tambah:
+            log(f"YouTube meminta verifikasi, mencoba memakai login YouTube di {tambah['cookiesfrombrowser'][0]}…")
+        try:
+            with yt_dlp.YoutubeDL({**opsi, **tambah}) as ydl:
+                return ydl.extract_info(url, download=True)
+        except DownloadError as e:
+            if "cookiesfrombrowser" in tambah and not any(k in str(e).lower() for k in DIBLOKIR):
+                continue  # browser tidak ada / cookies tak terbaca → browser berikutnya
+            galat = str(e)
+        except Exception as e:  # noqa: BLE001  (browser tidak terpasang, database terkunci, dll.)
+            if "cookiesfrombrowser" not in tambah:
+                raise RuntimeError(f"Gagal mengunduh video: {e}") from e
+    if any(k in galat.lower() for k in DIBLOKIR):
+        raise RuntimeError(PESAN_BLOKIR)
+    raise RuntimeError("Gagal mengunduh video: " + re.sub(r"^ERROR:\s*(\[[^\]]+\]\s*)*", "", galat).strip()[:300])
+
+
 def _runtime_js() -> dict:
     """Deno bawaan paket pip `deno` (ikut installer) → tidak bergantung Node.js di komputer pengguna.
     Tanpa runtime JS, YouTube menolak sebagian besar format (laporan: Windows 'gagal mengunduh')."""
@@ -41,8 +89,7 @@ def ambil_sumber(sumber: str, kerja: Path) -> tuple[Path, list[dict], str]:
             "quiet": True, "no_warnings": True, "noprogress": True,
             "js_runtimes": _runtime_js(),  # yt-dlp butuh runtime JS untuk tantangan YouTube
         }
-        with yt_dlp.YoutubeDL(opsi) as ydl:
-            info = ydl.extract_info(sumber, download=True)
+        info = _unduh(yt_dlp, sumber, opsi)
         file = next(kerja.glob("sumber.*"))
         return file, info.get("heatmap") or [], info.get("title") or "video"
     p = Path(sumber).expanduser().resolve()
