@@ -66,6 +66,7 @@ jobs:
           if ($LASTEXITCODE -eq 0) { Get-ChildItem yt; Write-Host "TERUNDUH" }
           elseif ($out -match 'YouTube meminta verifikasi') { Write-Host "DIBLOKIR (pesan jelas tampil)" }
           else { throw "Unduh YouTube gagal tanpa pesan yang jelas" }
+          exit 0
 
       - name: Render 1 klip (gaya Hook Neon + Kertas Sobek)
         shell: pwsh
