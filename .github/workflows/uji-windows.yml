@@ -54,6 +54,17 @@ jobs:
           if (-not $ok) { throw "Studio tidak menyala" }
           Stop-Process $p.Id -Force -ErrorAction SilentlyContinue; Stop-Process $peng.Id -Force -ErrorAction SilentlyContinue
 
+      - name: Pilih file video lewat pemilih bawaan (laporan layar hitam WebView2)
+        shell: pwsh
+        run: |
+          Copy-Item uji\uji_pilih.py "$env:APP\alat\studio\uji_pilih.py"
+          Push-Location "$env:APP\alat\studio"
+          $out = & "$env:APP\python\python.exe" -u uji_pilih.py 2>&1 | Out-String
+          Pop-Location
+          Write-Host $out
+          if ($out -notmatch 'SUMBER = C:\\Users\\uji') { throw "Jalur file tidak masuk ke kolom sumber" }
+          exit 0
+
       - name: Unduh YouTube tanpa Node.js (laporan pengguna Windows "gagal mengunduh")
         shell: pwsh
         run: |

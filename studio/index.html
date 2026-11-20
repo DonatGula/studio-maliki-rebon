@@ -1138,8 +1138,16 @@ $('#tblSimpan').onclick = async () => {
 };
 
 // sumber: file & seret
-$('#tblFile').onclick = () => $('#pilihFile').click();
+$('#tblFile').onclick = async () => {
+  // Aplikasi desktop: pemilih file bawaan OS, video tidak disalin (WebView2 Windows bisa crash → layar hitam)
+  if (NATIVE() && window.pywebview.api.pilih_video) {
+    try { const p = await window.pywebview.api.pilih_video(); if (p) { $('#sumber').value = p; toast('File siap: ' + p.split(/[\\/]/).pop()); } return; }
+    catch (e) { /* jatuh ke input file biasa */ }
+  }
+  $('#pilihFile').click();
+};
 async function unggah(f) {
+  if (f.pywebviewFullPath) { $('#sumber').value = f.pywebviewFullPath; return toast('File siap: ' + f.name); }
   toast('Menyalin ' + f.name + '…');
   const r = await fetch('/api/unggah', {method: 'POST', headers: {'X-Nama-File': f.name}, body: f});
   const j = await r.json(); $('#sumber').value = j.jalur; toast('File siap: ' + f.name);

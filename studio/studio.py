@@ -873,6 +873,14 @@ def main():
             tujuan.write_text(isi, encoding="utf-8")
             return str(tujuan)
 
+        def pilih_video(self) -> str:
+            """Pemilih file bawaan OS → jalur asli (tanpa menyalin lewat WebView; video besar membuat WebView2
+            di Windows kehabisan memori dan layar jadi hitam)."""
+            jenis = ("Video (*.mp4;*.mov;*.mkv;*.webm;*.avi;*.m4v;*.MP4;*.MOV)", "Semua file (*.*)")
+            tipe = getattr(getattr(webview, "FileDialog", None), "OPEN", None) or webview.OPEN_DIALOG
+            hasil = webview.windows[0].create_file_dialog(tipe, allow_multiple=False, file_types=jenis)
+            return str(hasil[0]) if hasil else ""
+
     if sys.platform == "darwin":
         # Nama & ikon di menu bar/Dock: "Studio Maliki", bukan "python"
         try:
@@ -884,6 +892,13 @@ def main():
             pass
 
     def setelah_mulai():
+        # Daftarkan penangan "drop" di sisi Python → file yang diseret membawa jalur aslinya (pywebviewFullPath),
+        # jadi tidak perlu disalin lewat WebView.
+        try:
+            from webview.dom import DOMEventHandler
+            webview.windows[0].dom.document.events.drop += DOMEventHandler(lambda e: None, prevent_default=False)
+        except Exception:  # noqa: BLE001
+            pass
         # ikon Dock dipasang setelah aplikasi Cocoa berjalan (kalau terlalu awal, ditimpa ikon python)
         if sys.platform != "darwin":
             return
