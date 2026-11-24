@@ -31,7 +31,7 @@ export type Adegan = {
 
 export type Props = {
   judul: string;
-  gaya: string; // kunci di TEMA (14 template + 10 ilustrasi: piksel, kapur, emas, ps2, komik, flat, stickman, cgi, bata, clay)
+  gaya: string; // tema tipografi/warna legacy; visual utama baru dipilih lewat motion.styleId
   handle?: string;
   aksen?: string;
   adegan: Adegan[];
