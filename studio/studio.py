@@ -655,6 +655,14 @@ def mulai_batch_motion(d: dict) -> dict:
     if not isinstance(skills, list):
         raise ValueError("Pilihan Motion Skills tidak valid.")
     skills = [x for x in skills if isinstance(x, str) and re.fullmatch(r"[a-z0-9-]+", x)][:5]
+    if KERJA.status == "jalan":
+        raise RuntimeError("Masih ada proses berjalan. Tunggu selesai atau batalkan dulu.")
+    p = baca_pengaturan()
+    if p.get("SUARA") == "voxcpm":
+        if not voxcpm_terpasang():
+            raise ValueError("Suara AI VoxCPM belum terpasang.")
+        if p.get("VOXCPM_MODE") == "clone" and not ref_suara():
+            raise ValueError('Mode "Clone suaraku" membutuhkan rekaman suaramu sendiri.')
     stamp = time.strftime("%Y%m%d-%H%M%S")
     items = []
     for i, judul in enumerate(topik, 1):
@@ -668,12 +676,6 @@ def mulai_batch_motion(d: dict) -> dict:
     manifest_path = DATA / f".batch-motion-{stamp}.json"
     summary_path = DATA / f".batch-motion-{stamp}-hasil.json"
     manifest_path.write_text(json.dumps({"items": items, "summary": str(summary_path)}, ensure_ascii=False), encoding="utf-8")
-    p = baca_pengaturan()
-    if p.get("SUARA") == "voxcpm":
-        if not voxcpm_terpasang():
-            raise ValueError("Suara AI VoxCPM belum terpasang.")
-        if p.get("VOXCPM_MODE") == "clone" and not ref_suara():
-            raise ValueError('Mode "Clone suaraku" membutuhkan rekaman suaramu sendiri.')
     def setelah(k: Kerja):
         hasil = json.loads(summary_path.read_text(encoding="utf-8"))
         k.hasil = {"jenis": "motion-batch", "hasil": hasil}
