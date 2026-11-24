@@ -1582,6 +1582,7 @@ let MOTION_DRAFT = null;
 function sinkronMotionScene() {
   if (!MOTION_DRAFT) return;
   MOTION_DRAFT.judul = $('#motionJudulDraft')?.value ?? MOTION_DRAFT.judul ?? '';
+  MOTION_DRAFT.preset = $('#motionPreset')?.value ?? MOTION_DRAFT.preset ?? 'shorts';
   document.querySelectorAll('.motion-scene').forEach((card) => {
     const i = Number(card.dataset.index), a = MOTION_DRAFT.adegan[i];
     if (!a) return;
@@ -1646,12 +1647,14 @@ function hasilMotion(h) {
       <h2 style="margin:6px 0 8px">Tinjau setiap adegan</h2>
       <p class="catatan">Ubah narasi, visual, gerakan, durasi, dan transisi. Kamu juga bisa mengubah urutan atau menambah/menghapus adegan. Semua perubahan diterapkan sebelum video dirender.</p>
       <div class="bidang"><label>Judul video</label><input class="input" id="motionJudulDraft" value="${esc(MOTION_DRAFT.judul || '')}"></div>
+      <div class="bidang"><label>Preset ekspor</label><select class="input" id="motionPreset"><option value="shorts">YouTube Shorts · 1080×1920</option><option value="tiktok">TikTok · 1080×1920</option><option value="reels">Instagram/Facebook Reels · 1080×1920</option><option value="draft">Draft cepat · 540×960</option><option value="high">Kualitas tinggi · 1350×2400</option></select><small class="catatan">Shorts, TikTok, dan Reels memakai kanvas vertikal 9:16. Preset mengatur kualitas/ukuran render.</small></div>
       <div id="motionTimeline" class="kartu" style="padding:14px;margin:14px 0;overflow:hidden"></div>
       <div id="motionSceneList"></div>
       <div class="aksi" style="margin-top:14px"><button class="tombol kedua kecil" id="motionAddScene">+ Tambah adegan</button><button class="tombol kedua kecil" id="mSaveDraft">Simpan draft</button><button class="tombol utama" id="mRender">Render video</button><button class="tombol kedua kecil" id="mFolder">Buka folder</button></div>
       <div class="catatan" style="margin-top:10px">Draft otomatis tersimpan di folder proyek saat mulai render. Proyek ini juga bisa dibuka kembali dari Riwayat.</div></div>`;
     el.classList.add('tampil');
     gambarMotionScene();
+    $('#motionPreset').value = ['shorts','tiktok','reels','draft','high'].includes(MOTION_DRAFT.preset) ? MOTION_DRAFT.preset : 'shorts';
     $('#motionAddScene').onclick = () => {
       sinkronMotionScene();
       MOTION_DRAFT.adegan.push({judul: '', teks: '', ikon: '✨', visual: '', gerak: '', transisi: ''});
