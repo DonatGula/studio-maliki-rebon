@@ -52,6 +52,7 @@ Gunakan prinsip-prinsip berikut sebagai arahan kreatif, bukan menyalin contoh me
 - B-roll hanya boleh merujuk klip yang memang disediakan pengguna; jangan mengarang footage, transkrip bertiming, atau path asset.
 - Audiogram tidak boleh memakai analyser real-time atau mengklaim waveform audio-synced jika data audio tidak tersedia. Utamakan visualisasi sederhana yang deterministik.
 - Infografis harus memakai angka yang ada di sumber/topik; jangan mengarang statistik. Peta harus memakai lokasi dan rute yang disebutkan atau diberikan pengguna.
+- Slideshow, demo produk, dan iklan hanya boleh memakai foto, detail produk, harga, diskon, bukti, dan CTA yang diberikan pengguna. Jangan mengarang spesifikasi, testimoni, hasil, harga, atau urgensi promo.
 - Bila sebuah efek memerlukan package atau renderer yang belum tersedia, jelaskan sebagai arahan visual sederhana yang bisa diwujudkan oleh Remotion bawaan; jangan menambah dependency otomatis.
 - Sertakan metadata storyboard agar bisa diedit pada tahap editor berikutnya, tetapi pertahankan kolom JSON lama.
 Tambahkan properti tingkat atas "motion": {"skills": ${idsJson}, "arah_visual": "ringkasan satu kalimat", "bahasa_gerak": "aturan gerak singkat"}.
