@@ -4,8 +4,9 @@ Sumber upstream: [iart-ai/motion-skills](https://github.com/iart-ai/motion-skill
 
 ## Status integrasi
 
-- **Bundled**: skill files sudah disalin ke `iart-ai/` dan dapat dipakai engine.
-- **Catalog**: pack sudah terdaftar sebagai target integrasi, tetapi file skill-nya belum dibundel dan belum bisa dipilih oleh generator.
+- **Bundled**: seluruh skill dari pack tersebut sudah tersedia secara lokal.
+- **Partial**: sebagian skill pack sudah tersedia dan dapat dipilih oleh engine.
+- **Catalog**: pack baru tercatat sebagai target integrasi; skill-nya belum bisa dipilih.
 
 Daftar mesin yang menjadi sumber kebenaran:
 - `registry.json`: skill yang benar-benar tersedia secara lokal dan dapat dipakai engine.
@@ -37,16 +38,15 @@ Jangan menambahkan ID skill ke `registry.json` sebelum file `SKILL.md` yang sesu
 | B-roll for Talking Head | 1 | Bundled |
 | AI Talking Head Video | 1 | Catalog |
 
-Total upstream: 19 pack, 56 skill. Pada integrasi lokal saat ini, 12 file skill dari sembilan pack sudah tersedia (empat pack masih parsial).
+Total upstream: 19 pack, 56 skill. Saat ini 12 file skill dari sembilan pack sudah tersedia: tiga pack lengkap dan enam pack parsial.
 
 ## Urutan integrasi lanjutan yang disarankan
 
 Untuk target konten Shorts, TikTok, dan Reels, prioritaskan:
 1. Lengkapi YouTube Video dan Data Animation yang masih parsial.
-2. Lanjutkan E-commerce dan Ad Video.
-3. E-commerce dan Ad Video.
-4. Text-message Video dan Talking Head.
-5. Sisanya sesuai kebutuhan, terutama pack WebGL/Manim yang mungkin membutuhkan renderer atau dependency berbeda.
+2. Integrasikan E-commerce dan Ad Video.
+3. Tambahkan Text-message Video dan Talking Head.
+4. Lanjutkan pack lain sesuai kebutuhan, terutama WebGL/Manim yang mungkin memerlukan renderer atau dependency berbeda.
 
 Setiap pack baru perlu ditinjau isi, dependensi, lisensi, dan kecocokannya dengan Remotion sebelum ditambahkan ke registry. Skill yang mengandalkan GSAP, Three.js, Manim, WebM alpha, atau layanan AI eksternal tidak otomatis kompatibel dengan renderer Studio Maliki.
 
