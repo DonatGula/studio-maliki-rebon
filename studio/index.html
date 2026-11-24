@@ -546,7 +546,7 @@ main{position:relative;z-index:1}
       <div class="kartu proses" id="prosesKlip">
         <div class="langkah" id="lkKlip"></div>
         <div class="batang"><i id="batangKlip"></i></div>
-        <details><summary>Lihat log</summary><div class="log" id="logKlip"></div></details>
+        <details><summary>Lihat log</summary><div class="aksi" style="margin:8px 0"><button class="tombol kedua kecil" type="button" data-copy-log="Klip">Salin log</button></div><div class="log" id="logKlip"></div></details>
         <div class="aksi"><button class="tombol kedua kecil" data-batal>Batalkan</button></div>
       </div>
       <div class="hasil" id="hasilKlip"></div>
@@ -666,14 +666,47 @@ main{position:relative;z-index:1}
             <button class="gaya" data-v="daftar" title="Daftar Sumber"><img src="/aset/gaya/daftar.jpg" alt="" loading="lazy"><div class="nama"><b>Daftar Sumber</b><span>T11</span></div></button>
           </div>
           <label class="saklar" style="margin-top:14px">AI menggambar objek tiap adegan <em style="font-style:normal;color:var(--redup);font-size:12px">&nbsp;SVG, menggantikan emoji · butuh AI di Pengaturan</em><input type="checkbox" id="gGambarAI" checked></label>
+          <div style="margin-top:16px;padding:12px;border:1px solid var(--garis);border-radius:12px;background:var(--bg)">
+            <div style="font-size:13px;font-weight:700;margin-bottom:6px">Motion Skills <span style="color:var(--redup);font-weight:400">· AI memilih otomatis jika tidak ada yang dicentang</span></div>
+            <div style="display:flex;flex-wrap:wrap;gap:10px 14px;font-size:12px;color:var(--redup)">
+              <label><input type="checkbox" class="motion-skill" value="animation-principles"> Prinsip Animasi</label>
+              <label><input type="checkbox" class="motion-skill" value="motion-art-direction"> Art Direction</label>
+              <label><input type="checkbox" class="motion-skill" value="remotion-video"> Remotion</label>
+              <label><input type="checkbox" class="motion-skill" value="short-form-video"> Short-form</label>
+              <label><input type="checkbox" class="motion-skill" value="caption-animation"> Caption</label>
+              <label><input type="checkbox" class="motion-skill" value="explainer-video"> Explainer</label>
+              <label><input type="checkbox" class="motion-skill" value="kinetic-typography"> Kinetic Typography</label>
+              <label><input type="checkbox" class="motion-skill" value="javascript-animation"> JavaScript Animation</label>
+              <label><input type="checkbox" class="motion-skill" value="audiogram"> Audiogram / Podcast</label>
+              <label><input type="checkbox" class="motion-skill" value="talking-head-b-roll"> B-roll Talking Head</label>
+              <label><input type="checkbox" class="motion-skill" value="animated-infographic"> Infografis Data</label>
+              <label><input type="checkbox" class="motion-skill" value="map-animation"> Animasi Peta</label>
+              <label><input type="checkbox" class="motion-skill" value="photo-slideshow"> Slideshow Foto</label>
+              <label><input type="checkbox" class="motion-skill" value="product-demo-video"> Demo Produk</label>
+              <label><input type="checkbox" class="motion-skill" value="promo-video"> Video Promo</label>
+              <label><input type="checkbox" class="motion-skill" value="ad-creative-video"> Kreatif Iklan</label>
+            </div>
+            <div class="catatan">Pilih maksimal lima dari 16 skill yang tersedia untuk mengarahkan AI. Jika semuanya kosong, pemilihan dilakukan otomatis dari topik.</div>
+          </div>
           <div class="catatan">Suara narator: <b id="ketSuara">Damayanti (bawaan macOS)</b> · ubah di Pengaturan AI. Resolusi 1080×1920, 30 fps.</div>
-          <div class="aksi" style="margin-top:16px"><button class="tombol utama" id="tblMotion"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z"/></svg>Buat video</button></div>
+          <div class="aksi" style="margin-top:16px"><button class="tombol utama" id="tblMotion"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z"/></svg>Buat naskah</button></div>
         </div>
+      </div>
+      <div class="kartu" style="margin-top:16px">
+        <div class="eyebrow">produksi massal · maksimal 5 video</div>
+        <h2 style="margin:4px 0 8px">Batch Production</h2>
+        <p class="catatan">Masukkan satu topik per baris. AI akan membuat naskah dan merender setiap video secara berurutan ke proyek terpisah. Pastikan AI sudah aktif di Pengaturan.</p>
+        <div class="bidang"><label>Daftar topik</label><textarea class="input" id="motionBatchTopics" rows="4" placeholder="Fakta unik tentang laut dalam&#10;Sejarah singkat kopi&#10;Cara kerja aurora"></textarea></div>
+        <div class="grid2" style="margin:0">
+          <div class="bidang"><label>Preset batch</label><select class="input" id="motionBatchPreset"><option value="shorts">YouTube Shorts · 1080×1920</option><option value="tiktok">TikTok · 1080×1920</option><option value="reels">Reels · 1080×1920</option><option value="draft">Draft cepat · 540×960</option><option value="high">Kualitas tinggi · 1350×2400</option></select></div>
+          <div class="bidang"><label>Jumlah video</label><div class="input" id="motionBatchCount" style="display:flex;align-items:center">0 / 5 topik</div></div>
+        </div>
+        <div class="aksi"><button class="tombol utama" id="motionBatchRun">Mulai batch</button></div>
       </div>
       <div class="kartu proses" id="prosesMotion">
         <div class="langkah" id="lkMotion"></div>
         <div class="batang"><i id="batangMotion"></i></div>
-        <details><summary>Lihat log</summary><div class="log" id="logMotion"></div></details>
+        <details><summary>Lihat log</summary><div class="aksi" style="margin:8px 0"><button class="tombol kedua kecil" type="button" data-copy-log="Motion">Salin log</button></div><div class="log" id="logMotion"></div></details>
         <div class="aksi"><button class="tombol kedua kecil" data-batal>Batalkan</button></div>
       </div>
       <div class="hasil" id="hasilMotion"></div>
@@ -798,6 +831,11 @@ const salin = async (t) => {
   catch { const ta = document.createElement('textarea'); ta.value = t; document.body.append(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
   toast('Disalin ✓');
 };
+$('[data-copy-log]').forEach((b) => b.addEventListener('click', () => {
+  const isi = $('#log' + b.dataset.copyLog)?.textContent || '';
+  if (!isi.trim()) return toast('Belum ada log untuk disalin.', true);
+  salin(isi);
+}));
 const NATIVE = () => !!(window.pywebview && window.pywebview.api);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 const jam = (d) => { d = Math.max(0, d); const m = Math.floor(d / 60), s = Math.floor(d % 60); return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`; };
@@ -1221,19 +1259,53 @@ $('#tblKlip').onclick = async () => {
     mulaiPantau('klip');
   } catch (e) { toast(e.message, true); }
 };
+$('#motionBatchTopics').oninput = () => {
+  const n = $('#motionBatchTopics').value.split(/\r?\n/).filter((x) => x.trim()).length;
+  $('#motionBatchCount').textContent = `${n} / 5 topik`;
+};
+$('#motionBatchRun').onclick = async () => {
+  if (SIBUK) return toast('Tunggu proses yang sedang berjalan selesai.', true);
+  const topics = $('#motionBatchTopics').value.split(/\r?\n/).map((x) => x.trim()).filter(Boolean);
+  if (!topics.length || topics.length > 5) return toast('Masukkan 1 sampai 5 topik, satu topik per baris.', true);
+  if (!confirm(`Buat ${topics.length} video secara berurutan? Proses dapat memerlukan waktu cukup lama.`)) return;
+  try {
+    await api('/api/motion/batch', {topik: topics, gaya: $('#pilGaya .aktif').dataset.v,
+      ai: PENG.AI || 'lokal', skills: [...document.querySelectorAll('.motion-skill:checked')].map((x) => x.value),
+      preset: $('#motionBatchPreset').value});
+    mulaiPantau('motion');
+  } catch (e) { toast(e.message, true); }
+};
 $('#tblMotion').onclick = async () => {
   if (SIBUK) return toast(`Masih memproses ${SIBUK === 'motion' ? 'Motion' : 'klip'} — tunggu selesai atau tekan Batalkan dulu.`, true);
   try {
     const isi = nilaiPil('#pilIsi');
     await api('/api/motion', {topik: isi === 'topik' ? $('#topik').value : '', naskah: isi === 'naskah' ? $('#naskahJSON').value : '',
-      gaya: $('#pilGaya .aktif').dataset.v, ai: PENG.AI || 'lokal', gambar: $('#gGambarAI').checked});
+      gaya: $('#pilGaya .aktif').dataset.v, ai: PENG.AI || 'lokal', gambar: $('#gGambarAI').checked,
+      skills: [...document.querySelectorAll('.motion-skill:checked')].map((x) => x.value)});
     mulaiPantau('motion');
   } catch (e) { toast(e.message, true); }
 };
 $('#salinPrompt').onclick = (e) => { e.preventDefault(); salin(`Kamu penulis naskah video pendek berbahasa Indonesia. Topik: [TOPIK]. Tulis 4–7 adegan; adegan 1 hook; satu kalimat narasi per adegan maks 14 kata; judul layar 2–5 kata; jangan mengarang angka; adegan terakhir ajakan. Balas HANYA JSON: {"judul":"...","adegan":[{"judul":"2-5 kata","teks":"kalimat narasi","kunci":["kata"],"ikon":"🔥"}]}`); };
 
 // hasil
-function tampilHasil(h) { if (!h) return; if (h.jenis === 'motion') return hasilMotion(h); hasilKlip(h); }
+function tampilHasil(h) {
+  if (!h) return;
+  if (h.jenis === 'motion') return hasilMotion(h);
+  if (h.jenis === 'motion-batch') {
+    const el = $('#hasilMotion'), hasil = h.hasil || [], berhasil = hasil.filter((x) => x.ok).length;
+    el.innerHTML = `<div class="kartu" style="margin-top:18px"><div class="eyebrow">batch selesai · ${berhasil}/${hasil.length} berhasil</div>
+      <h2>Hasil produksi batch</h2>
+      ${hasil.map((x) => `<div class="adegan" style="margin:10px 0"><em>${x.ok ? '✓' : '!'}</em><div><b>${esc(x.topic)}</b><small>${x.ok ? 'Video berhasil dirender' : esc(x.error || 'Gagal') }</small></div>${x.ok ? `<a class="tombol utama kecil" href="${esc(x.video)}" download>Unduh MP4</a><button class="tombol kedua kecil" data-batch-project="${esc(x.name)}">Buka proyek</button>` : ''}</div>`).join('')}
+    </div>`;
+    el.classList.add('tampil');
+    $('[data-batch-project]', el).forEach((b) => b.onclick = async () => {
+      const h = await api(`/api/proyek/motion/${b.dataset.batchProject}`);
+      tampilHasil(h);
+    });
+    return;
+  }
+  hasilKlip(h);
+}
 // ── Klip: hasil analisis (kiri pemutar & ringkasan, kanan kartu klip) ──
 const KLIP = {h: null, pilih: new Set(), cari: '', filter: 0, urut: 'skor', judul: {}, aktif: null};
 const pct = (x) => Math.round((x || 0) <= 1 ? (x || 0) * 100 : x);
@@ -1562,15 +1634,150 @@ $('#tblRender').onclick = async () => {
 };
 segarkanG();
 
+let MOTION_DRAFT = null;
+
+function sinkronMotionScene() {
+  if (!MOTION_DRAFT) return;
+  MOTION_DRAFT.judul = $('#motionJudulDraft')?.value ?? MOTION_DRAFT.judul ?? '';
+  MOTION_DRAFT.preset = $('#motionPreset')?.value ?? MOTION_DRAFT.preset ?? 'shorts';
+  document.querySelectorAll('.motion-scene').forEach((card) => {
+    const i = Number(card.dataset.index), a = MOTION_DRAFT.adegan[i];
+    if (!a) return;
+    card.querySelectorAll('[data-key]').forEach((field) => {
+      const key = field.dataset.key;
+      if (key === 'durasi') {
+        const v = field.value.trim();
+        if (v) a.durasi = Number(v); else delete a.durasi;
+      } else if (key === 'kunci') {
+        const v = field.value.split(',').map((x) => x.trim()).filter(Boolean);
+        if (v.length) a.kunci = v; else delete a.kunci;
+      } else {
+        a[key] = field.value;
+      }
+    });
+  });
+}
+
+function gambarMotionTimeline() {
+  const el = $('#motionTimeline');
+  if (!el || !MOTION_DRAFT) return;
+  const durations = MOTION_DRAFT.adegan.map((a) => Math.max(0.5, Number(a.durasi) || Math.max(2.5, String(a.teks || '').split(/\s+/).filter(Boolean).length / 2.6)));
+  const total = durations.reduce((sum, value) => sum + value, 0);
+  el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b>Timeline · ${MOTION_DRAFT.adegan.length} adegan</b><small>${total.toFixed(1)} detik</small></div>
+    <div style="display:flex;gap:4px;min-height:54px;overflow:hidden;border-radius:10px;background:var(--panel2);padding:4px">
+      ${durations.map((d, i) => `<button type="button" data-timeline-scene="${i}" title="Adegan ${i + 1} · ${d.toFixed(1)} detik" style="flex:${d} 1 0;min-width:24px;border:1px solid var(--aksen);border-radius:7px;background:var(--aksen);color:var(--pada-aksen);font:600 12px var(--mono);cursor:pointer;overflow:hidden">${i + 1}<small style="display:block;font-size:10px;opacity:.8">${d.toFixed(1)}s</small></button>`).join('')}
+    </div>`;
+}
+function gambarMotionScene() {
+  const el = $('#motionSceneList');
+  if (!el || !MOTION_DRAFT) return;
+  gambarMotionTimeline();
+  el.innerHTML = MOTION_DRAFT.adegan.map((a, i) => `<article class="kartu motion-scene" data-index="${i}" style="margin:12px 0;padding:16px">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px">
+      <b>Adegan ${String(i + 1).padStart(2, '0')}</b>
+      <div class="aksi"><button class="tombol kedua kecil" data-scene-preview="${i}" title="Render preview adegan">▶ Preview</button>
+      <button class="tombol kedua kecil" data-scene-regen="${i}" title="Buat ulang adegan dengan AI">↻ AI</button>
+      <button class="tombol kedua kecil" data-scene-up="${i}" ${i === 0 ? 'disabled' : ''} title="Pindah ke atas">↑</button>
+      <button class="tombol kedua kecil" data-scene-down="${i}" ${i === MOTION_DRAFT.adegan.length - 1 ? 'disabled' : ''} title="Pindah ke bawah">↓</button>
+      <button class="tombol kedua kecil" data-scene-delete="${i}" title="Hapus adegan">Hapus</button></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px">
+      <div class="bidang"><label>Judul layar</label><input class="input" data-key="judul" value="${esc(a.judul || '')}" placeholder="Judul singkat"></div>
+      <div class="bidang"><label>Ikon / emoji</label><input class="input" data-key="ikon" value="${esc(a.ikon || '')}" placeholder="🎬"></div>
+      <div class="bidang"><label>Durasi (detik)</label><input class="input" type="number" min="0.5" step="0.5" data-key="durasi" value="${esc(a.durasi ?? '')}" placeholder="otomatis"></div>
+      <div class="bidang"><label>Kata kunci subtitle (pisahkan koma)</label><input class="input" data-key="kunci" value="${esc(Array.isArray(a.kunci) ? a.kunci.join(', ') : a.kunci || '')}" placeholder="kata penting, sorotan"></div>
+    </div>
+    <div class="bidang"><label>Narasi / teks subtitle</label><textarea class="input" data-key="teks" rows="2" placeholder="Kalimat narasi adegan">${esc(a.teks || '')}</textarea></div>
+    <div class="bidang"><label>Arah visual</label><textarea class="input" data-key="visual" rows="2" placeholder="Apa yang terlihat di adegan ini">${esc(a.visual || '')}</textarea></div>
+    <div class="bidang"><label>Gerakan / animasi</label><textarea class="input" data-key="gerak" rows="2" placeholder="Bagaimana elemen bergerak">${esc(a.gerak || '')}</textarea></div>
+    <div class="bidang"><label>Transisi</label><input class="input" data-key="transisi" value="${esc(a.transisi || '')}" placeholder="Cara masuk dan keluar adegan"></div>
+    ${a.preview ? `<div class="bidang"><label>Preview adegan</label><video src="${esc(a.preview)}?v=${Date.now()}" controls playsinline style="width:100%;max-height:360px;background:#000;border-radius:12px"></video></div>` : ''}
+  </article>`).join('');
+}
+
 function hasilMotion(h) {
   const el = $('#hasilMotion'); const n = h.naskah || {};
+  if (h.tahap === 'review') {
+    MOTION_DRAFT = JSON.parse(JSON.stringify(n));
+    if (!Array.isArray(MOTION_DRAFT.adegan)) MOTION_DRAFT.adegan = [];
+    el.innerHTML = `<div class="kartu" style="margin-top:18px"><div class="eyebrow">Tahap 2 · editor storyboard</div>
+      <h2 style="margin:6px 0 8px">Tinjau setiap adegan</h2>
+      <p class="catatan">Ubah narasi, visual, gerakan, durasi, dan transisi. Kamu juga bisa mengubah urutan atau menambah/menghapus adegan. Semua perubahan diterapkan sebelum video dirender.</p>
+      <div class="bidang"><label>Judul video</label><input class="input" id="motionJudulDraft" value="${esc(MOTION_DRAFT.judul || '')}"></div>
+      <div class="bidang"><label>Preset ekspor</label><select class="input" id="motionPreset"><option value="shorts">YouTube Shorts · 1080×1920</option><option value="tiktok">TikTok · 1080×1920</option><option value="reels">Instagram/Facebook Reels · 1080×1920</option><option value="draft">Draft cepat · 540×960</option><option value="high">Kualitas tinggi · 1350×2400</option></select><small class="catatan">Shorts, TikTok, dan Reels memakai kanvas vertikal 9:16. Preset mengatur kualitas/ukuran render.</small></div>
+      <div id="motionTimeline" class="kartu" style="padding:14px;margin:14px 0;overflow:hidden"></div>
+      <div id="motionSceneList"></div>
+      <div class="aksi" style="margin-top:14px"><button class="tombol kedua kecil" id="motionAddScene">+ Tambah adegan</button><button class="tombol kedua kecil" id="mSaveDraft">Simpan draft</button><button class="tombol utama" id="mRender">Render video</button><button class="tombol kedua kecil" id="mFolder">Buka folder</button></div>
+      <div class="catatan" style="margin-top:10px">Draft otomatis tersimpan di folder proyek saat mulai render. Proyek ini juga bisa dibuka kembali dari Riwayat.</div></div>`;
+    el.classList.add('tampil');
+    gambarMotionScene();
+    $('#motionPreset').value = ['shorts','tiktok','reels','draft','high'].includes(MOTION_DRAFT.preset) ? MOTION_DRAFT.preset : 'shorts';
+    $('#motionAddScene').onclick = () => {
+      sinkronMotionScene();
+      MOTION_DRAFT.adegan.push({judul: '', teks: '', ikon: '✨', visual: '', gerak: '', transisi: ''});
+      gambarMotionScene();
+    };
+    $('#motionTimeline').onclick = (e) => {
+      const btn = e.target.closest('[data-timeline-scene]');
+      if (!btn) return;
+      document.querySelectorAll('#motionSceneList .motion-scene')[Number(btn.dataset.timelineScene)]?.scrollIntoView({behavior: 'smooth', block: 'center'});
+    };
+    $('#motionSceneList').onchange = () => { sinkronMotionScene(); gambarMotionTimeline(); };
+    $('#motionSceneList').onclick = async (e) => {
+      const preview = e.target.closest('[data-scene-preview]'), regen = e.target.closest('[data-scene-regen]');
+      const up = e.target.closest('[data-scene-up]'), down = e.target.closest('[data-scene-down]'), del = e.target.closest('[data-scene-delete]');
+      if (!up && !down && !del && !preview && !regen) return;
+      sinkronMotionScene();
+      const target = up || down || del || preview || regen;
+      const i = Number(target.dataset.sceneUp ?? target.dataset.sceneDown ?? target.dataset.sceneDelete ?? target.dataset.scenePreview ?? target.dataset.sceneRegen);
+      if (preview || regen) {
+        if (SIBUK) return toast('Tunggu proses yang sedang berjalan selesai.', true);
+        try {
+          await api('/api/motion/save', {nama: h.nama, naskah: JSON.stringify(MOTION_DRAFT)});
+          const endpoint = preview ? '/api/motion/preview-scene' : '/api/motion/regenerate';
+          await api(endpoint, {nama: h.nama, indice: i, ai: PENG.AI || 'lokal'});
+          mulaiPantau('motion');
+        } catch (err) { toast(err.message, true); }
+        return;
+      }
+      if (del) {
+        if (MOTION_DRAFT.adegan.length <= 1) return toast('Minimal harus ada satu adegan.', true);
+        MOTION_DRAFT.adegan.splice(i, 1);
+      } else {
+        const j = i + (up ? -1 : 1);
+        if (j < 0 || j >= MOTION_DRAFT.adegan.length) return;
+        [MOTION_DRAFT.adegan[i], MOTION_DRAFT.adegan[j]] = [MOTION_DRAFT.adegan[j], MOTION_DRAFT.adegan[i]];
+      }
+      gambarMotionScene();
+    };
+    $('#mSaveDraft').onclick = async () => {
+      sinkronMotionScene();
+      try {
+        if (!MOTION_DRAFT.adegan.length) return toast('Tambahkan minimal satu adegan.', true);
+        await api('/api/motion/save', {nama: h.nama, naskah: JSON.stringify(MOTION_DRAFT)});
+        toast('Draft berhasil disimpan ✓');
+      } catch (e) { toast(e.message, true); }
+    };
+    $('#mRender').onclick = async () => {
+      if (SIBUK) return toast('Tunggu proses yang sedang berjalan selesai.', true);
+      sinkronMotionScene();
+      try {
+        if (!MOTION_DRAFT.adegan.length) return toast('Tambahkan minimal satu adegan.', true);
+        await api('/api/motion/render', {nama: h.nama, naskah: JSON.stringify(MOTION_DRAFT)});
+        mulaiPantau('motion');
+      } catch (e) { toast(e.message, true); }
+    };
+    $('#mFolder').onclick = () => api('/api/buka-folder', {jenis: 'motion', nama: h.nama});
+    return;
+  }
   el.innerHTML = `<div class="kartu video-besar"><video src="${h.video}" controls playsinline></video><div>
     <div class="eyebrow">Selesai · gaya ${esc(n.gaya || '')}</div><h2 style="margin:6px 0 14px;letter-spacing:-.4px">${esc(n.judul || 'Video')}</h2>
     <div class="daftar-adegan">${(n.adegan || []).map((a, i) => `<div class="adegan"><em>${esc(a.ikon || '▶️')}</em><div><b>${String(i + 1).padStart(2, '0')} · ${esc(a.judul)}</b><small>${esc(a.teks || (a.video ? 'klip video' : ''))}${a.durasi ? ' · ' + a.durasi + ' dtk' : ''}</small></div></div>`).join('')}</div>
-    <div class="aksi" style="margin-top:14px"><a class="tombol utama kecil" href="${h.video}" download data-jenis="motion" data-nama="${h.nama}" data-file="video.mp4">Unduh MP4</a><button class="tombol kedua kecil" id="mFolder">Buka folder</button><button class="tombol kedua kecil" id="mNaskah">Salin naskah JSON</button></div></div></div>`;
+    <div class="aksi" style="margin-top:14px"><a class="tombol utama kecil" href="${h.video}" download data-jenis="motion" data-nama="${h.nama}" data-file="video.mp4">Unduh MP4</a><button class="tombol kedua kecil" id="mEdit">Edit storyboard</button><button class="tombol kedua kecil" id="mFolder">Buka folder</button><button class="tombol kedua kecil" id="mNaskah">Salin naskah JSON</button></div></div></div>`;
   el.classList.add('tampil');
   $('#mFolder').onclick = () => api('/api/buka-folder', {jenis: 'motion', nama: h.nama});
   $('#mNaskah').onclick = () => salin(JSON.stringify(n, null, 2));
+  $('#mEdit').onclick = () => hasilMotion({...h, tahap: 'review'});
 }
 
 // riwayat
@@ -1788,6 +1995,13 @@ async function muatRiwayat() {
     }
     if (antre.length && !jadwal) jadwal = requestAnimationFrame(munculkan);
   }).observe(document.querySelector('main'), {childList: true, subtree: true});
+  document.querySelectorAll('.motion-skill').forEach((input) => input.addEventListener('change', () => {
+    const dipilih = document.querySelectorAll('.motion-skill:checked').length;
+    if (dipilih > 5) {
+      input.checked = false;
+      alert('Maksimal lima Motion Skills dapat dipilih sekaligus.');
+    }
+  }));
   document.querySelectorAll(SELEKTOR).forEach((el) => sudah.add(el));
 })();
 </script>

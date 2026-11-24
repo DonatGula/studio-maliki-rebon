@@ -16,12 +16,12 @@ const env = bacaEnv();
 const penyedia = (opsi.ai ?? env.AI ?? 'gemini').toLowerCase();
 const adegan = naskah.adegan.filter((a) => !a.klip && !a.video);
 
-const daftar = adegan.map((a, i) => `${i + 1}. judul: "${a.judul}" | narasi: "${a.teks}"${a.ikon ? ` | petunjuk ikon: ${a.ikon}` : ''}`).join('\n');
+const daftar = adegan.map((a, i) => `${i + 1}. judul: "${a.judul}" | narasi: "${a.teks}"${a.visual ? ` | arahan visual storyboard: ${a.visual}` : ''}${a.ikon ? ` | petunjuk ikon: ${a.ikon}` : ''}`).join('\n');
 const prompt = `Kamu ilustrator vektor. Gambarlah SATU objek utama untuk tiap adegan video pendek di bawah ini, sebagai SVG.
 
 Aturan tiap SVG:
 - <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">, latar TRANSPARAN (jangan ada persegi latar).
-- Satu objek konkret yang mewakili adegan (benda, kendaraan, alat, hewan, orang sederhana), di tengah, mengisi ±90% kanvas (jangan kecil).
+- Satu objek konkret yang mewakili adegan (benda, kendaraan, alat, hewan, orang sederhana), di tengah, mengisi ±90% kanvas (jangan kecil). Jika tersedia arahan visual storyboard, jadikan itu acuan utama dan jangan menambahkan fakta yang tidak disebutkan.
 - Gaya flat illustration: bentuk tegas, 3–6 warna cerah dan kontras, boleh gradien sederhana, garis tepi gelap tipis boleh.
 - Hanya elemen: path, circle, ellipse, rect, polygon, polyline, line, g, defs, linearGradient, radialGradient, stop.
 - DILARANG: teks/huruf/angka, <text>, gambar luar, skrip, style, filter. Maksimal ±2500 karakter per SVG.

@@ -1,0 +1,331 @@
+{
+  "version": 1,
+  "upstream": "https://github.com/iart-ai/motion-skills",
+  "packs": [
+    {
+      "id": "motion-design",
+      "name": "Motion Design",
+      "repository": "iart-ai/motion-design-skills",
+      "skills": [
+        "animation-principles",
+        "motion-art-direction",
+        "remotion-video"
+      ],
+      "default": true
+    },
+    {
+      "id": "tiktok-video",
+      "name": "TikTok / Short-form Video",
+      "repository": "iart-ai/tiktok-video-skills",
+      "skills": [
+        "short-form-video",
+        "caption-animation"
+      ],
+      "default": true
+    },
+    {
+      "id": "explainer-video",
+      "name": "Explainer Video",
+      "repository": "iart-ai/explainer-video-skills",
+      "skills": [
+        "explainer-video"
+      ],
+      "default": false
+    },
+    {
+      "id": "kinetic-typography",
+      "name": "Kinetic Typography",
+      "repository": "iart-ai/kinetic-typography-skills",
+      "skills": [
+        "kinetic-typography"
+      ],
+      "default": false
+    },
+    {
+      "id": "javascript-animation",
+      "name": "JavaScript Animation",
+      "repository": "iart-ai/javascript-animation-skills",
+      "skills": [
+        "javascript-animation"
+      ],
+      "default": false
+    },
+    {
+      "id": "youtube-video",
+      "name": "YouTube / Podcast",
+      "repository": "iart-ai/youtube-video-skills",
+      "skills": [
+        "audiogram"
+      ],
+      "default": false
+    },
+    {
+      "id": "b-roll",
+      "name": "B-roll for Talking Head",
+      "repository": "iart-ai/b-roll-skills",
+      "skills": [
+        "talking-head-b-roll"
+      ],
+      "default": false
+    },
+    {
+      "id": "data-animation",
+      "name": "Data Visualization",
+      "repository": "iart-ai/data-animation-skills",
+      "skills": [
+        "animated-infographic"
+      ],
+      "default": false
+    },
+    {
+      "id": "map-animation",
+      "name": "Editorial Map Animation",
+      "repository": "iart-ai/map-animation-skills",
+      "skills": [
+        "map-animation"
+      ],
+      "default": false
+    },
+    {
+      "id": "ecommerce-video",
+      "name": "E-commerce Product Video",
+      "repository": "iart-ai/ecommerce-video-skills",
+      "skills": [
+        "photo-slideshow",
+        "product-demo-video",
+        "promo-video"
+      ],
+      "default": false
+    },
+    {
+      "id": "ad-video",
+      "name": "Advertising / Brand Campaign",
+      "repository": "iart-ai/ad-video-skills",
+      "skills": [
+        "ad-creative-video"
+      ],
+      "default": false
+    }
+  ],
+  "skills": [
+    {
+      "id": "animation-principles",
+      "file": "animation-principles/SKILL.md",
+      "keywords": [
+        "animasi",
+        "gerak",
+        "motion",
+        "transisi",
+        "smooth",
+        "halus",
+        "timing",
+        "easing",
+        "bounce"
+      ],
+      "always": true
+    },
+    {
+      "id": "motion-art-direction",
+      "file": "motion-art-direction/SKILL.md",
+      "keywords": [
+        "gaya",
+        "style",
+        "visual",
+        "branding",
+        "mood",
+        "sinematik",
+        "desain"
+      ],
+      "always": true
+    },
+    {
+      "id": "remotion-video",
+      "file": "remotion-video/SKILL.md",
+      "keywords": [
+        "remotion",
+        "video",
+        "render",
+        "adegan"
+      ],
+      "always": true
+    },
+    {
+      "id": "short-form-video",
+      "file": "short-form-video/SKILL.md",
+      "keywords": [
+        "shorts",
+        "short",
+        "reels",
+        "tiktok",
+        "viral",
+        "konten",
+        "video pendek"
+      ],
+      "always": true
+    },
+    {
+      "id": "caption-animation",
+      "file": "caption-animation/SKILL.md",
+      "keywords": [
+        "subtitle",
+        "caption",
+        "teks",
+        "narasi",
+        "karaoke"
+      ],
+      "always": false
+    },
+    {
+      "id": "explainer-video",
+      "file": "explainer-video/SKILL.md",
+      "keywords": [
+        "edukasi",
+        "menjelaskan",
+        "penjelasan",
+        "tutorial",
+        "cara kerja",
+        "sejarah",
+        "sains",
+        "fakta"
+      ],
+      "always": false
+    },
+    {
+      "id": "kinetic-typography",
+      "file": "kinetic-typography/SKILL.md",
+      "keywords": [
+        "tipografi",
+        "teks bergerak",
+        "typography",
+        "judul",
+        "lirik",
+        "kata"
+      ],
+      "always": false
+    },
+    {
+      "id": "javascript-animation",
+      "file": "javascript-animation/SKILL.md",
+      "keywords": [
+        "ilustrasi",
+        "gambar bergerak",
+        "tanpa aset",
+        "canvas",
+        "animasi gambar"
+      ],
+      "always": false
+    },
+    {
+      "id": "audiogram",
+      "file": "audiogram/SKILL.md",
+      "keywords": [
+        "podcast",
+        "audiogram",
+        "waveform",
+        "gelombang suara",
+        "audio",
+        "voiceover",
+        "suara"
+      ],
+      "always": false
+    },
+    {
+      "id": "talking-head-b-roll",
+      "file": "talking-head-b-roll/SKILL.md",
+      "keywords": [
+        "b-roll",
+        "talking head",
+        "wawancara",
+        "video orang bicara",
+        "podcast",
+        "presenter",
+        "sisipan video"
+      ],
+      "always": false
+    },
+    {
+      "id": "animated-infographic",
+      "file": "animated-infographic/SKILL.md",
+      "keywords": [
+        "infografis",
+        "infographic",
+        "data",
+        "statistik",
+        "angka",
+        "grafik",
+        "diagram",
+        "persentase"
+      ],
+      "always": false
+    },
+    {
+      "id": "map-animation",
+      "file": "map-animation/SKILL.md",
+      "keywords": [
+        "peta",
+        "map",
+        "lokasi",
+        "rute",
+        "geografi",
+        "perjalanan",
+        "wilayah",
+        "negara"
+      ],
+      "always": false
+    },
+    {
+      "id": "photo-slideshow",
+      "file": "photo-slideshow/SKILL.md",
+      "keywords": [
+        "slideshow",
+        "foto produk",
+        "kumpulan foto",
+        "galeri",
+        "album",
+        "before after"
+      ],
+      "always": false
+    },
+    {
+      "id": "product-demo-video",
+      "file": "product-demo-video/SKILL.md",
+      "keywords": [
+        "demo produk",
+        "product demo",
+        "fitur produk",
+        "unboxing",
+        "cara pakai produk",
+        "review produk"
+      ],
+      "always": false
+    },
+    {
+      "id": "promo-video",
+      "file": "promo-video/SKILL.md",
+      "keywords": [
+        "promo",
+        "diskon",
+        "harga",
+        "voucher",
+        "kode promo",
+        "flash sale",
+        "penawaran"
+      ],
+      "always": false
+    },
+    {
+      "id": "ad-creative-video",
+      "file": "ad-creative-video/SKILL.md",
+      "keywords": [
+        "iklan",
+        "ads",
+        "kampanye",
+        "campaign",
+        "cta",
+        "variasi iklan",
+        "promosi brand"
+      ],
+      "always": false
+    }
+  ]
+}

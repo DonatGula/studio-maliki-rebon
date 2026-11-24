@@ -4,6 +4,7 @@
 // Tanpa kunci API? Pakai PROMPT-NASKAH.md di Claude/Gemini/ChatGPT gratis lalu simpan JSON-nya sendiri.
 import {writeFileSync, mkdirSync, readFileSync} from 'node:fs';
 import {bacaEnv, tanyaAI, berhenti} from './ai.mjs';
+import {susunPanduanMotion, pilihMotionSkills} from './skills/engine.mjs';
 
 const argv = process.argv.slice(2);
 const opsi = Object.fromEntries(argv.filter((a) => a.startsWith('--')).map((a) => a.slice(2).split('=')));
@@ -14,15 +15,22 @@ if (!topik) {
 }
 const env = bacaEnv();
 const penyedia = (opsi.ai ?? env.AI ?? 'gemini').toLowerCase();
-const prompt = readFileSync('PROMPT-NASKAH.md', 'utf8').replace('[TOPIK]', topik);
+const skillMode = opsi.skills ?? 'auto';
+let skillIds = [];
+let panduanMotion = '';
+try { skillIds = pilihMotionSkills(topik, skillMode); panduanMotion = susunPanduanMotion(topik, skillMode); }
+catch (e) { berhenti(e.message); }
+const prompt = readFileSync('PROMPT-NASKAH.md', 'utf8').replace('[TOPIK]', topik) + '\n\n' + panduanMotion;
 const tanya = () => tanyaAI(penyedia, prompt, env, 'menulis naskah');
 
 console.log(`• Meminta AI '${penyedia}' menulis naskah: ${topik}`);
+console.log(`• Motion Skills: ${skillIds.join(', ')}`);
 const teks = await tanya();
 const m = teks.match(/\{[\s\S]*\}/);
 if (!m) berhenti('Balasan AI tidak berisi JSON:\n' + teks.slice(0, 500));
 const naskah = JSON.parse(m[0]);
 if (opsi.gaya) naskah.gaya = opsi.gaya;
+naskah.motion = {...(naskah.motion ?? {}), skills: skillIds};
 naskah.handle = env.HANDLE || ''; // nama akun hanya dari pengaturan pengguna — AI kadang mengarang akun
 // judul layar berupa label ("Hook", "Tips 1") → ganti dengan 4 kata awal narasi
 for (const a of naskah.adegan ?? []) {

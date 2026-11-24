@@ -1,0 +1,162 @@
+{
+  "version": 1,
+  "source": "https://github.com/iart-ai/motion-skills",
+  "sourceUpdated": "2026-11-18",
+  "totalPacks": 19,
+  "totalSkills": 56,
+  "note": "status bundled means all skills in the upstream pack are included locally; partial means selected SKILL.md files are included; catalog means listed for planned installation/integration.",
+  "packs": [
+    {
+      "id": "tiktok-video",
+      "name": "TikTok / Reels / Shorts",
+      "repository": "iart-ai/tiktok-video-skills",
+      "skillCount": 4,
+      "status": "partial",
+      "url": "https://github.com/iart-ai/tiktok-video-skills"
+    },
+    {
+      "id": "text-message-video",
+      "name": "Text-message Stories",
+      "repository": "iart-ai/text-message-video-skills",
+      "skillCount": 1,
+      "status": "catalog",
+      "url": "https://github.com/iart-ai/text-message-video-skills"
+    },
+    {
+      "id": "youtube-video",
+      "name": "YouTube / Podcast",
+      "repository": "iart-ai/youtube-video-skills",
+      "skillCount": 2,
+      "status": "partial",
+      "url": "https://github.com/iart-ai/youtube-video-skills"
+    },
+    {
+      "id": "ecommerce-video",
+      "name": "E-commerce Product Video",
+      "repository": "iart-ai/ecommerce-video-skills",
+      "skillCount": 3,
+      "status": "bundled",
+      "url": "https://github.com/iart-ai/ecommerce-video-skills"
+    },
+    {
+      "id": "ad-video",
+      "name": "Advertising / Brand Campaign",
+      "repository": "iart-ai/ad-video-skills",
+      "skillCount": 3,
+      "status": "partial",
+      "url": "https://github.com/iart-ai/ad-video-skills"
+    },
+    {
+      "id": "data-animation",
+      "name": "Data Visualization",
+      "repository": "iart-ai/data-animation-skills",
+      "skillCount": 3,
+      "status": "partial",
+      "url": "https://github.com/iart-ai/data-animation-skills"
+    },
+    {
+      "id": "explainer-video",
+      "name": "Explainer / Educational",
+      "repository": "iart-ai/explainer-video-skills",
+      "skillCount": 5,
+      "status": "partial",
+      "url": "https://github.com/iart-ai/explainer-video-skills"
+    },
+    {
+      "id": "map-animation",
+      "name": "Editorial Map Animation",
+      "repository": "iart-ai/map-animation-skills",
+      "skillCount": 1,
+      "status": "bundled",
+      "url": "https://github.com/iart-ai/map-animation-skills"
+    },
+    {
+      "id": "web-animation",
+      "name": "Web / UI Animation",
+      "repository": "iart-ai/web-animation-skills",
+      "skillCount": 9,
+      "status": "catalog",
+      "url": "https://github.com/iart-ai/web-animation-skills"
+    },
+    {
+      "id": "motion-design",
+      "name": "Motion Design",
+      "repository": "iart-ai/motion-design-skills",
+      "skillCount": 9,
+      "status": "partial",
+      "url": "https://github.com/iart-ai/motion-design-skills"
+    },
+    {
+      "id": "kinetic-typography",
+      "name": "Kinetic Typography",
+      "repository": "iart-ai/kinetic-typography-skills",
+      "skillCount": 1,
+      "status": "bundled",
+      "url": "https://github.com/iart-ai/kinetic-typography-skills"
+    },
+    {
+      "id": "freelance-motion",
+      "name": "Freelance Motion Workflow",
+      "repository": "iart-ai/freelance-motion-skills",
+      "skillCount": 5,
+      "status": "catalog",
+      "url": "https://github.com/iart-ai/freelance-motion-skills"
+    },
+    {
+      "id": "webgl-animation",
+      "name": "3D / WebGL Animation",
+      "repository": "iart-ai/webgl-animation-skills",
+      "skillCount": 3,
+      "status": "catalog",
+      "url": "https://github.com/iart-ai/webgl-animation-skills"
+    },
+    {
+      "id": "manim",
+      "name": "Math / Scientific Animation",
+      "repository": "iart-ai/manim-skills",
+      "skillCount": 1,
+      "status": "catalog",
+      "url": "https://github.com/iart-ai/manim-skills"
+    },
+    {
+      "id": "generative-illustration",
+      "name": "Generative Illustration",
+      "repository": "iart-ai/generative-illustration-skills",
+      "skillCount": 1,
+      "status": "catalog",
+      "url": "https://github.com/iart-ai/generative-illustration-skills"
+    },
+    {
+      "id": "javascript-animation",
+      "name": "JavaScript / Canvas Animation",
+      "repository": "iart-ai/javascript-animation-skills",
+      "skillCount": 2,
+      "status": "partial",
+      "url": "https://github.com/iart-ai/javascript-animation-skills"
+    },
+    {
+      "id": "lower-thirds",
+      "name": "Transparent Lower Thirds",
+      "repository": "iart-ai/lower-thirds-skills",
+      "skillCount": 1,
+      "status": "catalog",
+      "url": "https://github.com/iart-ai/lower-thirds-skills"
+    },
+    {
+      "id": "b-roll",
+      "name": "B-roll for Talking Head",
+      "repository": "iart-ai/b-roll-skills",
+      "skillCount": 1,
+      "status": "bundled",
+      "url": "https://github.com/iart-ai/b-roll-skills"
+    },
+    {
+      "id": "talking-head",
+      "name": "AI Talking Head Video",
+      "repository": "iart-ai/talking-head-skills",
+      "skillCount": 1,
+      "status": "catalog",
+      "url": "https://github.com/iart-ai/talking-head-skills"
+    }
+  ]
+}
