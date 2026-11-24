@@ -48,7 +48,11 @@ Gunakan prinsip-prinsip berikut sebagai arahan kreatif, bukan menyalin contoh me
 - Gunakan easing yang sesuai, stagger seperlunya, anticipation/follow-through yang ringan, dan jeda agar teks terbaca.
 - Sesuaikan ide animasi dengan komposisi Remotion Studio Maliki yang sudah ada. Jangan mengarang komponen, package, file asset, atau kemampuan renderer yang belum tersedia.
 - Video utama tetap vertikal 9:16 dan berbahasa Indonesia. Jaga teks singkat, area aman, kontras, dan keterbacaan di layar ponsel.
-- Skill JavaScript Animation hanya menjadi inspirasi storyboard; jangan mengganti pipeline Remotion yang sudah ada.
+- Skill JavaScript Animation, Audiogram, B-roll, Infographic, dan Map Animation adalah arahan storyboard. Jangan menganggap dependency, script, template, layanan eksternal, atau file referensi dari pack upstream sudah terpasang.
+- B-roll hanya boleh merujuk klip yang memang disediakan pengguna; jangan mengarang footage, transkrip bertiming, atau path asset.
+- Audiogram tidak boleh memakai analyser real-time atau mengklaim waveform audio-synced jika data audio tidak tersedia. Utamakan visualisasi sederhana yang deterministik.
+- Infografis harus memakai angka yang ada di sumber/topik; jangan mengarang statistik. Peta harus memakai lokasi dan rute yang disebutkan atau diberikan pengguna.
+- Bila sebuah efek memerlukan package atau renderer yang belum tersedia, jelaskan sebagai arahan visual sederhana yang bisa diwujudkan oleh Remotion bawaan; jangan menambah dependency otomatis.
 - Sertakan metadata storyboard agar bisa diedit pada tahap editor berikutnya, tetapi pertahankan kolom JSON lama.
 Tambahkan properti tingkat atas "motion": {"skills": ${idsJson}, "arah_visual": "ringkasan satu kalimat", "bahasa_gerak": "aturan gerak singkat"}.
 Pada setiap objek adegan, tambahkan "visual": "apa yang terlihat", "gerak": "aksi/gerakan visual yang disarankan", dan "transisi": "cara masuk/keluar singkat".
