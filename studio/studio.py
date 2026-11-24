@@ -491,57 +491,102 @@ def mulai_render_klip(d: dict) -> dict:
 
 
 def mulai_motion(d: dict) -> dict:
+    """Tahap 1: buat naskah saja. Pengguna meninjau dan mengedit sebelum render."""
     topik = (d.get("topik") or "").strip()
     naskah_teks = (d.get("naskah") or "").strip()
     if not topik and not naskah_teks:
         raise ValueError("Isi topik, atau tempel naskah JSON.")
     ai = penyedia_ai(d.get("ai"))
     if not naskah_teks and ai == "lokal":
-        raise ValueError("Membuat naskah dari topik butuh AI (Gemini/Ollama/Claude) — atur di Pengaturan, "
-                         "atau tempel naskah JSON dari Claude/Gemini gratis.")
+        raise ValueError("Membuat naskah dari topik butuh AI (Gemini/Ollama/Claude) — atur di Pengaturan, atau tempel naskah JSON.")
     node = cari_node()
     folder = proyek_baru("motion")
     nama = folder.name
-    if not (MOTION / "node_modules").exists():
-        langkah = [([shutil.which("npm") or "npm", "install", "--silent"], MOTION)]
-    else:
-        langkah = []
     gaya = d.get("gaya", "garis")
+    (MOTION / "naskah").mkdir(exist_ok=True)
     if naskah_teks:
-        data = json.loads(naskah_teks)
+        try:
+            data = json.loads(naskah_teks)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"JSON naskah tidak valid: {e.msg} (baris {e.lineno}).") from e
+        if not isinstance(data, dict) or not isinstance(data.get("adegan"), list) or not data["adegan"]:
+            raise ValueError('Naskah harus berupa objek JSON dengan daftar "adegan" yang tidak kosong.')
         data["gaya"] = gaya
-        (MOTION / "naskah").mkdir(exist_ok=True)
-        (MOTION / "naskah" / f"{nama}.json").write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
-    else:
-        skills = d.get("skills") or []
-        skill_arg = ",".join(str(x) for x in skills if isinstance(x, str) and re.fullmatch(r"[a-z0-9-]+", x))
-        langkah.append(([node, "naskah.mjs", topik, f"--ai={ai}", f"--gaya={gaya}", f"--nama={nama}",
-                         f"--skills={skill_arg or 'auto'}"], MOTION))
-    if d.get("gambar") and ai != "lokal":
-        # AI menggambar objek SVG per adegan (gagal → video tetap jadi dengan emoji)
-        langkah.append(([node, "gambar.mjs", f"naskah/{nama}.json", f"--ai={ai}"], MOTION))
+        naskah_path = MOTION / "naskah" / f"{nama}.json"
+        naskah_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        shutil.copy(naskah_path, folder / "naskah.json")
+        (folder / "permintaan.json").write_text(json.dumps(d, ensure_ascii=False), encoding="utf-8")
+        KERJA.hasil = {"jenis": "motion", "nama": nama, "tahap": "review", "naskah": data}
+        KERJA.jenis, KERJA.log, KERJA.status, KERJA.folder = "motion", ["Naskah JSON siap ditinjau."], "selesai", folder
+        return {"proyek": nama, "tahap": "review"}
+    skills = d.get("skills") or []
+    skill_arg = ",".join(str(x) for x in skills if isinstance(x, str) and re.fullmatch(r"[a-z0-9-]+", x))
+    langkah = []
+    if not (MOTION / "node_modules").exists():
+        npm = shutil.which("npm") or ("npm" if os.name == "nt" else "/usr/bin/npm")
+        langkah.append(([npm, "install", "--silent"], MOTION))
+    langkah.append(([node, "naskah.mjs", topik, f"--ai={ai}", f"--gaya={gaya}", f"--nama={nama}",
+                     f"--skills={skill_arg or 'auto'}"], MOTION))
+    (folder / "permintaan.json").write_text(json.dumps(d, ensure_ascii=False), encoding="utf-8")
+
+    def setelah(k: Kerja):
+        naskah_path = MOTION / "naskah" / f"{nama}.json"
+        if not naskah_path.exists():
+            raise RuntimeError("AI selesai tetapi file naskah tidak ditemukan.")
+        shutil.copy(naskah_path, folder / "naskah.json")
+        k.hasil = {"jenis": "motion", "nama": nama, "tahap": "review",
+                   "naskah": json.loads(naskah_path.read_text(encoding="utf-8"))}
+
+    KERJA.jalankan("motion", langkah, folder, setelah)
+    return {"proyek": nama, "tahap": "review"}
+
+
+def render_motion(d: dict) -> dict:
+    """Tahap 2: render hanya setelah naskah disetujui/diedit pengguna."""
+    nama = re.sub(r"[^\\w-]", "", d.get("nama", ""))
+    if not nama:
+        raise ValueError("Nama proyek tidak valid.")
+    folder = (DATA / "motion" / nama).resolve()
+    if DATA.resolve() not in folder.parents or not folder.is_dir():
+        raise ValueError("Proyek Motion tidak ditemukan.")
+    teks = d.get("naskah")
+    if not isinstance(teks, str) or not teks.strip():
+        raise ValueError("Naskah kosong.")
+    try:
+        data = json.loads(teks)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"JSON naskah tidak valid: {e.msg} (baris {e.lineno}).") from e
+    if not isinstance(data, dict) or not isinstance(data.get("adegan"), list) or not data["adegan"]:
+        raise ValueError('Naskah harus memiliki daftar "adegan" yang tidak kosong.')
+    for i, adegan in enumerate(data["adegan"], 1):
+        if not isinstance(adegan, dict) or not isinstance(adegan.get("teks", ""), str):
+            raise ValueError(f"Adegan {i} tidak valid: setiap adegan harus berupa objek dengan teks.")
+    node = cari_node()
+    gaya = str(data.get("gaya") or "garis")
+    if not re.fullmatch(r"[a-z0-9_-]+", gaya):
+        raise ValueError("Nama gaya tidak valid.")
+    data["gaya"] = gaya
+    naskah_path = MOTION / "naskah" / f"{nama}.json"
+    naskah_path.parent.mkdir(parents=True, exist_ok=True)
+    naskah_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    shutil.copy(naskah_path, folder / "naskah.json")
     p = baca_pengaturan()
-    perintah = [node, "buat.mjs", f"naskah/{nama}.json", f"--gaya={gaya}", f"--suara-mac={p.get('SUARA_MAC', 'Damayanti')}"]
+    perintah = [node, "buat.mjs", f"naskah/{nama}.json", f"--gaya={gaya}",
+                f"--suara-mac={p.get('SUARA_MAC', 'Damayanti')}"]
     if p.get("SUARA") == "voxcpm":
         if not voxcpm_terpasang():
             raise ValueError("Suara AI (VoxCPM) belum dipasang. Buka Pengaturan AI → Suara narator → Pasang suara AI.")
         if p.get("VOXCPM_MODE") == "clone" and not ref_suara():
-            # tidak ada suara bawaan siapa pun: mode clone WAJIB memakai rekaman pengguna sendiri (dengan izin)
-            raise ValueError("Mode \"Clone suaraku\" butuh rekaman suaramu sendiri. Buka Pengaturan AI → Suara narator, "
-                             "centang pernyataan izin, lalu pilih rekaman 10–20 detik. Atau pilih warna suara Netral.")
+            raise ValueError('Mode "Clone suaraku" membutuhkan rekaman suaramu sendiri.')
         perintah.append("--suara=voxcpm")
-    langkah.append((perintah, MOTION))
 
     def setelah(k: Kerja):
-        for f in (MOTION / "hasil").glob(f"{nama}-*.mp4"):
-            shutil.move(str(f), folder / "video.mp4")
-        n = MOTION / "naskah" / f"{nama}.json"
-        if n.exists():
-            shutil.copy(n, folder / "naskah.json")
+        for hasil in (MOTION / "hasil").glob(f"{nama}-*.mp4"):
+            shutil.move(str(hasil), folder / "video.mp4")
         k.hasil = muat_proyek("motion", nama)
 
-    KERJA.jalankan("motion", langkah, folder, setelah)
-    return {"proyek": nama}
+    KERJA.jalankan("motion", [(perintah, MOTION)], folder, setelah)
+    return {"proyek": nama, "tahap": "render"}
 
 
 def muat_proyek(jenis: str, nama: str) -> dict:
@@ -770,6 +815,8 @@ class H(BaseHTTPRequestHandler):
                 return self._json(mulai_klip(d))
             if jalur == "/api/motion":
                 return self._json(mulai_motion(d))
+            if jalur == "/api/motion/render":
+                return self._json(render_motion(d))
             if jalur == "/api/unduh":
                 f = (DATA / d.get("jenis", "") / d.get("nama", "") / d.get("file", "")).resolve()
                 if not f.is_file() or DATA.resolve() not in f.parents:
