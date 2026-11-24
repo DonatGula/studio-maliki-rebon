@@ -630,6 +630,59 @@ def render_motion(d: dict) -> dict:
 
 
 
+
+def mulai_batch_motion(d: dict) -> dict:
+    """Buat beberapa video secara berurutan, masing-masing menjadi proyek tersendiri."""
+    topik = d.get("topik", [])
+    if isinstance(topik, str):
+        topik = [x.strip() for x in topik.splitlines() if x.strip()]
+    if not isinstance(topik, list):
+        raise ValueError("Daftar topik batch tidak valid.")
+    topik = [str(x).strip() for x in topik if str(x).strip()]
+    if not topik or len(topik) > 5:
+        raise ValueError("Batch harus berisi 1 sampai 5 topik.")
+    ai = penyedia_ai(d.get("ai"))
+    if ai == "lokal":
+        raise ValueError("Batch otomatis membutuhkan AI aktif (Gemini, Ollama, Claude Code, Codex, atau OpenCode).")
+    node = cari_node()
+    gaya = str(d.get("gaya") or "garis")
+    if not re.fullmatch(r"[a-z0-9_-]+", gaya):
+        raise ValueError("Nama gaya tidak valid.")
+    preset = str(d.get("preset") or "shorts")
+    if preset not in ("shorts", "tiktok", "reels", "draft", "high"):
+        raise ValueError("Preset ekspor tidak dikenal.")
+    skills = d.get("skills") or []
+    if not isinstance(skills, list):
+        raise ValueError("Pilihan Motion Skills tidak valid.")
+    skills = [x for x in skills if isinstance(x, str) and re.fullmatch(r"[a-z0-9-]+", x)][:5]
+    stamp = time.strftime("%Y%m%d-%H%M%S")
+    items = []
+    for i, judul in enumerate(topik, 1):
+        slug = re.sub(r"[^a-z0-9]+", "-", judul.lower()).strip("-")[:28] or "video"
+        nama = f"{stamp}-b{i:02d}-{slug}"
+        folder = DATA / "motion" / nama
+        folder.mkdir(parents=True, exist_ok=True)
+        items.append({"no": i, "topic": judul, "name": nama, "folder": str(folder), "ai": ai,
+                      "style": gaya, "skills": ",".join(skills) or "auto", "preset": preset,
+                      "voice": "voxcpm" if baca_pengaturan().get("SUARA") == "voxcpm" else "default"})
+    manifest_path = DATA / f".batch-motion-{stamp}.json"
+    summary_path = DATA / f".batch-motion-{stamp}-hasil.json"
+    manifest_path.write_text(json.dumps({"items": items, "summary": str(summary_path)}, ensure_ascii=False), encoding="utf-8")
+    p = baca_pengaturan()
+    if p.get("SUARA") == "voxcpm":
+        if not voxcpm_terpasang():
+            raise ValueError("Suara AI VoxCPM belum terpasang.")
+        if p.get("VOXCPM_MODE") == "clone" and not ref_suara():
+            raise ValueError('Mode "Clone suaraku" membutuhkan rekaman suaramu sendiri.')
+    def setelah(k: Kerja):
+        hasil = json.loads(summary_path.read_text(encoding="utf-8"))
+        k.hasil = {"jenis": "motion-batch", "hasil": hasil}
+        manifest_path.unlink(missing_ok=True)
+        summary_path.unlink(missing_ok=True)
+    KERJA.jalankan("motion", [([node, "batch.mjs", str(manifest_path)], MOTION)], DATA, setelah)
+    return {"ok": True, "jumlah": len(items)}
+
+
 def _motion_project(nama: str) -> Path:
     nama = re.sub(r"[^\\w-]", "", nama or "")
     folder = (DATA / "motion" / nama).resolve()
@@ -933,6 +986,8 @@ class H(BaseHTTPRequestHandler):
                 return self._json({"ok": True})
             if jalur == "/api/klip":
                 return self._json(mulai_klip(d))
+            if jalur == "/api/motion/batch":
+                return self._json(mulai_batch_motion(d))
             if jalur == "/api/motion":
                 return self._json(mulai_motion(d))
             if jalur == "/api/motion/save":
