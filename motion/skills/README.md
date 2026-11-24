@@ -21,8 +21,8 @@ Jangan menambahkan ID skill ke `registry.json` sebelum file `SKILL.md` yang sesu
 | TikTok / Reels / Shorts | 4 | Partial (2 skills bundled) |
 | Text-message Stories | 1 | Catalog |
 | YouTube / Podcast | 2 | Partial (1 skill bundled) |
-| E-commerce Product Video | 3 | Catalog |
-| Advertising / Brand Campaign | 3 | Catalog |
+| E-commerce Product Video | 3 | Bundled |
+| Advertising / Brand Campaign | 3 | Partial (1 skill bundled) |
 | Data Visualization | 3 | Partial (1 skill bundled) |
 | Explainer / Educational | 5 | Partial (1 skill bundled) |
 | Editorial Map Animation | 1 | Bundled |
@@ -38,15 +38,14 @@ Jangan menambahkan ID skill ke `registry.json` sebelum file `SKILL.md` yang sesu
 | B-roll for Talking Head | 1 | Bundled |
 | AI Talking Head Video | 1 | Catalog |
 
-Total upstream: 19 pack, 56 skill. Saat ini 12 file skill dari sembilan pack sudah tersedia: tiga pack lengkap dan enam pack parsial.
+Total upstream: 19 pack, 56 skill. Saat ini 16 file skill dari sebelas pack sudah tersedia: empat pack lengkap dan tujuh pack parsial.
 
 ## Urutan integrasi lanjutan yang disarankan
 
 Untuk target konten Shorts, TikTok, dan Reels, prioritaskan:
-1. Lengkapi YouTube Video dan Data Animation yang masih parsial.
-2. Integrasikan E-commerce dan Ad Video.
-3. Tambahkan Text-message Video dan Talking Head.
-4. Lanjutkan pack lain sesuai kebutuhan, terutama WebGL/Manim yang mungkin memerlukan renderer atau dependency berbeda.
+1. Lengkapi YouTube Video, Data Animation, dan Ad Video yang masih parsial.
+2. Tambahkan Text-message Video dan Talking Head.
+3. Lanjutkan pack lain sesuai kebutuhan, terutama WebGL/Manim yang mungkin memerlukan renderer atau dependency berbeda.
 
 Setiap pack baru perlu ditinjau isi, dependensi, lisensi, dan kecocokannya dengan Remotion sebelum ditambahkan ke registry. Skill yang mengandalkan GSAP, Three.js, Manim, WebM alpha, atau layanan AI eksternal tidak otomatis kompatibel dengan renderer Studio Maliki.
 
