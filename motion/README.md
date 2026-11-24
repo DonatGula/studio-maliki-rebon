@@ -89,6 +89,18 @@ Periksa isi naskah sebelum render, karena AI bisa salah. Langganan Claude Pro **
 File `.env` berisi kuncimu. Jangan dibagikan ke orang lain.
 
 
+## Alur baru: tinjau naskah sebelum render
+
+Dari halaman Motion di Studio, proses sekarang dipisah menjadi dua tahap:
+
+1. **Buat naskah** — AI menghasilkan naskah/storyboard JSON, atau pengguna memasukkan JSON sendiri.
+2. **Tinjau & edit** — naskah ditampilkan di editor JSON dalam browser. Periksa judul, teks narasi, jumlah adegan, dan metadata visual; perubahan dapat dilakukan sebelum render.
+3. **Render video** — tombol Render video mengirim naskah yang sudah diedit ke backend lokal, lalu Remotion membuat MP4.
+
+Naskah disimpan di folder proyek lokal sebagai `naskah.json`. Jika browser ditutup setelah tahap pertama, proyek dan naskah tetap ada di folder data Studio. Untuk membuka proyek draft, gunakan Riwayat/ folder proyek; editor draft akan ditampilkan lagi saat proyek draft dimuat.
+
+Studio juga dapat dibuka langsung di browser dengan menjalankan `uv run studio.py --browser` dari folder `studio`; alamat lokal default adalah `http://127.0.0.1:8787`. Server hanya mendengarkan di komputer sendiri.
+
 ## Motion Skills (integrasi awal)
 
 Generator naskah kini memakai panduan Motion Skills dari proyek iart.ai untuk membantu AI menentukan arah visual, bahasa gerak, dan storyboard per adegan. Remotion tetap menjadi renderer; Motion Skills bukan plugin rendering.
