@@ -626,6 +626,84 @@ def render_motion(d: dict) -> dict:
     return {"proyek": nama, "tahap": "render"}
 
 
+
+def _motion_project(nama: str) -> Path:
+    nama = re.sub(r"[^\\w-]", "", nama or "")
+    folder = (DATA / "motion" / nama).resolve()
+    if not nama or DATA.resolve() not in folder.parents or not folder.is_dir():
+        raise ValueError("Proyek Motion tidak ditemukan.")
+    return folder
+
+
+def regenerar_motion_adegan(d: dict) -> dict:
+    """AI membuat ulang satu adegan; adegan lain tidak disentuh."""
+    nome = str(d.get("nama", ""))
+    folder = _motion_project(nome)
+    index = int(d.get("indice", -1))
+    naskah_path = folder / "naskah.json"
+    if not naskah_path.exists():
+        raise ValueError("Draft naskah proyek tidak ditemukan.")
+    data = json.loads(naskah_path.read_text(encoding="utf-8"))
+    if index < 0 or index >= len(data.get("adegan", [])):
+        raise ValueError("Nomor adegan tidak valid.")
+    ai = penyedia_ai(d.get("ai"))
+    node = cari_node()
+    token = f"{nome}-regen-{index + 1}-{int(time.time())}"
+    sumber = MOTION / "naskah" / f"{token}.json"
+    keluaran = folder / f".{token}.json"
+    sumber.parent.mkdir(parents=True, exist_ok=True)
+    sumber.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    cmd = [node, "adegan.mjs", f"naskah/{token}.json", str(index + 1), ai, str(keluaran)]
+    def setelah(k: Kerja):
+        baru = json.loads(keluaran.read_text(encoding="utf-8"))
+        lama = data["adegan"][index]
+        lama.update(baru)
+        lama.pop("preview", None)
+        naskah_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        shutil.copy(naskah_path, MOTION / "naskah" / f"{nome}.json")
+        sumber.unlink(missing_ok=True); keluaran.unlink(missing_ok=True)
+        k.hasil = {"jenis": "motion", "nama": nome, "tahap": "review", "naskah": data}
+    KERJA.jalankan("motion", [(cmd, MOTION)], folder, setelah)
+    return {"ok": True, "proyek": nome, "adegan": index + 1}
+
+
+def pratinjau_motion_adegan(d: dict) -> dict:
+    """Render satu adegan sebagai MP4 preview kecil tanpa mengubah hasil final."""
+    nama = str(d.get("nama", ""))
+    folder = _motion_project(nama)
+    index = int(d.get("indice", -1))
+    naskah_path = folder / "naskah.json"
+    if not naskah_path.exists():
+        raise ValueError("Draft naskah proyek tidak ditemukan.")
+    data = json.loads(naskah_path.read_text(encoding="utf-8"))
+    if index < 0 or index >= len(data.get("adegan", [])):
+        raise ValueError("Nomor adegan tidak valid.")
+    node = cari_node()
+    token = f"{nama}-preview-{index + 1}-{int(time.time())}"
+    sumber = MOTION / "naskah" / f"{token}.json"
+    sumber.parent.mkdir(parents=True, exist_ok=True)
+    satu = {k: v for k, v in data.items() if k != "adegan"}
+    adegan = dict(data["adegan"][index])
+    adegan.pop("preview", None)
+    satu["adegan"] = [adegan]
+    sumber.write_text(json.dumps(satu, ensure_ascii=False, indent=2), encoding="utf-8")
+    gaya = str(data.get("gaya") or "garis")
+    perintah = [node, "buat.mjs", f"naskah/{token}.json", f"--gaya={gaya}", "--suara=tanpa", "--preset=preview"]
+    def setelah(k: Kerja):
+        hasil = MOTION / "hasil" / f"{token}-{gaya}.mp4"
+        if not hasil.exists():
+            raise RuntimeError("File preview tidak ditemukan setelah rendering.")
+        tujuan = folder / f"preview-{index + 1:02d}.mp4"
+        shutil.move(str(hasil), tujuan)
+        data["adegan"][index]["preview"] = f"/berkas/motion/{nome if False else nome}/preview-{index + 1:02d}.mp4"
+        naskah_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        shutil.copy(naskah_path, MOTION / "naskah" / f"{nome}.json")
+        sumber.unlink(missing_ok=True)
+        k.hasil = {"jenis": "motion", "nama": nome, "tahap": "review", "naskah": data}
+    KERJA.jalankan("motion", [(perintah, MOTION)], folder, setelah)
+    return {"ok": True, "proyek": nama, "adegan": index + 1}
+
+
 def muat_proyek(jenis: str, nama: str) -> dict:
     f = DATA / jenis / nama
     out = {"jenis": jenis, "nama": nama}
@@ -856,6 +934,10 @@ class H(BaseHTTPRequestHandler):
                 return self._json(mulai_motion(d))
             if jalur == "/api/motion/save":
                 return self._json(simpan_motion_draft(d))
+            if jalur == "/api/motion/regenerate":
+                return self._json(regenerar_motion_adegan(d))
+            if jalur == "/api/motion/preview-scene":
+                return self._json(pratinjau_motion_adegan(d))
             if jalur == "/api/motion/render":
                 return self._json(render_motion(d))
             if jalur == "/api/unduh":
