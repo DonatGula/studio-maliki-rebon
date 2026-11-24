@@ -1247,12 +1247,12 @@ $('#tblKlip').onclick = async () => {
   } catch (e) { toast(e.message, true); }
 };
 $('#motionBatchTopics').oninput = () => {
-  const n = $('#motionBatchTopics').value.split(/\\r?\\n/).filter((x) => x.trim()).length;
+  const n = $('#motionBatchTopics').value.split(/\r?\n/).filter((x) => x.trim()).length;
   $('#motionBatchCount').textContent = `${n} / 5 topik`;
 };
 $('#motionBatchRun').onclick = async () => {
   if (SIBUK) return toast('Tunggu proses yang sedang berjalan selesai.', true);
-  const topics = $('#motionBatchTopics').value.split(/\\r?\\n/).map((x) => x.trim()).filter(Boolean);
+  const topics = $('#motionBatchTopics').value.split(/\r?\n/).map((x) => x.trim()).filter(Boolean);
   if (!topics.length || topics.length > 5) return toast('Masukkan 1 sampai 5 topik, satu topik per baris.', true);
   if (!confirm(`Buat ${topics.length} video secara berurutan? Proses dapat memerlukan waktu cukup lama.`)) return;
   try {
@@ -1648,7 +1648,7 @@ function sinkronMotionScene() {
 function gambarMotionTimeline() {
   const el = $('#motionTimeline');
   if (!el || !MOTION_DRAFT) return;
-  const durations = MOTION_DRAFT.adegan.map((a) => Math.max(0.5, Number(a.durasi) || Math.max(2.5, String(a.teks || '').split(/\\s+/).filter(Boolean).length / 2.6)));
+  const durations = MOTION_DRAFT.adegan.map((a) => Math.max(0.5, Number(a.durasi) || Math.max(2.5, String(a.teks || '').split(/\s+/).filter(Boolean).length / 2.6)));
   const total = durations.reduce((sum, value) => sum + value, 0);
   el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b>Timeline · ${MOTION_DRAFT.adegan.length} adegan</b><small>${total.toFixed(1)} detik</small></div>
     <div style="display:flex;gap:4px;min-height:54px;overflow:hidden;border-radius:10px;background:var(--panel2);padding:4px">
