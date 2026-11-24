@@ -666,6 +666,20 @@ main{position:relative;z-index:1}
             <button class="gaya" data-v="daftar" title="Daftar Sumber"><img src="/aset/gaya/daftar.jpg" alt="" loading="lazy"><div class="nama"><b>Daftar Sumber</b><span>T11</span></div></button>
           </div>
           <label class="saklar" style="margin-top:14px">AI menggambar objek tiap adegan <em style="font-style:normal;color:var(--redup);font-size:12px">&nbsp;SVG, menggantikan emoji · butuh AI di Pengaturan</em><input type="checkbox" id="gGambarAI" checked></label>
+          <div style="margin-top:16px;padding:12px;border:1px solid var(--garis);border-radius:12px;background:var(--bg)">
+            <div style="font-size:13px;font-weight:700;margin-bottom:6px">Motion Skills <span style="color:var(--redup);font-weight:400">· AI memilih otomatis jika tidak ada yang dicentang</span></div>
+            <div style="display:flex;flex-wrap:wrap;gap:10px 14px;font-size:12px;color:var(--redup)">
+              <label><input type="checkbox" class="motion-skill" value="animation-principles"> Prinsip Animasi</label>
+              <label><input type="checkbox" class="motion-skill" value="motion-art-direction"> Art Direction</label>
+              <label><input type="checkbox" class="motion-skill" value="remotion-video"> Remotion</label>
+              <label><input type="checkbox" class="motion-skill" value="short-form-video"> Short-form</label>
+              <label><input type="checkbox" class="motion-skill" value="caption-animation"> Caption</label>
+              <label><input type="checkbox" class="motion-skill" value="explainer-video"> Explainer</label>
+              <label><input type="checkbox" class="motion-skill" value="kinetic-typography"> Kinetic Typography</label>
+              <label><input type="checkbox" class="motion-skill" value="javascript-animation"> JavaScript Animation</label>
+            </div>
+            <div class="catatan">Pilih satu atau beberapa skill untuk mengarahkan AI. Jika semuanya kosong, pemilihan dilakukan otomatis dari topik.</div>
+          </div>
           <div class="catatan">Suara narator: <b id="ketSuara">Damayanti (bawaan macOS)</b> · ubah di Pengaturan AI. Resolusi 1080×1920, 30 fps.</div>
           <div class="aksi" style="margin-top:16px"><button class="tombol utama" id="tblMotion"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z"/></svg>Buat video</button></div>
         </div>
@@ -1226,7 +1240,8 @@ $('#tblMotion').onclick = async () => {
   try {
     const isi = nilaiPil('#pilIsi');
     await api('/api/motion', {topik: isi === 'topik' ? $('#topik').value : '', naskah: isi === 'naskah' ? $('#naskahJSON').value : '',
-      gaya: $('#pilGaya .aktif').dataset.v, ai: PENG.AI || 'lokal', gambar: $('#gGambarAI').checked});
+      gaya: $('#pilGaya .aktif').dataset.v, ai: PENG.AI || 'lokal', gambar: $('#gGambarAI').checked,
+      skills: [...document.querySelectorAll('.motion-skill:checked')].map((x) => x.value)});
     mulaiPantau('motion');
   } catch (e) { toast(e.message, true); }
 };
