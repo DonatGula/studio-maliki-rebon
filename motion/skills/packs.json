@@ -11,7 +11,7 @@
       "name": "TikTok / Reels / Shorts",
       "repository": "iart-ai/tiktok-video-skills",
       "skillCount": 4,
-      "status": "bundled",
+      "status": "partial",
       "url": "https://github.com/iart-ai/tiktok-video-skills"
     },
     {
@@ -59,7 +59,7 @@
       "name": "Explainer / Educational",
       "repository": "iart-ai/explainer-video-skills",
       "skillCount": 5,
-      "status": "bundled",
+      "status": "partial",
       "url": "https://github.com/iart-ai/explainer-video-skills"
     },
     {
@@ -83,7 +83,7 @@
       "name": "Motion Design",
       "repository": "iart-ai/motion-design-skills",
       "skillCount": 9,
-      "status": "bundled",
+      "status": "partial",
       "url": "https://github.com/iart-ai/motion-design-skills"
     },
     {
@@ -131,7 +131,7 @@
       "name": "JavaScript / Canvas Animation",
       "repository": "iart-ai/javascript-animation-skills",
       "skillCount": 2,
-      "status": "bundled",
+      "status": "partial",
       "url": "https://github.com/iart-ai/javascript-animation-skills"
     },
     {
