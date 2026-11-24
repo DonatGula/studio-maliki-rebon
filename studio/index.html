@@ -638,9 +638,12 @@ main{position:relative;z-index:1}
           <div id="isiNaskah" hidden><textarea class="input" id="naskahJSON" style="min-height:180px;font-family:var(--mono);font-size:12px" placeholder='{"judul":"...","adegan":[{"judul":"...","teks":"...","kunci":["..."],"ikon":"🔥"}]}'></textarea></div>
         </div>
         <div class="kartu">
-          <h2 class="judul-kartu"><i style="background:var(--hijau)"></i>Gaya · 24 template</h2>
+          <h2 class="judul-kartu"><i style="background:var(--hijau)"></i>Visual utama · 2D Animated Storytelling</h2>
           <div class="gaya-pilih" id="pilGaya">
-            <button class="gaya" data-v="piksel" title="Pixel Art"><img src="/aset/gaya/piksel.jpg" alt="" loading="lazy"><div class="nama"><b>Pixel Art</b><span>ilustrasi</span></div></button>
+            <button class="gaya aktif" data-v="garis" title="2D Animated Storytelling">
+              <div class="nama"><b>2D Animated Storytelling</b><span>Karakter · lingkungan · aksi · kamera</span></div>
+            </button>
+          </div></button>
             <button class="gaya" data-v="kapur" title="Papan Kapur"><img src="/aset/gaya/kapur.jpg" alt="" loading="lazy"><div class="nama"><b>Papan Kapur</b><span>ilustrasi</span></div></button>
             <button class="gaya" data-v="emas" title="Sketsa Emas"><img src="/aset/gaya/emas.jpg" alt="" loading="lazy"><div class="nama"><b>Sketsa Emas</b><span>ilustrasi</span></div></button>
             <button class="gaya" data-v="ps2" title="Low-poly PS2"><img src="/aset/gaya/ps2.jpg" alt="" loading="lazy"><div class="nama"><b>Low-poly PS2</b><span>ilustrasi</span></div></button>
@@ -665,7 +668,7 @@ main{position:relative;z-index:1}
             <button class="gaya" data-v="sorot" title="Grid Lampu Sorot"><img src="/aset/gaya/sorot.jpg" alt="" loading="lazy"><div class="nama"><b>Grid Lampu Sorot</b><span>T10</span></div></button>
             <button class="gaya" data-v="daftar" title="Daftar Sumber"><img src="/aset/gaya/daftar.jpg" alt="" loading="lazy"><div class="nama"><b>Daftar Sumber</b><span>T11</span></div></button>
           </div>
-          <label class="saklar" style="margin-top:14px">AI menggambar objek tiap adegan <em style="font-style:normal;color:var(--redup);font-size:12px">&nbsp;SVG, menggantikan emoji · butuh AI di Pengaturan</em><input type="checkbox" id="gGambarAI" checked></label>
+          <p class="catatan" style="margin-top:14px">Visual dibuat dari karakter manusia ilustratif, lingkungan, properti, aksi, dan gerak kamera. Emoji bukan lagi visual utama. Gaya alternatif terinspirasi Lemo-Opuscar akan ditambahkan setelah renderer dasar tervalidasi.</p>
           <div style="margin-top:16px;padding:12px;border:1px solid var(--garis);border-radius:12px;background:var(--bg)">
             <div style="font-size:13px;font-weight:700;margin-bottom:6px">Motion Skills <span style="color:var(--redup);font-weight:400">· AI memilih otomatis jika tidak ada yang dicentang</span></div>
             <div style="display:flex;flex-wrap:wrap;gap:10px 14px;font-size:12px;color:var(--redup)">
@@ -1280,7 +1283,7 @@ $('#tblMotion').onclick = async () => {
   try {
     const isi = nilaiPil('#pilIsi');
     await api('/api/motion', {topik: isi === 'topik' ? $('#topik').value : '', naskah: isi === 'naskah' ? $('#naskahJSON').value : '',
-      gaya: $('#pilGaya .aktif').dataset.v, ai: PENG.AI || 'lokal', gambar: $('#gGambarAI').checked,
+      gaya: $('#pilGaya .aktif').dataset.v, ai: PENG.AI || 'lokal', gambar: false,
       skills: [...document.querySelectorAll('.motion-skill:checked')].map((x) => x.value)});
     mulaiPantau('motion');
   } catch (e) { toast(e.message, true); }
