@@ -703,7 +703,7 @@ main{position:relative;z-index:1}
       <div class="kartu">
         <div class="form-pny" data-f="lokal"><div class="panduan" id="panduan-lokal"></div></div>
         <div class="form-pny" data-f="gemini"><div class="panduan" id="panduan-gemini"></div>
-          <div class="bidang"><label>Gemini API key <em><a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--biru)">Ambil kunci gratis ↗</a></em></label><input class="input" type="password" id="GEMINI_API_KEY" placeholder="AIza…" autocomplete="off"></div>
+          <div class="bidang"><label>Gemini API key <em><a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--biru)">Ambil kunci gratis ↗</a></em></label><input class="input" type="password" id="GEMINI_API_KEY" placeholder="tempel kunci Gemini di sini" autocomplete="off"></div>
           <div class="bidang"><label>Model <em>pilih dari daftar, atau "Lainnya…" untuk mengetik sendiri</em></label><input class="input" id="GEMINI_MODEL" list="dlGemini">
             <datalist id="dlGemini"><option value="gemini-3.8-flash"><option value="gemini-3.6-flash"><option value="gemini-3.5-flash-lite"><option value="gemini-3.1-flash-lite"><option value="gemini-3-flash-preview"></datalist></div>
           <div class="catatan">Semua model di atas bertier gratis menurut aistudio.google.com/docs/pricing (13 Nov 2026). Kalau model pilihan sibuk, Studio otomatis mencoba model cadangan.</div>
@@ -767,7 +767,7 @@ main{position:relative;z-index:1}
   <div class="wiz-isi">
     <div data-wiz="1"><h3>Cek persyaratan laptop</h3><p>Studio memeriksa laptopmu secara otomatis. Tanda ⚠ berarti tetap bisa jalan, tapi mungkin lambat atau ada fitur yang sebaiknya dilewati.</p>
       <table class="tabel-syarat"><thead><tr><th>komponen</th><th>minimal</th><th>disarankan</th><th>laptopmu</th></tr></thead><tbody id="tSyarat"></tbody></table></div>
-    <div data-wiz="2" hidden><h3>Pasang komponen</h3><p>Komponen wajib dipasang sekali saja. Unduhannya langsung dari sumber resminya, dan semuanya disimpan di laptopmu.</p><div id="daftarKomp"></div></div>
+    <div data-wiz="2" hidden><h3>Pasang komponen</h3><p>Hanya <b>Mesin Klip</b> yang wajib. Komponen bertanda <em>opsional</em> boleh dilewati dan bisa dipasang kapan saja nanti dari Pengaturan. Unduhan langsung dari sumber resminya dan disimpan di laptopmu.</p><div id="daftarKomp"></div></div>
     <div data-wiz="3" hidden><h3>Sambungkan AI</h3><p>Pilih AI yang kamu punya. Ikuti langkah bernomor, lalu tekan Uji koneksi. Tidak punya apa-apa? Pilih <b>Lokal</b> — tetap jalan, gratis.</p><div id="wizAI"></div></div>
     <div data-wiz="4" hidden><h3>Studio siap dipakai 🎉</h3><p>Pengaturan bisa diubah kapan saja di menu <b>Pengaturan AI</b>. Wizard ini bisa dibuka lagi dari kartu <b>cek sistem</b>.</p>
       <div class="bento" style="grid-template-columns:1fr 1fr">
@@ -893,7 +893,7 @@ function gambarWizard() {
   $('#wizKembali').style.visibility = n > 1 ? '' : 'hidden';
   $('#wizLanjut').textContent = n === 4 ? 'Selesai' : 'Lanjut';
   const x = WIZ.sistem;
-  $('#wizKet').textContent = n === 2 && x && !x.komponen.klip ? 'Pasang Mesin Klip dulu (wajib).' : n === 3 ? 'Bisa dilewati — mode Lokal tetap jalan.' : '';
+  $('#wizKet').textContent = n === 2 && x && !x.komponen.klip ? 'Pasang Mesin Klip dulu (wajib).' : n === 2 ? 'Mesin Klip siap. Komponen opsional boleh dilewati, tekan Lanjut.' : n === 3 ? 'Bisa dilewati — mode Lokal tetap jalan.' : '';
   $('#wizLanjut').disabled = n === 2 && x && !x.komponen.klip;
   // langkah 3 memakai panel Pengaturan AI yang sama (dipindah sementara ke wizard)
   const pil = $('#pilPenyedia'); const form = pil?.nextElementSibling;
@@ -1061,7 +1061,7 @@ function gambarPanduan() {
     lokal: [langkah(1, 'Tidak perlu apa-apa', 'Mode lokal memakai rumus heatmap YouTube, energi suara, dan kata hook. Gratis, tanpa internet untuk AI.', true),
       langkah(2, 'Simpan & uji', 'Pilih Lokal lalu tekan Simpan pengaturan.', PENG.AI === 'lokal')],
     gemini: [langkah(1, 'Buka Google AI Studio', 'Masuk dengan akun Google-mu (gratis).', st.gemini.kunci, '<button class="tombol kedua kecil" data-url="https://aistudio.google.com/apikey">Buka AI Studio ↗</button>'),
-      langkah(2, 'Klik "Create API key"', 'Pilih proyek bawaan, lalu salin kunci yang diawali <code>AIza</code>.', st.gemini.kunci),
+      langkah(2, 'Klik "Create API key"', 'Pilih proyek bawaan, lalu salin kuncinya (biasanya diawali <code>AIza</code>, kunci baru bisa berbeda; tetap sah).', st.gemini.kunci),
       langkah(3, 'Tempel kuncinya di bawah', 'Kunci hanya disimpan di laptop ini, tidak pernah dikirim ke Studio Maliki.', st.gemini.kunci),
       langkah(4, 'Simpan & uji koneksi', 'Tekan Simpan pengaturan, lalu Uji koneksi.', st.gemini.kunci && PENG.AI === 'gemini')],
     openai: [langkah(1, 'Pasang Ollama', st.openai.ollama ? 'Ollama sudah terpasang.' : 'Unduh aplikasi Ollama (gratis), pasang, lalu buka sekali.', st.openai.ollama,

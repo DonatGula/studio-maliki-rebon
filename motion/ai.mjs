@@ -42,7 +42,7 @@ export async function tanyaAI(penyedia, prompt, env, tugas = 'menulis naskah') {
         } catch (e) {
           const kode = e?.status ?? e?.code;
           pesan = `${model}: ${kode ?? e?.name} ${String(e?.message ?? '').slice(0, 160)}`;
-          if ([400, 401, 403].includes(kode)) berhenti(`Kunci Gemini ditolak (${kode}). Cek kuncinya di Pengaturan AI.`);
+          if ([400, 401, 403].includes(kode)) berhenti(`Gemini menolak permintaan (${kode}): ${String(e?.message ?? '').slice(0, 200)}\nCek kuncinya di Pengaturan AI.`);
           console.log(`• Gemini ${model} sibuk/limit (${kode ?? e?.name}), mencoba lagi…`);
           if (!kode) break; // batas waktu/jaringan → langsung model berikutnya
           await new Promise((r) => setTimeout(r, 3000 * (coba + 1)));
@@ -83,13 +83,17 @@ export async function tanyaAI(penyedia, prompt, env, tugas = 'menulis naskah') {
     return teks;
   }
   if (penyedia === 'openai') {
-    const url = (env.OPENAI_BASE_URL ?? 'http://localhost:11434/v1').replace(/\/$/, '') + '/chat/completions';
+    // '/v1' ditambahkan bila pengguna hanya menulis host (mis. http://localhost:11434) → penyebab umum 404
+    let dasar = (env.OPENAI_BASE_URL || 'http://localhost:11434/v1').trim().replace(/\/+$/, '').replace(/\/chat\/completions$/, '');
+    try { if (['', '/'].includes(new URL(dasar).pathname)) dasar += '/v1'; } catch {}
+    const url = dasar + '/chat/completions';
     const res = await fetch(url, {
       method: 'POST',
       headers: {'Content-Type': 'application/json', Authorization: `Bearer ${env.OPENAI_API_KEY || 'ollama'}`},
       body: JSON.stringify({model: env.OPENAI_MODEL ?? 'gemma3:4b', messages: [{role: 'user', content: prompt}]}),
     });
-    if (!res.ok) berhenti(`AI ${url} membalas ${res.status}: ${await res.text()}`);
+    if (!res.ok) berhenti(`AI ${url} membalas ${res.status}: ${(await res.text()).slice(0, 300)}` +
+      (res.status === 404 ? `\nModel '${env.OPENAI_MODEL ?? 'gemma3:4b'}' mungkin belum diunduh (Ollama: tekan 'Unduh model' di Pengaturan AI), atau alamat server salah.` : ''));
     return (await res.json()).choices[0].message.content;
   }
   berhenti(`Penyedia AI tidak dikenal: ${penyedia} (pilih gemini, openai, claude-code, codex, opencode)`);

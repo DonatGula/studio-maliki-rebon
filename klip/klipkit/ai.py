@@ -57,7 +57,7 @@ def tanya_ai(penyedia: str, prompt: str) -> str:
                     except gerr.APIError as e:
                         pesan = f"{model}: {e.code} {getattr(e, 'message', '') or e}"
                         if e.code in (400, 401, 403):
-                            sys.exit(f"Kunci Gemini ditolak ({e.code}). Cek kuncinya di Pengaturan AI.")
+                            sys.exit(f"Gemini menolak permintaan ({e.code}): {str(getattr(e, 'message', '') or e)[:200]}. Cek kuncinya di Pengaturan AI.")
                         log(f"Gemini {model} sibuk/limit ({e.code}), mencoba lagi…")
                         time.sleep(3 * (coba + 1))
                     except Exception as e:  # noqa: BLE001 — batas waktu / jaringan
@@ -68,15 +68,36 @@ def tanya_ai(penyedia: str, prompt: str) -> str:
     if penyedia in ("claude-code", "codex", "opencode"):
         return tanya_langganan(penyedia, prompt)
     if penyedia == "openai":
+        import urllib.error
         import urllib.request
-        url = env.get("OPENAI_BASE_URL", "http://localhost:11434/v1").rstrip("/") + "/chat/completions"
+        url = alamat_openai(env.get("OPENAI_BASE_URL", "")) + "/chat/completions"
         data = json.dumps({"model": env.get("OPENAI_MODEL", "gemma3:4b"),
                            "messages": [{"role": "user", "content": prompt}]}).encode()
         req = urllib.request.Request(url, data=data, headers={
             "Content-Type": "application/json", "Authorization": f"Bearer {env.get('OPENAI_API_KEY', 'ollama')}"})
-        with urllib.request.urlopen(req, timeout=600) as resp:
-            return json.loads(resp.read())["choices"][0]["message"]["content"]
+        try:
+            with urllib.request.urlopen(req, timeout=600) as resp:
+                return json.loads(resp.read())["choices"][0]["message"]["content"]
+        except urllib.error.HTTPError as e:
+            isi = e.read().decode("utf-8", "replace")[:300]
+            saran = (f" Model '{env.get('OPENAI_MODEL', 'gemma3:4b')}' mungkin belum diunduh (Ollama: tekan 'Unduh model' "
+                     "di Pengaturan AI atau jalankan `ollama pull <model>`), atau alamat server salah.") if e.code == 404 else ""
+            sys.exit(f"AI di {url} membalas {e.code}: {isi}.{saran}")
+        except urllib.error.URLError as e:
+            sys.exit(f"AI di {url} tidak bisa dihubungi ({e.reason}). Pastikan Ollama/servernya menyala.")
     sys.exit(f"Penyedia AI tidak dikenal: {penyedia} (pilih lokal, gemini, openai, claude-code, codex, opencode)")
+
+
+def alamat_openai(url: str) -> str:
+    """Alamat server OpenAI-kompatibel tanpa garis miring akhir; '/v1' ditambahkan bila pengguna hanya menulis
+    host (mis. http://localhost:11434) — penyebab umum galat 404."""
+    import urllib.parse
+    url = (url or "http://localhost:11434/v1").strip().rstrip("/")
+    if url.endswith("/chat/completions"):
+        url = url[: -len("/chat/completions")]
+    if urllib.parse.urlparse(url).path in ("", "/"):
+        url += "/v1"
+    return url
 
 
 def cari_cli(nama: str) -> str | None:
