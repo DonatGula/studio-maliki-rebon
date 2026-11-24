@@ -1645,7 +1645,7 @@ function hasilMotion(h) {
       MOTION_DRAFT.adegan.push({judul: '', teks: '', ikon: '✨', visual: '', gerak: '', transisi: ''});
       gambarMotionScene();
     };
-    $('#motionSceneList').onclick = (e) => {
+    $('#motionSceneList').onclick = async (e) => {
       const preview = e.target.closest('[data-scene-preview]'), regen = e.target.closest('[data-scene-regen]');
       const up = e.target.closest('[data-scene-up]'), down = e.target.closest('[data-scene-down]'), del = e.target.closest('[data-scene-delete]');
       if (!up && !down && !del && !preview && !regen) return;
