@@ -1633,7 +1633,7 @@ function hasilMotion(h) {
       <p class="catatan">Ubah narasi, visual, gerakan, durasi, dan transisi. Kamu juga bisa mengubah urutan atau menambah/menghapus adegan. Semua perubahan diterapkan sebelum video dirender.</p>
       <div class="bidang"><label>Judul video</label><input class="input" id="motionJudulDraft" value="${esc(MOTION_DRAFT.judul || '')}"></div>
       <div id="motionSceneList"></div>
-      <div class="aksi" style="margin-top:14px"><button class="tombol kedua kecil" id="motionAddScene">+ Tambah adegan</button><button class="tombol utama" id="mRender">Render video</button><button class="tombol kedua kecil" id="mFolder">Buka folder</button></div>
+      <div class="aksi" style="margin-top:14px"><button class="tombol kedua kecil" id="motionAddScene">+ Tambah adegan</button><button class="tombol kedua kecil" id="mSaveDraft">Simpan draft</button><button class="tombol utama" id="mRender">Render video</button><button class="tombol kedua kecil" id="mFolder">Buka folder</button></div>
       <div class="catatan" style="margin-top:10px">Draft otomatis tersimpan di folder proyek saat mulai render. Proyek ini juga bisa dibuka kembali dari Riwayat.</div></div>`;
     el.classList.add('tampil');
     gambarMotionScene();
@@ -1656,6 +1656,14 @@ function hasilMotion(h) {
         [MOTION_DRAFT.adegan[i], MOTION_DRAFT.adegan[j]] = [MOTION_DRAFT.adegan[j], MOTION_DRAFT.adegan[i]];
       }
       gambarMotionScene();
+    };
+    $('#mSaveDraft').onclick = async () => {
+      sinkronMotionScene();
+      try {
+        if (!MOTION_DRAFT.adegan.length) return toast('Tambahkan minimal satu adegan.', true);
+        await api('/api/motion/save', {nama: h.nama, naskah: JSON.stringify(MOTION_DRAFT)});
+        toast('Draft berhasil disimpan ✓');
+      } catch (e) { toast(e.message, true); }
     };
     $('#mRender').onclick = async () => {
       if (SIBUK) return toast('Tunggu proses yang sedang berjalan selesai.', true);
