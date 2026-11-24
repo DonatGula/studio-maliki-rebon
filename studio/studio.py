@@ -544,7 +544,7 @@ def mulai_motion(d: dict) -> dict:
 
 def simpan_motion_draft(d: dict) -> dict:
     """Simpan hasil edit storyboard tanpa memulai rendering."""
-    nama = re.sub(r"[^\\w-]", "", d.get("nama", ""))
+    nama = re.sub(r"[^\w-]", "", d.get("nama", ""))
     if not nama:
         raise ValueError("Nama proyek tidak valid.")
     folder = (DATA / "motion" / nama).resolve()
