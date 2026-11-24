@@ -9,7 +9,7 @@ const ROOT = join(DIR, 'skills', 'iart-ai');
 const registry = JSON.parse(readFileSync(join(DIR, 'skills', 'registry.json'), 'utf8'));
 
 const norm = (s) => String(s ?? '').toLocaleLowerCase('id-ID');
-function chooseSkillIds(topik, manual) {
+export function pilihMotionSkills(topik, manual = 'auto') {
   if (manual && manual !== 'auto') {
     const requested = manual.split(',').map((s) => s.trim()).filter(Boolean);
     const valid = new Set(registry.skills.map((s) => s.id));
@@ -29,7 +29,7 @@ function chooseSkillIds(topik, manual) {
 }
 
 export function susunPanduanMotion(topik, manual = 'auto') {
-  const ids = chooseSkillIds(topik, manual);
+  const ids = pilihMotionSkills(topik, manual);
   const sections = ids.map((id) => {
     const skill = registry.skills.find((s) => s.id === id);
     const path = join(ROOT, skill.file);
