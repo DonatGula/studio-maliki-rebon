@@ -603,7 +603,10 @@ def render_motion(d: dict) -> dict:
     naskah_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     shutil.copy(naskah_path, folder / "naskah.json")
     p = baca_pengaturan()
-    perintah = [node, "buat.mjs", f"naskah/{nama}.json", f"--gaya={gaya}",
+    preset = str(data.get("preset") or "shorts").lower()
+    if preset not in ("shorts", "tiktok", "reels", "draft", "high"):
+        raise ValueError("Preset ekspor tidak dikenal.")
+    perintah = [node, "buat.mjs", f"naskah/{nama}.json", f"--gaya={gaya}", f"--preset={preset}",
                 f"--suara-mac={p.get('SUARA_MAC', 'Damayanti')}"]
     if p.get("SUARA") == "voxcpm":
         if not voxcpm_terpasang():
