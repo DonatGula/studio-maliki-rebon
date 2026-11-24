@@ -1600,9 +1600,20 @@ function sinkronMotionScene() {
   });
 }
 
+function gambarMotionTimeline() {
+  const el = $('#motionTimeline');
+  if (!el || !MOTION_DRAFT) return;
+  const durations = MOTION_DRAFT.adegan.map((a) => Math.max(0.5, Number(a.durasi) || Math.max(2.5, String(a.teks || '').split(/\\s+/).filter(Boolean).length / 2.6)));
+  const total = durations.reduce((sum, value) => sum + value, 0);
+  el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b>Timeline · ${MOTION_DRAFT.adegan.length} adegan</b><small>${total.toFixed(1)} detik</small></div>
+    <div style="display:flex;gap:4px;min-height:54px;overflow:hidden;border-radius:10px;background:var(--panel2);padding:4px">
+      ${durations.map((d, i) => `<button type="button" data-timeline-scene="${i}" title="Adegan ${i + 1} · ${d.toFixed(1)} detik" style="flex:${d} 1 0;min-width:24px;border:1px solid var(--aksen);border-radius:7px;background:var(--aksen);color:var(--pada-aksen);font:600 12px var(--mono);cursor:pointer;overflow:hidden">${i + 1}<small style="display:block;font-size:10px;opacity:.8">${d.toFixed(1)}s</small></button>`).join('')}
+    </div>`;
+}
 function gambarMotionScene() {
   const el = $('#motionSceneList');
   if (!el || !MOTION_DRAFT) return;
+  gambarMotionTimeline();
   el.innerHTML = MOTION_DRAFT.adegan.map((a, i) => `<article class="kartu motion-scene" data-index="${i}" style="margin:12px 0;padding:16px">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px">
       <b>Adegan ${String(i + 1).padStart(2, '0')}</b>
@@ -1635,6 +1646,7 @@ function hasilMotion(h) {
       <h2 style="margin:6px 0 8px">Tinjau setiap adegan</h2>
       <p class="catatan">Ubah narasi, visual, gerakan, durasi, dan transisi. Kamu juga bisa mengubah urutan atau menambah/menghapus adegan. Semua perubahan diterapkan sebelum video dirender.</p>
       <div class="bidang"><label>Judul video</label><input class="input" id="motionJudulDraft" value="${esc(MOTION_DRAFT.judul || '')}"></div>
+      <div id="motionTimeline" class="kartu" style="padding:14px;margin:14px 0;overflow:hidden"></div>
       <div id="motionSceneList"></div>
       <div class="aksi" style="margin-top:14px"><button class="tombol kedua kecil" id="motionAddScene">+ Tambah adegan</button><button class="tombol kedua kecil" id="mSaveDraft">Simpan draft</button><button class="tombol utama" id="mRender">Render video</button><button class="tombol kedua kecil" id="mFolder">Buka folder</button></div>
       <div class="catatan" style="margin-top:10px">Draft otomatis tersimpan di folder proyek saat mulai render. Proyek ini juga bisa dibuka kembali dari Riwayat.</div></div>`;
@@ -1645,6 +1657,12 @@ function hasilMotion(h) {
       MOTION_DRAFT.adegan.push({judul: '', teks: '', ikon: '✨', visual: '', gerak: '', transisi: ''});
       gambarMotionScene();
     };
+    $('#motionTimeline').onclick = (e) => {
+      const btn = e.target.closest('[data-timeline-scene]');
+      if (!btn) return;
+      $('#motionSceneList .motion-scene')?.[Number(btn.dataset.timelineScene)]?.scrollIntoView({behavior: 'smooth', block: 'center'});
+    };
+    $('#motionSceneList').onchange = () => { sinkronMotionScene(); gambarMotionTimeline(); };
     $('#motionSceneList').onclick = async (e) => {
       const preview = e.target.closest('[data-scene-preview]'), regen = e.target.closest('[data-scene-regen]');
       const up = e.target.closest('[data-scene-up]'), down = e.target.closest('[data-scene-down]'), del = e.target.closest('[data-scene-delete]');
