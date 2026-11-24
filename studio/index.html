@@ -831,7 +831,7 @@ const salin = async (t) => {
   catch { const ta = document.createElement('textarea'); ta.value = t; document.body.append(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
   toast('Disalin ✓');
 };
-$('[data-copy-log]').forEach((b) => b.addEventListener('click', () => {
+$$('[data-copy-log]').forEach((b) => b.addEventListener('click', () => {
   const isi = $('#log' + b.dataset.copyLog)?.textContent || '';
   if (!isi.trim()) return toast('Belum ada log untuk disalin.', true);
   salin(isi);
@@ -1298,7 +1298,7 @@ function tampilHasil(h) {
       ${hasil.map((x) => `<div class="adegan" style="margin:10px 0"><em>${x.ok ? '✓' : '!'}</em><div><b>${esc(x.topic)}</b><small>${x.ok ? 'Video berhasil dirender' : esc(x.error || 'Gagal') }</small></div>${x.ok ? `<a class="tombol utama kecil" href="${esc(x.video)}" download>Unduh MP4</a><button class="tombol kedua kecil" data-batch-project="${esc(x.name)}">Buka proyek</button>` : ''}</div>`).join('')}
     </div>`;
     el.classList.add('tampil');
-    $('[data-batch-project]', el).forEach((b) => b.onclick = async () => {
+    $$('[data-batch-project]', el).forEach((b) => b.onclick = async () => {
       const h = await api(`/api/proyek/motion/${b.dataset.batchProject}`);
       tampilHasil(h);
     });
