@@ -79,6 +79,48 @@ const Room: React.FC<{kind: string; frame: number}> = ({kind, frame}) => {
   );
 };
 
+
+const SceneObjects: React.FC<{items: string[]; frame: number}> = ({items, frame}) => (
+  <g>
+    {items.slice(0, 5).map((item, i) => {
+      const name = item.toLowerCase();
+      const x = 150 + i * 190;
+      const y = 1280 + Math.sin(frame / 16 + i) * 3;
+      if (/ponsel|hp|telepon|phone/.test(name)) return <g key={item + i} transform={`translate(${x} ${y}) rotate(-8)`}>
+        <rect x="-42" y="-76" width="84" height="150" rx="14" fill="#26364a" /><rect x="-34" y="-62" width="68" height="120" rx="7" fill="#a9d8e5" />
+        <circle cy="65" r="4" fill="#e9e5dc" />
+      </g>;
+      if (/buku|book/.test(name)) return <g key={item + i} transform={`translate(${x} ${y}) rotate(5)`}>
+        <path d="M-68 -55 Q-10 -70 0 -42 V55 Q-30 32 -68 48Z" fill="#e9c66f" stroke="#70543d" strokeWidth="7" />
+        <path d="M0 -42 Q30 -70 68 -55 V48 Q30 32 0 55Z" fill="#f5e7bd" stroke="#70543d" strokeWidth="7" />
+        <path d="M-48 -28 H-12 M16 -28 H48 M-48 -8 H-12 M16 -8 H48" stroke="#a58c63" strokeWidth="4" />
+      </g>;
+      if (/kopi|gelas|cangkir|cup/.test(name)) return <g key={item + i} transform={`translate(${x} ${y})`}>
+        <path d="M-42 -42 H36 L28 50 Q0 66 -30 50Z" fill="#f5eee2" stroke="#8c6550" strokeWidth="7" />
+        <path d="M36 -25 Q82 -38 72 8 Q65 34 31 22" fill="none" stroke="#8c6550" strokeWidth="9" />
+        <path d="M-25 -28 H25" stroke="#9a6045" strokeWidth="8" />
+      </g>;
+      if (/laptop|komputer/.test(name)) return <g key={item + i} transform={`translate(${x} ${y})`}>
+        <rect x="-78" y="-68" width="156" height="105" rx="9" fill="#526477" stroke="#26364a" strokeWidth="8" />
+        <rect x="-66" y="-56" width="132" height="80" fill="#9bd1dc" />
+        <path d="M-96 42 H96 L75 62 H-75Z" fill="#d5dce1" stroke="#526477" strokeWidth="6" />
+      </g>;
+      if (/bola|ball/.test(name)) return <g key={item + i} transform={`translate(${x} ${y})`}>
+        <circle r="54" fill="#e58a54" stroke="#7d4c39" strokeWidth="7" />
+        <path d="M-50 -15 Q0 15 50 -15 M-15 -50 Q15 0 -15 50" fill="none" stroke="#f7d7a7" strokeWidth="7" />
+      </g>;
+      if (/pintu|door/.test(name)) return <g key={item + i} transform={`translate(${x} ${y})`}>
+        <rect x="-48" y="-125" width="96" height="220" rx="8" fill="#a87956" stroke="#654c3b" strokeWidth="8" />
+        <circle cx="28" cy="-12" r="7" fill="#f1d08a" />
+      </g>;
+      return <g key={item + i} transform={`translate(${x} ${y})`}>
+        <rect x="-48" y="-45" width="96" height="90" rx="12" fill="#d6b28b" stroke="#795b43" strokeWidth="6" />
+        <path d="M-28 -20 H28 M-28 0 H28 M-28 20 H10" stroke="#9a7959" strokeWidth="5" />
+      </g>;
+    })}
+  </g>
+);
+
 export const StoryScene: React.FC<Props> = ({adegan, karakter = []}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
@@ -97,6 +139,7 @@ export const StoryScene: React.FC<Props> = ({adegan, karakter = []}) => {
       <svg viewBox="0 0 1080 1920" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
         <g transform={`translate(${cameraX} 0) scale(${cameraScale})`} style={{transformOrigin: '540px 960px'}}>
           <Room kind={kind} frame={frame} />
+          <SceneObjects items={adegan.objek ?? []} frame={frame} />
           <g opacity={interpolate(enter, [0, 1], [0, 1])}>
             {selected.map((c, i) => <Character key={c.id} x={positions[i]} y={1040} color={c.warna?.[0] ?? (i ? '#d68b58' : '#4f86b7')} frame={frame} action={actionText} />)}
           </g>
