@@ -4,7 +4,7 @@
   "sourceUpdated": "2026-11-18",
   "totalPacks": 19,
   "totalSkills": 56,
-  "note": "status bundled means all skills in the upstream pack are included locally; partial means selected SKILL.md files are included; catalog means listed for planned integration.",
+  "note": "status bundled means all skills in the upstream pack are included locally; partial means selected SKILL.md files are included; catalog means listed for planned installation/integration.",
   "packs": [
     {
       "id": "tiktok-video",
@@ -35,7 +35,7 @@
       "name": "E-commerce Product Video",
       "repository": "iart-ai/ecommerce-video-skills",
       "skillCount": 3,
-      "status": "catalog",
+      "status": "bundled",
       "url": "https://github.com/iart-ai/ecommerce-video-skills"
     },
     {
@@ -43,7 +43,7 @@
       "name": "Advertising / Brand Campaign",
       "repository": "iart-ai/ad-video-skills",
       "skillCount": 3,
-      "status": "catalog",
+      "status": "partial",
       "url": "https://github.com/iart-ai/ad-video-skills"
     },
     {
