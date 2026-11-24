@@ -4,6 +4,7 @@
 // Tanpa kunci API? Pakai PROMPT-NASKAH.md di Claude/Gemini/ChatGPT gratis lalu simpan JSON-nya sendiri.
 import {writeFileSync, mkdirSync, readFileSync} from 'node:fs';
 import {bacaEnv, tanyaAI, berhenti} from './ai.mjs';
+import {susunPanduanMotion} from './skills/engine.mjs';
 
 const argv = process.argv.slice(2);
 const opsi = Object.fromEntries(argv.filter((a) => a.startsWith('--')).map((a) => a.slice(2).split('=')));
@@ -14,10 +15,15 @@ if (!topik) {
 }
 const env = bacaEnv();
 const penyedia = (opsi.ai ?? env.AI ?? 'gemini').toLowerCase();
-const prompt = readFileSync('PROMPT-NASKAH.md', 'utf8').replace('[TOPIK]', topik);
+const skillIds = opsi.skills ?? 'auto';
+let panduanMotion = '';
+try { panduanMotion = susunPanduanMotion(topik, skillIds); }
+catch (e) { berhenti(e.message); }
+const prompt = readFileSync('PROMPT-NASKAH.md', 'utf8').replace('[TOPIK]', topik) + '\\n\\n' + panduanMotion;
 const tanya = () => tanyaAI(penyedia, prompt, env, 'menulis naskah');
 
 console.log(`• Meminta AI '${penyedia}' menulis naskah: ${topik}`);
+console.log(`• Motion Skills: ${skillIds === 'auto' ? 'otomatis' : skillIds}`);
 const teks = await tanya();
 const m = teks.match(/\{[\s\S]*\}/);
 if (!m) berhenti('Balasan AI tidak berisi JSON:\n' + teks.slice(0, 500));
