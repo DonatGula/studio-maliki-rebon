@@ -546,7 +546,7 @@ main{position:relative;z-index:1}
       <div class="kartu proses" id="prosesKlip">
         <div class="langkah" id="lkKlip"></div>
         <div class="batang"><i id="batangKlip"></i></div>
-        <details><summary>Lihat log</summary><div class="log" id="logKlip"></div></details>
+        <details><summary>Lihat log</summary><div class="aksi" style="margin:8px 0"><button class="tombol kedua kecil" type="button" data-copy-log="Klip">Salin log</button></div><div class="log" id="logKlip"></div></details>
         <div class="aksi"><button class="tombol kedua kecil" data-batal>Batalkan</button></div>
       </div>
       <div class="hasil" id="hasilKlip"></div>
@@ -706,7 +706,7 @@ main{position:relative;z-index:1}
       <div class="kartu proses" id="prosesMotion">
         <div class="langkah" id="lkMotion"></div>
         <div class="batang"><i id="batangMotion"></i></div>
-        <details><summary>Lihat log</summary><div class="log" id="logMotion"></div></details>
+        <details><summary>Lihat log</summary><div class="aksi" style="margin:8px 0"><button class="tombol kedua kecil" type="button" data-copy-log="Motion">Salin log</button></div><div class="log" id="logMotion"></div></details>
         <div class="aksi"><button class="tombol kedua kecil" data-batal>Batalkan</button></div>
       </div>
       <div class="hasil" id="hasilMotion"></div>
@@ -831,6 +831,11 @@ const salin = async (t) => {
   catch { const ta = document.createElement('textarea'); ta.value = t; document.body.append(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
   toast('Disalin ✓');
 };
+$('[data-copy-log]').forEach((b) => b.addEventListener('click', () => {
+  const isi = $('#log' + b.dataset.copyLog)?.textContent || '';
+  if (!isi.trim()) return toast('Belum ada log untuk disalin.', true);
+  salin(isi);
+}));
 const NATIVE = () => !!(window.pywebview && window.pywebview.api);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 const jam = (d) => { d = Math.max(0, d); const m = Math.floor(d / 60), s = Math.floor(d % 60); return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`; };
