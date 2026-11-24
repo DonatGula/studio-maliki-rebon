@@ -695,11 +695,11 @@ def pratinjau_motion_adegan(d: dict) -> dict:
             raise RuntimeError("File preview tidak ditemukan setelah rendering.")
         tujuan = folder / f"preview-{index + 1:02d}.mp4"
         shutil.move(str(hasil), tujuan)
-        data["adegan"][index]["preview"] = f"/berkas/motion/{nome if False else nome}/preview-{index + 1:02d}.mp4"
+        data["adegan"][index]["preview"] = f"/berkas/motion/{nama}/preview-{index + 1:02d}.mp4"
         naskah_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
-        shutil.copy(naskah_path, MOTION / "naskah" / f"{nome}.json")
+        shutil.copy(naskah_path, MOTION / "naskah" / f"{nama}.json")
         sumber.unlink(missing_ok=True)
-        k.hasil = {"jenis": "motion", "nama": nome, "tahap": "review", "naskah": data}
+        k.hasil = {"jenis": "motion", "nama": nama, "tahap": "review", "naskah": data}
     KERJA.jalankan("motion", [(perintah, MOTION)], folder, setelah)
     return {"ok": True, "proyek": nama, "adegan": index + 1}
 
