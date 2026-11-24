@@ -684,7 +684,7 @@ def mulai_batch_motion(d: dict) -> dict:
 
 
 def _motion_project(nama: str) -> Path:
-    nama = re.sub(r"[^\\w-]", "", nama or "")
+    nama = re.sub(r"[^\w-]", "", nama or "")
     folder = (DATA / "motion" / nama).resolve()
     if not nama or DATA.resolve() not in folder.parents or not folder.is_dir():
         raise ValueError("Proyek Motion tidak ditemukan.")
