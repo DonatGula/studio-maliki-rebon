@@ -5,8 +5,8 @@ import {join, dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 const DIR = dirname(fileURLToPath(import.meta.url));
-const ROOT = join(DIR, 'skills', 'iart-ai');
-const registry = JSON.parse(readFileSync(join(DIR, 'skills', 'registry.json'), 'utf8'));
+const ROOT = join(DIR, 'iart-ai');
+const registry = JSON.parse(readFileSync(join(DIR, 'registry.json'), 'utf8'));
 
 const norm = (s) => String(s ?? '').toLocaleLowerCase('id-ID');
 export function pilihMotionSkills(topik, manual = 'auto') {
