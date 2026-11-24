@@ -24,7 +24,10 @@ export function pilihMotionSkills(topik, manual = 'auto') {
     score: skill.keywords.reduce((n, word) => n + (text.includes(norm(word)) ? 1 : 0), 0),
     always: skill.always,
   })).sort((a, b) => b.score - a.score);
-  const chosen = ranked.filter((s) => s.always || s.score > 0).slice(0, 5).map((s) => s.id);
+  // Skill fondasi selalu dipertahankan; skill topikal mengisi slot yang tersisa.
+  const foundational = ranked.filter((s) => s.always);
+  const relevant = ranked.filter((s) => !s.always && s.score > 0);
+  const chosen = [...foundational, ...relevant].slice(0, 5).map((s) => s.id);
   return chosen.length ? chosen : ['animation-principles', 'motion-art-direction', 'remotion-video', 'short-form-video'];
 }
 
