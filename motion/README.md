@@ -101,6 +101,29 @@ Naskah disimpan di folder proyek lokal sebagai `naskah.json`. Jika browser ditut
 
 Studio juga dapat dibuka langsung di browser dengan menjalankan `uv run studio.py --browser` dari folder `studio`; alamat lokal default adalah `http://127.0.0.1:8787`. Server hanya mendengarkan di komputer sendiri.
 
+## Editor storyboard, preview adegan, dan timeline
+
+Studio lokal menyediakan alur kerja bertahap:
+- Tinjau naskah AI sebelum render.
+- Edit tiap adegan, termasuk judul, narasi, ikon, durasi, arahan visual, gerak, dan transisi.
+- Simpan draft, atur urutan, tambah/hapus adegan.
+- Render preview satu adegan saja (540×960) atau minta AI membuat ulang satu adegan tanpa mengganti adegan lainnya.
+- Timeline visual menunjukkan proporsi durasi tiap adegan dan dapat dipakai untuk melompat ke kartu adegan terkait.
+
+## Produksi batch
+
+Di halaman Motion, masukkan 1–5 topik (satu topik per baris) pada bagian Batch Production. Aplikasi membuat naskah dan merendernya satu per satu ke folder proyek terpisah. Jika satu topik gagal, item berikutnya tetap dicoba; hasil dan kegagalan tiap topik dilaporkan di halaman hasil batch.
+
+## Preset ekspor
+
+- `shorts`: YouTube Shorts, kanvas 1080×1920, CRF 18.
+- `tiktok`: TikTok, kanvas 1080×1920, CRF 20.
+- `reels`: Instagram/Facebook Reels, kanvas 1080×1920, CRF 19.
+- `draft`: render cepat 540×960, CRF 23.
+- `high`: 1350×2400, CRF 16.
+
+Ketiga preset platform menggunakan rasio 9:16; perbedaannya adalah profil kompresi. Preview adegan menggunakan profil draft agar proses pemeriksaan lebih cepat.
+
 ## Motion Skills (integrasi awal)
 
 Generator naskah kini memakai panduan Motion Skills dari proyek iart.ai untuk membantu AI menentukan arah visual, bahasa gerak, dan storyboard per adegan. Remotion tetap menjadi renderer; Motion Skills bukan plugin rendering.
