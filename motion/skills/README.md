@@ -23,16 +23,16 @@ Jangan menambahkan ID skill ke `registry.json` sebelum file `SKILL.md` yang sesu
 | E-commerce Product Video | 3 | Catalog |
 | Advertising / Brand Campaign | 3 | Catalog |
 | Data Visualization | 3 | Partial (1 skill bundled) |
-| Explainer / Educational | 5 | Bundled |
+| Explainer / Educational | 5 | Partial (1 skill bundled) |
 | Editorial Map Animation | 1 | Bundled |
 | Web / UI Animation | 9 | Catalog |
-| Motion Design | 9 | Bundled |
+| Motion Design | 9 | Partial (3 skills bundled) |
 | Kinetic Typography | 1 | Bundled |
 | Freelance Motion Workflow | 5 | Catalog |
 | 3D / WebGL Animation | 3 | Catalog |
 | Math / Scientific Animation | 1 | Catalog |
 | Generative Illustration | 1 | Catalog |
-| JavaScript / Canvas Animation | 2 | Bundled |
+| JavaScript / Canvas Animation | 2 | Partial (1 skill bundled) |
 | Transparent Lower Thirds | 1 | Catalog |
 | B-roll for Talking Head | 1 | Bundled |
 | AI Talking Head Video | 1 | Catalog |
