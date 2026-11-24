@@ -585,7 +585,12 @@ def render_motion(d: dict) -> dict:
             shutil.move(str(hasil), folder / "video.mp4")
         k.hasil = muat_proyek("motion", nama)
 
-    KERJA.jalankan("motion", [(perintah, MOTION)], folder, setelah)
+    langkah = []
+    if not (MOTION / "node_modules").exists():
+        npm = shutil.which("npm") or ("npm" if os.name == "nt" else "/usr/bin/npm")
+        langkah.append(([npm, "install", "--silent"], MOTION))
+    langkah.append((perintah, MOTION))
+    KERJA.jalankan("motion", langkah, folder, setelah)
     return {"proyek": nama, "tahap": "render"}
 
 
