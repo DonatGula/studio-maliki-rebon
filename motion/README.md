@@ -124,25 +124,41 @@ Di halaman Motion, masukkan 1–5 topik (satu topik per baris) pada bagian Batch
 
 Ketiga preset platform menggunakan rasio 9:16; perbedaannya adalah profil kompresi. Preview adegan menggunakan profil draft agar proses pemeriksaan lebih cepat.
 
-## Motion Skills (integrasi awal)
+## Motion Skills
 
-Generator naskah kini memakai panduan Motion Skills dari proyek iart.ai untuk membantu AI menentukan arah visual, bahasa gerak, dan storyboard per adegan. Remotion tetap menjadi renderer; Motion Skills bukan plugin rendering.
+Generator naskah memakai panduan Motion Skills dari proyek [iart-ai/motion-skills](https://github.com/iart-ai/motion-skills). Remotion tetap menjadi renderer utama; skill adalah instruksi kreatif untuk AI, bukan plugin renderer.
 
-Skill pack awal yang disertakan:
-- Motion Design (animation principles, art direction, Remotion)
-- TikTok / Short-form Video (short-form structure, animated captions)
+Saat ini tersedia 16 file skill dari 11 pack:
+- Motion Design
+- TikTok / Short-form Video
 - Explainer Video
 - Kinetic Typography
-- JavaScript Animation (sebagai referensi storyboard; bukan pengganti pipeline Remotion)
+- JavaScript Animation
+- YouTube / Podcast (Audiogram)
+- B-roll for Talking Head
+- Data Animation (Infografis)
+- Map Animation
+- E-commerce Video (Slideshow, Demo Produk, Promo)
+- Ad Creative Video
 
-Secara default skill dipilih otomatis dari topik. Untuk memilih manual melalui terminal:
+Katalog `skills/packs.json` mencatat seluruh 19 pack dan 56 skill upstream. Empat pack sudah lengkap dan tujuh pack masih parsial. Skill yang belum disalin ke folder lokal tidak ditawarkan ke engine.
+
+Pemilihan otomatis berdasarkan topik mempertahankan empat skill fondasi dan menambahkan skill topikal yang paling relevan. Pemilihan manual dibatasi maksimal lima skill, baik dari UI maupun CLI:
 
 ```bash
 node naskah.mjs "Fakta menarik tentang luar angkasa" --skills=explainer-video,kinetic-typography
 ```
 
-ID skill yang tersedia: `animation-principles`, `motion-art-direction`, `remotion-video`, `short-form-video`, `caption-animation`, `explainer-video`, `kinetic-typography`, dan `javascript-animation`. Gunakan `--skills=auto` untuk pemilihan otomatis.
+ID skill lokal yang tersedia:
+`animation-principles`, `motion-art-direction`, `remotion-video`, `short-form-video`, `caption-animation`, `explainer-video`, `kinetic-typography`, `javascript-animation`, `audiogram`, `talking-head-b-roll`, `animated-infographic`, `map-animation`, `photo-slideshow`, `product-demo-video`, `promo-video`, dan `ad-creative-video`.
 
-Hasil JSON tetap mempertahankan struktur naskah lama dan menambahkan metadata `motion.skills`, `motion.arah_visual`, `motion.bahasa_gerak`, serta arahan `visual`, `gerak`, dan `transisi` per adegan. Metadata ini menjadi dasar editor storyboard/adegan pada fase berikutnya. Renderer saat ini tetap menggunakan field visual yang sudah didukung oleh template yang ada.
+### Metadata storyboard ke renderer
+
+- `visual`: menjadi konteks utama saat generator SVG AI membuat ilustrasi adegan (jika fitur gambar AI diaktifkan).
+- `gerak`: adapter native Remotion mengenali arahan sederhana seperti melayang, berdenyut, dan berputar.
+- `transisi`: adapter mengenali fade, slide dari arah tertentu, dan zoom saat adegan masuk.
+- Adapter tidak menambahkan dependency baru. Arahan yang membutuhkan asset atau library eksternal tidak otomatis dijalankan.
+
+Penerapan gerak/transisi masih berbasis kata kunci, bukan motion DSL lengkap. Hasil akhir perlu diperiksa saat pengujian visual. Field lama dan struktur JSON naskah tetap dipertahankan.
 
 Atribusi dan lisensi sumber: [skills/ATTRIBUTION.md](skills/ATTRIBUTION.md). Skill packs upstream menggunakan MIT; integrasi ini tidak mengubah lisensi utama Studio Maliki yang tercantum di `../LISENSI.md`.
