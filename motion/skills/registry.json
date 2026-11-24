@@ -49,6 +49,42 @@
         "javascript-animation"
       ],
       "default": false
+    },
+    {
+      "id": "youtube-video",
+      "name": "YouTube / Podcast",
+      "repository": "iart-ai/youtube-video-skills",
+      "skills": [
+        "audiogram"
+      ],
+      "default": false
+    },
+    {
+      "id": "b-roll",
+      "name": "B-roll for Talking Head",
+      "repository": "iart-ai/b-roll-skills",
+      "skills": [
+        "talking-head-b-roll"
+      ],
+      "default": false
+    },
+    {
+      "id": "data-animation",
+      "name": "Data Visualization",
+      "repository": "iart-ai/data-animation-skills",
+      "skills": [
+        "animated-infographic"
+      ],
+      "default": false
+    },
+    {
+      "id": "map-animation",
+      "name": "Editorial Map Animation",
+      "repository": "iart-ai/map-animation-skills",
+      "skills": [
+        "map-animation"
+      ],
+      "default": false
     }
   ],
   "skills": [
@@ -156,6 +192,64 @@
         "tanpa aset",
         "canvas",
         "animasi gambar"
+      ],
+      "always": false
+    },
+    {
+      "id": "audiogram",
+      "file": "audiogram/SKILL.md",
+      "keywords": [
+        "podcast",
+        "audiogram",
+        "waveform",
+        "gelombang suara",
+        "audio",
+        "voiceover",
+        "suara"
+      ],
+      "always": false
+    },
+    {
+      "id": "talking-head-b-roll",
+      "file": "talking-head-b-roll/SKILL.md",
+      "keywords": [
+        "b-roll",
+        "talking head",
+        "wawancara",
+        "video orang bicara",
+        "podcast",
+        "presenter",
+        "sisipan video"
+      ],
+      "always": false
+    },
+    {
+      "id": "animated-infographic",
+      "file": "animated-infographic/SKILL.md",
+      "keywords": [
+        "infografis",
+        "infographic",
+        "data",
+        "statistik",
+        "angka",
+        "grafik",
+        "diagram",
+        "persentase"
+      ],
+      "always": false
+    },
+    {
+      "id": "map-animation",
+      "file": "map-animation/SKILL.md",
+      "keywords": [
+        "peta",
+        "map",
+        "lokasi",
+        "rute",
+        "geografi",
+        "perjalanan",
+        "wilayah",
+        "negara"
       ],
       "always": false
     }
