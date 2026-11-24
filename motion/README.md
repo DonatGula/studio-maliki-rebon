@@ -87,3 +87,27 @@ node buat.mjs naskah/3-kebiasaan-pagi-produktif.json
 Periksa isi naskah sebelum render, karena AI bisa salah. Langganan Claude Pro **tidak** termasuk API. Pengguna Pro pakai
 `PROMPT-NASKAH.md` di claude.ai, atau minta Claude Code membuat naskah dan merender langsung.
 File `.env` berisi kuncimu. Jangan dibagikan ke orang lain.
+
+
+## Motion Skills (integrasi awal)
+
+Generator naskah kini memakai panduan Motion Skills dari proyek iart.ai untuk membantu AI menentukan arah visual, bahasa gerak, dan storyboard per adegan. Remotion tetap menjadi renderer; Motion Skills bukan plugin rendering.
+
+Skill pack awal yang disertakan:
+- Motion Design (animation principles, art direction, Remotion)
+- TikTok / Short-form Video (short-form structure, animated captions)
+- Explainer Video
+- Kinetic Typography
+- JavaScript Animation (sebagai referensi storyboard; bukan pengganti pipeline Remotion)
+
+Secara default skill dipilih otomatis dari topik. Untuk memilih manual melalui terminal:
+
+```bash
+node naskah.mjs "Fakta menarik tentang luar angkasa" --skills=explainer-video,kinetic-typography
+```
+
+ID skill yang tersedia: `animation-principles`, `motion-art-direction`, `remotion-video`, `short-form-video`, `caption-animation`, `explainer-video`, `kinetic-typography`, dan `javascript-animation`. Gunakan `--skills=auto` untuk pemilihan otomatis.
+
+Hasil JSON tetap mempertahankan struktur naskah lama dan menambahkan metadata `motion.skills`, `motion.arah_visual`, `motion.bahasa_gerak`, serta arahan `visual`, `gerak`, dan `transisi` per adegan. Metadata ini menjadi dasar editor storyboard/adegan pada fase berikutnya. Renderer saat ini tetap menggunakan field visual yang sudah didukung oleh template yang ada.
+
+Atribusi dan lisensi sumber: [skills/ATTRIBUTION.md](skills/ATTRIBUTION.md). Skill packs upstream menggunakan MIT; integrasi ini tidak mengubah lisensi utama Studio Maliki yang tercantum di `../LISENSI.md`.
