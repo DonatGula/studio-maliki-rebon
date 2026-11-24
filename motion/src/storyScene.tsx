@@ -1,5 +1,6 @@
 import React from 'react';
 import {interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
+import {StoryCharacter, StoryEnvironment, StoryProp, CharacterDesign} from './storyAssets';
 
 export type KarakterStory = {
   id: string;
@@ -7,6 +8,7 @@ export type KarakterStory = {
   deskripsi?: string;
   warna?: string[];
   ciriTetap?: string[];
+  tampilan?: CharacterDesign['tampilan'];
 };
 
 export type AdeganStory = {
@@ -138,10 +140,10 @@ export const StoryScene: React.FC<Props> = ({adegan, karakter = []}) => {
     <div style={{position: 'absolute', inset: 0, overflow: 'hidden', background: '#ead8c2'}}>
       <svg viewBox="0 0 1080 1920" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
         <g transform={`translate(${cameraX} 0) scale(${cameraScale})`} style={{transformOrigin: '540px 960px'}}>
-          <Room kind={kind} frame={frame} />
-          <SceneObjects items={adegan.objek ?? []} frame={frame} />
+          <StoryEnvironment spec={{jenis: kind}} />
+          {(adegan.objek ?? []).slice(0, 5).map((item, i) => <StoryProp key={item + i} name={item} x={150 + i * 190} y={1280 + Math.sin(frame / 16 + i) * 3} />)}
           <g opacity={interpolate(enter, [0, 1], [0, 1])}>
-            {selected.map((c, i) => <Character key={c.id} x={positions[i]} y={1040} color={c.warna?.[0] ?? (i ? '#d68b58' : '#4f86b7')} frame={frame} action={actionText} />)}
+            {selected.map((c, i) => <StoryCharacter key={c.id} design={c} x={positions[i]} y={1040} frame={frame} action={actionText} />)}
           </g>
           <rect x="0" y="0" width="1080" height="1920" fill="url(#storyShade)" />
         </g>
