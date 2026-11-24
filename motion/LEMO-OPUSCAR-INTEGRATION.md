@@ -195,3 +195,33 @@ Tidak termasuk Tahap 2:
 - Mengubah UI editor atau batch.
 
 Tahap 2 dianggap selesai setelah rancangan ini ditinjau. Tahap 3 baru dimulai dengan prototipe renderer 2D satu adegan dan tidak akan menghapus jalur lama sebelum uji render berhasil.
+
+
+## 9. Implementasi lanjutan — status 24 November 2026
+
+Tahap setelah rancangan mulai diterapkan pada branch `feat/lemo-opuscar-foundation`.
+
+### Sudah dibuat pada branch ini
+
+- **Tahap 3 — fondasi karakter dan lingkungan:** file `src/storyScene.tsx` menyediakan renderer React/SVG untuk karakter manusia sederhana, latar lingkungan (ruang/kamar, dapur, dan luar ruang), pose/aksi dasar, serta gerak masuk.
+- **Tahap 4 — gerak adegan dan kamera dasar:** aksi teks memicu gerak sederhana (jalan/berlari, duduk/berbaring, menunjuk/memegang); framing wide/medium/close-up, pan, dan slow-push diterapkan pada kamera. Ini masih animasi prosedural sederhana, bukan rig tulang atau interpolasi gerak kompleks.
+- **Tahap 5 — AI storyboard:** `PROMPT-NASKAH.md` meminta Character Bible dan arahan lingkungan, properti, aksi, serta kamera. `naskah.mjs` menormalisasi field baru dan mengisi `motion.styleId=storytelling-2d` sebagai default.
+- **Integrasi Remotion:** `Video.tsx` memilih renderer 2D bila style ID baru atau metadata adegan baru ditemukan. Audio, subtitle, judul, klip asli, dan MotionAdegan tetap berada di composition lama.
+- **Kompatibilitas:** proyek tanpa `motion.styleId` dan tanpa metadata visual baru tetap melewati renderer lama; field `ikon` dan `gambar` tidak dihapus.
+
+### Belum boleh dianggap selesai
+
+- **Tahap 6 — Scene Editor:** belum ada kontrol UI khusus untuk mengedit Character Bible, lingkungan, properti, aksi, dan kamera. Data JSON dapat dibaca oleh renderer, tetapi pengalaman edit visual belum selesai.
+- **Tahap 7 — Batch Production:** jalur batch yang memakai generator dan `buat.mjs` secara desain membawa metadata baru bersama JSON; perlu uji batch nyata untuk memastikan semua worker/proses dan penyimpanan proyek mempertahankannya.
+- **Tahap 8 — pengujian dan optimasi:** belum ada hasil build TypeScript/Remotion atau render MP4 yang dijalankan pada Windows. Perlu uji dengan `npm install`, pemeriksaan TypeScript, preview, render satu video, proyek lama, klip asli, dan batch. Jangan menghapus template lama sebelum pengujian regresi lulus.
+
+### Kriteria rilis
+
+1. `naskah.mjs` menghasilkan JSON dengan Character Bible dan metadata visual valid.
+2. Preview satu adegan memperlihatkan karakter dan lingkungan, bukan ikon sebagai visual utama.
+3. Render MP4 penuh berhasil dengan narasi, subtitle, dan transisi.
+4. Proyek lama dan adegan klip asli tetap dapat dirender.
+5. Editor dan batch mempertahankan field baru saat menyimpan/memuat.
+6. Build bersih dan uji regresi lulus di Windows.
+
+Sampai kriteria di atas terpenuhi, integrasi berstatus **implementasi awal / perlu validasi**, bukan rilis final.
