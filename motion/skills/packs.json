@@ -4,7 +4,7 @@
   "sourceUpdated": "2026-11-18",
   "totalPacks": 19,
   "totalSkills": 56,
-  "note": "catalog lists all upstream packs; status bundled means selected SKILL.md files are currently included locally, catalog means listed for planned installation/integration.",
+  "note": "status bundled means all skills in the upstream pack are included locally; partial means selected SKILL.md files are included; catalog means listed for planned integration.",
   "packs": [
     {
       "id": "tiktok-video",
@@ -27,7 +27,7 @@
       "name": "YouTube / Podcast",
       "repository": "iart-ai/youtube-video-skills",
       "skillCount": 2,
-      "status": "catalog",
+      "status": "partial",
       "url": "https://github.com/iart-ai/youtube-video-skills"
     },
     {
@@ -51,7 +51,7 @@
       "name": "Data Visualization",
       "repository": "iart-ai/data-animation-skills",
       "skillCount": 3,
-      "status": "catalog",
+      "status": "partial",
       "url": "https://github.com/iart-ai/data-animation-skills"
     },
     {
@@ -67,7 +67,7 @@
       "name": "Editorial Map Animation",
       "repository": "iart-ai/map-animation-skills",
       "skillCount": 1,
-      "status": "catalog",
+      "status": "bundled",
       "url": "https://github.com/iart-ai/map-animation-skills"
     },
     {
@@ -147,7 +147,7 @@
       "name": "B-roll for Talking Head",
       "repository": "iart-ai/b-roll-skills",
       "skillCount": 1,
-      "status": "catalog",
+      "status": "bundled",
       "url": "https://github.com/iart-ai/b-roll-skills"
     },
     {
