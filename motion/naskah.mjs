@@ -20,7 +20,7 @@ let skillIds = [];
 let panduanMotion = '';
 try { skillIds = pilihMotionSkills(topik, skillMode); panduanMotion = susunPanduanMotion(topik, skillMode); }
 catch (e) { berhenti(e.message); }
-const prompt = readFileSync('PROMPT-NASKAH.md', 'utf8').replace('[TOPIK]', topik) + '\\n\\n' + panduanMotion;
+const prompt = readFileSync('PROMPT-NASKAH.md', 'utf8').replace('[TOPIK]', topik) + '\n\n' + panduanMotion;
 const tanya = () => tanyaAI(penyedia, prompt, env, 'menulis naskah');
 
 console.log(`• Meminta AI '${penyedia}' menulis naskah: ${topik}`);
