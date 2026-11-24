@@ -127,7 +127,17 @@ log(`Render gaya "${naskah.gaya}" → ${keluar}`);
 const propsRel = join('hasil', `${nama}.props.json`).split('\\').join('/');
 // Keluaran Remotion ditangkap lalu dicetak ulang, supaya alasan gagal (mis. Chrome Headless Shell tidak bisa diunduh/dijalankan)
 // selalu terlihat di log Studio — sebelumnya hanya muncul "status 1, stderr null".
-const r = spawnSync(process.execPath, [...REMOTION, 'render', 'src/index.ts', 'Motion', keluar, `--props=${propsRel}`, '--timeout=180000', '--log=verbose'],
+const preset = opsi.preset ?? 'shorts';
+const presetRender = {
+  shorts: {scale: '1', crf: '18'}, tiktok: {scale: '1', crf: '20'},
+  reels: {scale: '1', crf: '19'}, draft: {scale: '0.5', crf: '23'},
+  high: {scale: '1.25', crf: '16'}, preview: {scale: '0.5', crf: '23'},
+};
+if (!presetRender[preset]) throw new Error('Preset ekspor tidak dikenal: ' + preset);
+const ekspor = presetRender[preset];
+log(`Preset ${preset}: skala ${ekspor.scale}×, CRF ${ekspor.crf}`);
+const r = spawnSync(process.execPath, [...REMOTION, 'render', 'src/index.ts', 'Motion', keluar, `--props=${propsRel}`,
+  `--scale=${ekspor.scale}`, `--crf=${ekspor.crf}`, '--timeout=180000', '--log=verbose'],
   {encoding: 'utf8', maxBuffer: 64 * 1024 * 1024});
 const keluaran = `${r.stdout ?? ''}${r.stderr ?? ''}`.split(/\r?\n/).filter((x) => x.trim());
 if (r.status !== 0 || !existsSync(keluar)) {
