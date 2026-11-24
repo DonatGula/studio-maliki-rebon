@@ -1640,6 +1640,10 @@ function sinkronMotionScene() {
   if (!MOTION_DRAFT) return;
   MOTION_DRAFT.judul = $('#motionJudulDraft')?.value ?? MOTION_DRAFT.judul ?? '';
   MOTION_DRAFT.preset = $('#motionPreset')?.value ?? MOTION_DRAFT.preset ?? 'shorts';
+  const styleId = $('#motionStyleId')?.value;
+  MOTION_DRAFT.motion = {...(MOTION_DRAFT.motion || {}), styleId: styleId === 'storytelling-2d' ? 'storytelling-2d' : undefined, aspectRatio: '9:16'};
+  const bible = $('#motionCharacters')?.value;
+  if (bible !== undefined) { try { MOTION_DRAFT.karakter = JSON.parse(bible || '[]'); } catch { /* pertahankan Character Bible terakhir yang valid */ } }
   document.querySelectorAll('.motion-scene').forEach((card) => {
     const i = Number(card.dataset.index), a = MOTION_DRAFT.adegan[i];
     if (!a) return;
@@ -1648,9 +1652,12 @@ function sinkronMotionScene() {
       if (key === 'durasi') {
         const v = field.value.trim();
         if (v) a.durasi = Number(v); else delete a.durasi;
-      } else if (key === 'kunci') {
+      } else if (['kunci', 'karakter', 'objek'].includes(key)) {
         const v = field.value.split(',').map((x) => x.trim()).filter(Boolean);
-        if (v.length) a.kunci = v; else delete a.kunci;
+        if (v.length) a[key] = v; else delete a[key];
+      } else if (key === 'aksi' || key === 'kamera') {
+        try { a[key] = field.value.trim() ? JSON.parse(field.value) : (key === 'aksi' ? [] : undefined); }
+        catch { /* jangan timpa data terstruktur dengan JSON yang belum valid */ }
       } else {
         a[key] = field.value;
       }
@@ -1683,13 +1690,18 @@ function gambarMotionScene() {
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px">
       <div class="bidang"><label>Judul layar</label><input class="input" data-key="judul" value="${esc(a.judul || '')}" placeholder="Judul singkat"></div>
-      <div class="bidang"><label>Ikon / emoji</label><input class="input" data-key="ikon" value="${esc(a.ikon || '')}" placeholder="🎬"></div>
+      <div class="bidang"><label>Ikon lama (opsional)</label><input class="input" data-key="ikon" value="${esc(a.ikon || '')}" placeholder="Hanya untuk proyek lama"></div>
       <div class="bidang"><label>Durasi (detik)</label><input class="input" type="number" min="0.5" step="0.5" data-key="durasi" value="${esc(a.durasi ?? '')}" placeholder="otomatis"></div>
       <div class="bidang"><label>Kata kunci subtitle (pisahkan koma)</label><input class="input" data-key="kunci" value="${esc(Array.isArray(a.kunci) ? a.kunci.join(', ') : a.kunci || '')}" placeholder="kata penting, sorotan"></div>
     </div>
     <div class="bidang"><label>Narasi / teks subtitle</label><textarea class="input" data-key="teks" rows="2" placeholder="Kalimat narasi adegan">${esc(a.teks || '')}</textarea></div>
-    <div class="bidang"><label>Arah visual</label><textarea class="input" data-key="visual" rows="2" placeholder="Apa yang terlihat di adegan ini">${esc(a.visual || '')}</textarea></div>
-    <div class="bidang"><label>Gerakan / animasi</label><textarea class="input" data-key="gerak" rows="2" placeholder="Bagaimana elemen bergerak">${esc(a.gerak || '')}</textarea></div>
+    <div class="bidang"><label>Lingkungan / lokasi</label><input class="input" data-key="lingkungan" value="${esc(a.lingkungan || a.visual || '')}" placeholder="Kamar tidur malam, dapur, taman..."></div>
+    <div class="bidang"><label>Karakter · ID dipisahkan koma</label><input class="input" data-key="karakter" value="${esc(Array.isArray(a.karakter) ? a.karakter.join(', ') : '')}" placeholder="tokoh-utama, teman"></div>
+    <div class="bidang"><label>Properti · pisahkan koma</label><input class="input" data-key="objek" value="${esc(Array.isArray(a.objek) ? a.objek.join(', ') : '')}" placeholder="ponsel, buku, cangkir"></div>
+    <div class="bidang"><label>Aksi karakter · JSON</label><textarea class="input" data-key="aksi" rows="2" spellcheck="false" placeholder='[{"subjek":"tokoh-utama","gerakan":"mengambil ponsel"}]'>${esc(JSON.stringify(a.aksi || [], null, 2))}</textarea></div>
+    <div class="bidang"><label>Kamera · JSON</label><textarea class="input" data-key="kamera" rows="2" spellcheck="false" placeholder='{"framing":"medium","angle":"eye-level","gerak":"slow-push"}'>${esc(JSON.stringify(a.kamera || {framing:'medium',angle:'eye-level',gerak:'statis'}, null, 2))}</textarea></div>
+    <div class="bidang"><label>Arah visual tambahan</label><textarea class="input" data-key="visual" rows="2" placeholder="Detail suasana, pencahayaan, dan komposisi">${esc(a.visual || '')}</textarea></div>
+    <div class="bidang"><label>Gerakan / animasi tambahan</label><textarea class="input" data-key="gerak" rows="2" placeholder="Bagaimana elemen bergerak">${esc(a.gerak || '')}</textarea></div>
     <div class="bidang"><label>Transisi</label><input class="input" data-key="transisi" value="${esc(a.transisi || '')}" placeholder="Cara masuk dan keluar adegan"></div>
     ${a.preview ? `<div class="bidang"><label>Preview adegan</label><video src="${esc(a.preview)}?v=${Date.now()}" controls playsinline style="width:100%;max-height:360px;background:#000;border-radius:12px"></video></div>` : ''}
   </article>`).join('');
@@ -1704,6 +1716,8 @@ function hasilMotion(h) {
       <h2 style="margin:6px 0 8px">Tinjau setiap adegan</h2>
       <p class="catatan">Ubah narasi, visual, gerakan, durasi, dan transisi. Kamu juga bisa mengubah urutan atau menambah/menghapus adegan. Semua perubahan diterapkan sebelum video dirender.</p>
       <div class="bidang"><label>Judul video</label><input class="input" id="motionJudulDraft" value="${esc(MOTION_DRAFT.judul || '')}"></div>
+      <div class="bidang"><label>Mode visual</label><select class="input" id="motionStyleId"><option value="storytelling-2d">2D Animated Storytelling · karakter & lingkungan</option><option value="legacy">Mode lama · kompatibilitas proyek terdahulu</option></select><small class="catatan">Mode utama menggambar karakter dan lingkungan 2D. Proyek lama tetap dapat memakai renderer sebelumnya.</small></div>
+      <div class="bidang"><label>Character Bible · JSON karakter</label><textarea class="input" id="motionCharacters" rows="5" spellcheck="false" placeholder='[{"id":"tokoh-utama","nama":"Tokoh utama","warna":["#4f86b7"],"ciriTetap":["kaus biru","rambut hitam"]}]'>${esc(JSON.stringify(MOTION_DRAFT.karakter || [], null, 2))}</textarea><small class="catatan">Gunakan ID karakter yang sama pada semua adegan agar penampilannya konsisten.</small></div>
       <div class="bidang"><label>Preset ekspor</label><select class="input" id="motionPreset"><option value="shorts">YouTube Shorts · 1080×1920</option><option value="tiktok">TikTok · 1080×1920</option><option value="reels">Instagram/Facebook Reels · 1080×1920</option><option value="draft">Draft cepat · 540×960</option><option value="high">Kualitas tinggi · 1350×2400</option></select><small class="catatan">Shorts, TikTok, dan Reels memakai kanvas vertikal 9:16. Preset mengatur kualitas/ukuran render.</small></div>
       <div id="motionTimeline" class="kartu" style="padding:14px;margin:14px 0;overflow:hidden"></div>
       <div id="motionSceneList"></div>
@@ -1712,9 +1726,10 @@ function hasilMotion(h) {
     el.classList.add('tampil');
     gambarMotionScene();
     $('#motionPreset').value = ['shorts','tiktok','reels','draft','high'].includes(MOTION_DRAFT.preset) ? MOTION_DRAFT.preset : 'shorts';
+    $('#motionStyleId').value = MOTION_DRAFT.motion?.styleId === 'storytelling-2d' ? 'storytelling-2d' : 'legacy';
     $('#motionAddScene').onclick = () => {
       sinkronMotionScene();
-      MOTION_DRAFT.adegan.push({judul: '', teks: '', ikon: '✨', visual: '', gerak: '', transisi: ''});
+      MOTION_DRAFT.adegan.push({judul: '', teks: '', visual: '', lingkungan: 'ruangan sederhana', karakter: [], objek: [], aksi: [], kamera: {framing: 'medium', angle: 'eye-level', gerak: 'statis'}, gerak: '', transisi: ''});
       gambarMotionScene();
     };
     $('#motionTimeline').onclick = (e) => {
