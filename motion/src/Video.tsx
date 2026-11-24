@@ -5,6 +5,7 @@ import {
 } from 'remotion';
 import {TEMA, Tema} from './tema';
 import {FilterIlustrasi} from './ilustrasi';
+import {MotionAdegan} from './motionAdegan';
 
 export const FPS = 30;
 
@@ -17,6 +18,9 @@ export type Adegan = {
   durasi?: number; // detik; diisi otomatis dari panjang suara
   suara?: string; // path di folder public/, mis. suara/01.wav
   klip?: string; // adegan video asli (path di public/, diisi buat.mjs dari file klip.py)
+  visual?: string; // arahan visual dari Motion Skills, dipakai sebagai konteks/label adegan
+  gerak?: string; // arahan gerakan yang diterapkan oleh adapter Remotion
+  transisi?: string; // arahan transisi masuk yang diterapkan oleh adapter Remotion
 };
 
 export type Props = {
@@ -278,7 +282,9 @@ export const Video: React.FC<Props> = (p) => {
         const d = frameAdegan(a);
         const el = (
           <Sequence key={i} from={dari} durationInFrames={d}>
-            {a.klip ? <AdeganKlip a={a} p={p} /> : <SatuAdegan a={a} i={i} n={p.adegan.length} p={p} />}
+            <MotionAdegan visual={a.visual} gerak={a.gerak} transisi={a.transisi}>
+              {a.klip ? <AdeganKlip a={a} p={p} /> : <SatuAdegan a={a} i={i} n={p.adegan.length} p={p} />}
+            </MotionAdegan>
           </Sequence>
         );
         dari += d;
