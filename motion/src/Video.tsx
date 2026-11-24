@@ -6,6 +6,7 @@ import {
 import {TEMA, Tema} from './tema';
 import {FilterIlustrasi} from './ilustrasi';
 import {MotionAdegan} from './motionAdegan';
+import {StoryScene, KarakterStory} from './storyScene';
 
 export const FPS = 30;
 
@@ -21,6 +22,11 @@ export type Adegan = {
   visual?: string; // arahan visual dari Motion Skills, dipakai sebagai konteks/label adegan
   gerak?: string; // arahan gerakan yang diterapkan oleh adapter Remotion
   transisi?: string; // arahan transisi masuk yang diterapkan oleh adapter Remotion
+  lingkungan?: string;
+  karakter?: string[];
+  objek?: string[];
+  aksi?: Array<{subjek?: string; gerakan?: string} | string>;
+  kamera?: {framing?: string; angle?: string; gerak?: string};
 };
 
 export type Props = {
@@ -29,6 +35,8 @@ export type Props = {
   handle?: string;
   aksen?: string;
   adegan: Adegan[];
+  motion?: {styleId?: string; aspectRatio?: string; [key: string]: unknown};
+  karakter?: KarakterStory[];
 };
 
 const JEDA = 0.35; // detik napas di akhir tiap adegan
@@ -252,11 +260,15 @@ const SatuAdegan: React.FC<{a: Adegan; i: number; n: number; p: Props}> = ({a, i
   const garis = spring({frame: f - 10, fps, config: {damping: 14}});
   return (
     <AbsoluteFill>
-      {w.bg ? <AbsoluteFill style={{background: w.bg}} /> : null}
-      {w.bg ? <t.Latar f={f} i={i} n={n} aksen={w.aksen} judul={a.judul} /> : null}
+      {(p.motion?.styleId === 'storytelling-2d' || !!a.lingkungan || !!a.aksi?.length || !!a.karakter?.length)
+        ? <StoryScene adegan={a} karakter={p.karakter} />
+        : <>
+          {w.bg ? <AbsoluteFill style={{background: w.bg}} /> : null}
+          {w.bg ? <t.Latar f={f} i={i} n={n} aksen={w.aksen} judul={a.judul} /> : null}
+          <Ikon a={a} t={t} w={w} i={i} />
+        </>}
       {a.suara ? <Audio src={staticFile(a.suara)} /> : null}
       <Label t={t} w={w} i={i} n={n} />
-      <Ikon a={a} t={t} w={w} i={i} />
       <Judul a={a} t={t} w={w} />
       {t.judul === 'naik' ? <div style={{position: 'absolute', top: 1080, left: 90, height: 10, width: 300 * garis, background: w.aksen, borderRadius: 5}} /> : null}
       <Subtitle a={a} t={t} w={w} />
