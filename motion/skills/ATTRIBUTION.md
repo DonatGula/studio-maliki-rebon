@@ -9,12 +9,16 @@ Studio Maliki Reborn mengintegrasikan panduan dari proyek [iart-ai/motion-skills
 - [explainer-video-skills](https://github.com/iart-ai/explainer-video-skills)
 - [kinetic-typography-skills](https://github.com/iart-ai/kinetic-typography-skills)
 - [javascript-animation-skills](https://github.com/iart-ai/javascript-animation-skills)
+- [youtube-video-skills](https://github.com/iart-ai/youtube-video-skills) — audiogram
+- [b-roll-skills](https://github.com/iart-ai/b-roll-skills) — talking-head-b-roll
+- [data-animation-skills](https://github.com/iart-ai/data-animation-skills) — animated-infographic
+- [map-animation-skills](https://github.com/iart-ai/map-animation-skills) — map-animation
 
-Delapan file `SKILL.md` dari lima pack di atas saat ini disertakan secara lokal. Status tersebut juga dicatat pada `packs.json`.
+Dua belas file `SKILL.md` dari sembilan pack (empat pack tambahan terintegrasi sebagian) saat ini disertakan secara lokal. Status tersebut juga dicatat pada `packs.json`.
 
 ## Katalog lengkap
 
-Katalog `packs.json` mencatat seluruh 19 pack dan 56 skill dari proyek upstream, termasuk pack yang belum dibundel. Pack berstatus `catalog` adalah daftar integrasi lanjutan, bukan klaim bahwa seluruh skill-nya sudah dapat dipilih atau digunakan saat ini.
+Katalog `packs.json` mencatat seluruh 19 pack dan 56 skill dari proyek upstream. Status `partial` berarti hanya sebagian skill dalam pack tersebut yang disertakan; `catalog` berarti pack masih berupa daftar integrasi lanjutan.
 
 ## Cara integrasi
 
