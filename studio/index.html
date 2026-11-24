@@ -1760,10 +1760,11 @@ function hasilMotion(h) {
   el.innerHTML = `<div class="kartu video-besar"><video src="${h.video}" controls playsinline></video><div>
     <div class="eyebrow">Selesai · gaya ${esc(n.gaya || '')}</div><h2 style="margin:6px 0 14px;letter-spacing:-.4px">${esc(n.judul || 'Video')}</h2>
     <div class="daftar-adegan">${(n.adegan || []).map((a, i) => `<div class="adegan"><em>${esc(a.ikon || '▶️')}</em><div><b>${String(i + 1).padStart(2, '0')} · ${esc(a.judul)}</b><small>${esc(a.teks || (a.video ? 'klip video' : ''))}${a.durasi ? ' · ' + a.durasi + ' dtk' : ''}</small></div></div>`).join('')}</div>
-    <div class="aksi" style="margin-top:14px"><a class="tombol utama kecil" href="${h.video}" download data-jenis="motion" data-nama="${h.nama}" data-file="video.mp4">Unduh MP4</a><button class="tombol kedua kecil" id="mFolder">Buka folder</button><button class="tombol kedua kecil" id="mNaskah">Salin naskah JSON</button></div></div></div>`;
+    <div class="aksi" style="margin-top:14px"><a class="tombol utama kecil" href="${h.video}" download data-jenis="motion" data-nama="${h.nama}" data-file="video.mp4">Unduh MP4</a><button class="tombol kedua kecil" id="mEdit">Edit storyboard</button><button class="tombol kedua kecil" id="mFolder">Buka folder</button><button class="tombol kedua kecil" id="mNaskah">Salin naskah JSON</button></div></div></div>`;
   el.classList.add('tampil');
   $('#mFolder').onclick = () => api('/api/buka-folder', {jenis: 'motion', nama: h.nama});
   $('#mNaskah').onclick = () => salin(JSON.stringify(n, null, 2));
+  $('#mEdit').onclick = () => hasilMotion({...h, tahap: 'review'});
 }
 
 // riwayat
