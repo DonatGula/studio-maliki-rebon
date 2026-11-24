@@ -36,7 +36,7 @@ export function susunPanduanMotion(topik, manual = 'auto') {
     if (!existsSync(path)) return '';
     // Batasi token prompt. File sumber lengkap tetap disimpan untuk referensi dan pengembangan.
     const body = readFileSync(path, 'utf8').slice(0, 5200);
-    return `\n### Skill: ${id}\nSumber: https://github.com/iart-ai/${registry.packs.find((p) => p.skills.includes(id))?.repository ?? 'motion-skills'}\n${body}`;
+    return `\n### Skill: ${id}\nSumber: https://github.com/${registry.packs.find((p) => p.skills.includes(id))?.repository ?? 'iart-ai/motion-skills'}\n${body}`;
   }).filter(Boolean);
   const idsJson = JSON.stringify(ids);
   const instruction = `
