@@ -17,14 +17,14 @@ Jangan menambahkan ID skill ke `registry.json` sebelum file `SKILL.md` yang sesu
 
 | Pack | Jumlah skill | Status |
 |---|---:|---|
-| TikTok / Reels / Shorts | 4 | Bundled |
+| TikTok / Reels / Shorts | 4 | Partial (2 skills bundled) |
 | Text-message Stories | 1 | Catalog |
-| YouTube / Podcast | 2 | Catalog |
+| YouTube / Podcast | 2 | Partial (1 skill bundled) |
 | E-commerce Product Video | 3 | Catalog |
 | Advertising / Brand Campaign | 3 | Catalog |
-| Data Visualization | 3 | Catalog |
+| Data Visualization | 3 | Partial (1 skill bundled) |
 | Explainer / Educational | 5 | Bundled |
-| Editorial Map Animation | 1 | Catalog |
+| Editorial Map Animation | 1 | Bundled |
 | Web / UI Animation | 9 | Catalog |
 | Motion Design | 9 | Bundled |
 | Kinetic Typography | 1 | Bundled |
@@ -34,16 +34,16 @@ Jangan menambahkan ID skill ke `registry.json` sebelum file `SKILL.md` yang sesu
 | Generative Illustration | 1 | Catalog |
 | JavaScript / Canvas Animation | 2 | Bundled |
 | Transparent Lower Thirds | 1 | Catalog |
-| B-roll for Talking Head | 1 | Catalog |
+| B-roll for Talking Head | 1 | Bundled |
 | AI Talking Head Video | 1 | Catalog |
 
-Total upstream: 19 pack, 56 skill. Pada integrasi lokal saat ini, baru 8 file skill dari lima pack yang dibundel.
+Total upstream: 19 pack, 56 skill. Pada integrasi lokal saat ini, 12 file skill dari sembilan pack sudah tersedia (empat pack masih parsial).
 
 ## Urutan integrasi lanjutan yang disarankan
 
 Untuk target konten Shorts, TikTok, dan Reels, prioritaskan:
-1. YouTube Video dan B-roll.
-2. Data Animation dan Map Animation.
+1. Lengkapi YouTube Video dan Data Animation yang masih parsial.
+2. Lanjutkan E-commerce dan Ad Video.
 3. E-commerce dan Ad Video.
 4. Text-message Video dan Talking Head.
 5. Sisanya sesuai kebutuhan, terutama pack WebGL/Manim yang mungkin membutuhkan renderer atau dependency berbeda.
