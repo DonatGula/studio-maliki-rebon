@@ -543,7 +543,7 @@ def mulai_motion(d: dict) -> dict:
 
 def render_motion(d: dict) -> dict:
     """Tahap 2: render hanya setelah naskah disetujui/diedit pengguna."""
-    nama = re.sub(r"[^\\w-]", "", d.get("nama", ""))
+    nama = re.sub(r"[^\w-]", "", d.get("nama", ""))
     if not nama:
         raise ValueError("Nama proyek tidak valid.")
     folder = (DATA / "motion" / nama).resolve()
