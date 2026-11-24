@@ -94,10 +94,10 @@ File `.env` berisi kuncimu. Jangan dibagikan ke orang lain.
 Dari halaman Motion di Studio, proses sekarang dipisah menjadi dua tahap:
 
 1. **Buat naskah** — AI menghasilkan naskah/storyboard JSON, atau pengguna memasukkan JSON sendiri.
-2. **Tinjau & edit** — naskah ditampilkan di editor JSON dalam browser. Periksa judul, teks narasi, jumlah adegan, dan metadata visual; perubahan dapat dilakukan sebelum render.
+2. **Tinjau & edit** — setiap adegan tampil sebagai kartu editor. Ubah judul layar, ikon, narasi, kata kunci subtitle, durasi, arahan visual, gerakan, dan transisi. Urutan adegan dapat dipindah, adegan dapat ditambah/dihapus, dan draft bisa disimpan tanpa render.
 3. **Render video** — tombol Render video mengirim naskah yang sudah diedit ke backend lokal, lalu Remotion membuat MP4.
 
-Naskah disimpan di folder proyek lokal sebagai `naskah.json`. Jika browser ditutup setelah tahap pertama, proyek dan naskah tetap ada di folder data Studio. Untuk membuka proyek draft, gunakan Riwayat/ folder proyek; editor draft akan ditampilkan lagi saat proyek draft dimuat.
+Naskah disimpan di folder proyek lokal sebagai `naskah.json`. Jika browser ditutup, draft terakhir yang disimpan tetap ada di folder data Studio. Untuk membuka proyek draft, gunakan Riwayat; editor adegan akan ditampilkan lagi saat proyek draft dimuat.
 
 Studio juga dapat dibuka langsung di browser dengan menjalankan `uv run studio.py --browser` dari folder `studio`; alamat lokal default adalah `http://127.0.0.1:8787`. Server hanya mendengarkan di komputer sendiri.
 
