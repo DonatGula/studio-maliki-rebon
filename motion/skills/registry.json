@@ -1,0 +1,163 @@
+{
+  "version": 1,
+  "upstream": "https://github.com/iart-ai/motion-skills",
+  "packs": [
+    {
+      "id": "motion-design",
+      "name": "Motion Design",
+      "repository": "iart-ai/motion-design-skills",
+      "skills": [
+        "animation-principles",
+        "motion-art-direction",
+        "remotion-video"
+      ],
+      "default": true
+    },
+    {
+      "id": "tiktok-video",
+      "name": "TikTok / Short-form Video",
+      "repository": "iart-ai/tiktok-video-skills",
+      "skills": [
+        "short-form-video",
+        "caption-animation"
+      ],
+      "default": true
+    },
+    {
+      "id": "explainer-video",
+      "name": "Explainer Video",
+      "repository": "iart-ai/explainer-video-skills",
+      "skills": [
+        "explainer-video"
+      ],
+      "default": false
+    },
+    {
+      "id": "kinetic-typography",
+      "name": "Kinetic Typography",
+      "repository": "iart-ai/kinetic-typography-skills",
+      "skills": [
+        "kinetic-typography"
+      ],
+      "default": false
+    },
+    {
+      "id": "javascript-animation",
+      "name": "JavaScript Animation",
+      "repository": "iart-ai/javascript-animation-skills",
+      "skills": [
+        "javascript-animation"
+      ],
+      "default": false
+    }
+  ],
+  "skills": [
+    {
+      "id": "animation-principles",
+      "file": "animation-principles/SKILL.md",
+      "keywords": [
+        "animasi",
+        "gerak",
+        "motion",
+        "transisi",
+        "smooth",
+        "halus",
+        "timing",
+        "easing",
+        "bounce"
+      ],
+      "always": true
+    },
+    {
+      "id": "motion-art-direction",
+      "file": "motion-art-direction/SKILL.md",
+      "keywords": [
+        "gaya",
+        "style",
+        "visual",
+        "branding",
+        "mood",
+        "sinematik",
+        "desain"
+      ],
+      "always": true
+    },
+    {
+      "id": "remotion-video",
+      "file": "remotion-video/SKILL.md",
+      "keywords": [
+        "remotion",
+        "video",
+        "render",
+        "adegan"
+      ],
+      "always": true
+    },
+    {
+      "id": "short-form-video",
+      "file": "short-form-video/SKILL.md",
+      "keywords": [
+        "shorts",
+        "short",
+        "reels",
+        "tiktok",
+        "viral",
+        "konten",
+        "video pendek"
+      ],
+      "always": true
+    },
+    {
+      "id": "caption-animation",
+      "file": "caption-animation/SKILL.md",
+      "keywords": [
+        "subtitle",
+        "caption",
+        "teks",
+        "narasi",
+        "karaoke"
+      ],
+      "always": false
+    },
+    {
+      "id": "explainer-video",
+      "file": "explainer-video/SKILL.md",
+      "keywords": [
+        "edukasi",
+        "menjelaskan",
+        "penjelasan",
+        "tutorial",
+        "cara kerja",
+        "sejarah",
+        "sains",
+        "fakta"
+      ],
+      "always": false
+    },
+    {
+      "id": "kinetic-typography",
+      "file": "kinetic-typography/SKILL.md",
+      "keywords": [
+        "tipografi",
+        "teks bergerak",
+        "typography",
+        "judul",
+        "lirik",
+        "kata"
+      ],
+      "always": false
+    },
+    {
+      "id": "javascript-animation",
+      "file": "javascript-animation/SKILL.md",
+      "keywords": [
+        "ilustrasi",
+        "gambar bergerak",
+        "tanpa aset",
+        "canvas",
+        "animasi gambar"
+      ],
+      "always": false
+    }
+  ]
+}
