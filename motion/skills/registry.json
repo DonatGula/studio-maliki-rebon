@@ -85,6 +85,26 @@
         "map-animation"
       ],
       "default": false
+    },
+    {
+      "id": "ecommerce-video",
+      "name": "E-commerce Product Video",
+      "repository": "iart-ai/ecommerce-video-skills",
+      "skills": [
+        "photo-slideshow",
+        "product-demo-video",
+        "promo-video"
+      ],
+      "default": false
+    },
+    {
+      "id": "ad-video",
+      "name": "Advertising / Brand Campaign",
+      "repository": "iart-ai/ad-video-skills",
+      "skills": [
+        "ad-creative-video"
+      ],
+      "default": false
     }
   ],
   "skills": [
@@ -250,6 +270,60 @@
         "perjalanan",
         "wilayah",
         "negara"
+      ],
+      "always": false
+    },
+    {
+      "id": "photo-slideshow",
+      "file": "photo-slideshow/SKILL.md",
+      "keywords": [
+        "slideshow",
+        "foto produk",
+        "kumpulan foto",
+        "galeri",
+        "album",
+        "before after"
+      ],
+      "always": false
+    },
+    {
+      "id": "product-demo-video",
+      "file": "product-demo-video/SKILL.md",
+      "keywords": [
+        "demo produk",
+        "product demo",
+        "fitur produk",
+        "unboxing",
+        "cara pakai produk",
+        "review produk"
+      ],
+      "always": false
+    },
+    {
+      "id": "promo-video",
+      "file": "promo-video/SKILL.md",
+      "keywords": [
+        "promo",
+        "diskon",
+        "harga",
+        "voucher",
+        "kode promo",
+        "flash sale",
+        "penawaran"
+      ],
+      "always": false
+    },
+    {
+      "id": "ad-creative-video",
+      "file": "ad-creative-video/SKILL.md",
+      "keywords": [
+        "iklan",
+        "ads",
+        "kampanye",
+        "campaign",
+        "cta",
+        "variasi iklan",
+        "promosi brand"
       ],
       "always": false
     }
