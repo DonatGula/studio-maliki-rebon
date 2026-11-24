@@ -1577,26 +1577,95 @@ $('#tblRender').onclick = async () => {
 };
 segarkanG();
 
+let MOTION_DRAFT = null;
+
+function sinkronMotionScene() {
+  if (!MOTION_DRAFT) return;
+  MOTION_DRAFT.judul = $('#motionJudulDraft')?.value ?? MOTION_DRAFT.judul ?? '';
+  document.querySelectorAll('.motion-scene').forEach((card) => {
+    const i = Number(card.dataset.index), a = MOTION_DRAFT.adegan[i];
+    if (!a) return;
+    card.querySelectorAll('[data-key]').forEach((field) => {
+      const key = field.dataset.key;
+      if (key === 'durasi') {
+        const v = field.value.trim();
+        if (v) a.durasi = Number(v); else delete a.durasi;
+      } else if (key === 'kunci') {
+        const v = field.value.split(',').map((x) => x.trim()).filter(Boolean);
+        if (v.length) a.kunci = v; else delete a.kunci;
+      } else {
+        a[key] = field.value;
+      }
+    });
+  });
+}
+
+function gambarMotionScene() {
+  const el = $('#motionSceneList');
+  if (!el || !MOTION_DRAFT) return;
+  el.innerHTML = MOTION_DRAFT.adegan.map((a, i) => `<article class="kartu motion-scene" data-index="${i}" style="margin:12px 0;padding:16px">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px">
+      <b>Adegan ${String(i + 1).padStart(2, '0')}</b>
+      <div class="aksi"><button class="tombol kedua kecil" data-scene-up="${i}" ${i === 0 ? 'disabled' : ''} title="Pindah ke atas">↑</button>
+      <button class="tombol kedua kecil" data-scene-down="${i}" ${i === MOTION_DRAFT.adegan.length - 1 ? 'disabled' : ''} title="Pindah ke bawah">↓</button>
+      <button class="tombol kedua kecil" data-scene-delete="${i}" title="Hapus adegan">Hapus</button></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px">
+      <div class="bidang"><label>Judul layar</label><input class="input" data-key="judul" value="${esc(a.judul || '')}" placeholder="Judul singkat"></div>
+      <div class="bidang"><label>Ikon / emoji</label><input class="input" data-key="ikon" value="${esc(a.ikon || '')}" placeholder="🎬"></div>
+      <div class="bidang"><label>Durasi (detik)</label><input class="input" type="number" min="0.5" step="0.5" data-key="durasi" value="${esc(a.durasi ?? '')}" placeholder="otomatis"></div>
+      <div class="bidang"><label>Kata kunci subtitle (pisahkan koma)</label><input class="input" data-key="kunci" value="${esc(Array.isArray(a.kunci) ? a.kunci.join(', ') : a.kunci || '')}" placeholder="kata penting, sorotan"></div>
+    </div>
+    <div class="bidang"><label>Narasi / teks subtitle</label><textarea class="input" data-key="teks" rows="2" placeholder="Kalimat narasi adegan">${esc(a.teks || '')}</textarea></div>
+    <div class="bidang"><label>Arah visual</label><textarea class="input" data-key="visual" rows="2" placeholder="Apa yang terlihat di adegan ini">${esc(a.visual || '')}</textarea></div>
+    <div class="bidang"><label>Gerakan / animasi</label><textarea class="input" data-key="gerak" rows="2" placeholder="Bagaimana elemen bergerak">${esc(a.gerak || '')}</textarea></div>
+    <div class="bidang"><label>Transisi</label><input class="input" data-key="transisi" value="${esc(a.transisi || '')}" placeholder="Cara masuk dan keluar adegan"></div>
+  </article>`).join('');
+}
+
 function hasilMotion(h) {
   const el = $('#hasilMotion'); const n = h.naskah || {};
   if (h.tahap === 'review') {
-    el.innerHTML = `<div class="kartu" style="margin-top:18px"><div class="eyebrow">Tahap 1 selesai · periksa sebelum render</div>
-      <h2 style="margin:6px 0 8px">${esc(n.judul || 'Naskah video')}</h2>
-      <p class="catatan">Periksa dan edit JSON naskah di bawah. Perubahan disimpan ke proyek saat kamu menekan Render video.</p>
-      <div class="bidang"><label for="motionEditor">Naskah JSON · ${(n.adegan || []).length} adegan</label>
-        <textarea class="input" id="motionEditor" spellcheck="false" style="min-height:360px;font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace">${esc(JSON.stringify(n, null, 2))}</textarea></div>
-      <div class="aksi" style="margin-top:14px"><button class="tombol utama" id="mRender">Render video</button><button class="tombol kedua kecil" id="mSalinDraft">Salin JSON</button><button class="tombol kedua kecil" id="mFolder">Buka folder</button></div>
-      <div class="catatan" style="margin-top:10px">Rendering dapat memerlukan waktu. Naskah tetap tersimpan walau browser ditutup.</div></div>`;
+    MOTION_DRAFT = JSON.parse(JSON.stringify(n));
+    if (!Array.isArray(MOTION_DRAFT.adegan)) MOTION_DRAFT.adegan = [];
+    el.innerHTML = `<div class="kartu" style="margin-top:18px"><div class="eyebrow">Tahap 2 · editor storyboard</div>
+      <h2 style="margin:6px 0 8px">Tinjau setiap adegan</h2>
+      <p class="catatan">Ubah narasi, visual, gerakan, durasi, dan transisi. Kamu juga bisa mengubah urutan atau menambah/menghapus adegan. Semua perubahan diterapkan sebelum video dirender.</p>
+      <div class="bidang"><label>Judul video</label><input class="input" id="motionJudulDraft" value="${esc(MOTION_DRAFT.judul || '')}"></div>
+      <div id="motionSceneList"></div>
+      <div class="aksi" style="margin-top:14px"><button class="tombol kedua kecil" id="motionAddScene">+ Tambah adegan</button><button class="tombol utama" id="mRender">Render video</button><button class="tombol kedua kecil" id="mFolder">Buka folder</button></div>
+      <div class="catatan" style="margin-top:10px">Draft otomatis tersimpan di folder proyek saat mulai render. Proyek ini juga bisa dibuka kembali dari Riwayat.</div></div>`;
     el.classList.add('tampil');
+    gambarMotionScene();
+    $('#motionAddScene').onclick = () => {
+      sinkronMotionScene();
+      MOTION_DRAFT.adegan.push({judul: '', teks: '', ikon: '✨', visual: '', gerak: '', transisi: ''});
+      gambarMotionScene();
+    };
+    $('#motionSceneList').onclick = (e) => {
+      const up = e.target.closest('[data-scene-up]'), down = e.target.closest('[data-scene-down]'), del = e.target.closest('[data-scene-delete]');
+      if (!up && !down && !del) return;
+      sinkronMotionScene();
+      const i = Number((up || down || del).dataset.sceneUp ?? (up || down || del).dataset.sceneDown ?? (up || down || del).dataset.sceneDelete);
+      if (del) {
+        if (MOTION_DRAFT.adegan.length <= 1) return toast('Minimal harus ada satu adegan.', true);
+        MOTION_DRAFT.adegan.splice(i, 1);
+      } else {
+        const j = i + (up ? -1 : 1);
+        if (j < 0 || j >= MOTION_DRAFT.adegan.length) return;
+        [MOTION_DRAFT.adegan[i], MOTION_DRAFT.adegan[j]] = [MOTION_DRAFT.adegan[j], MOTION_DRAFT.adegan[i]];
+      }
+      gambarMotionScene();
+    };
     $('#mRender').onclick = async () => {
       if (SIBUK) return toast('Tunggu proses yang sedang berjalan selesai.', true);
+      sinkronMotionScene();
       try {
-        JSON.parse($('#motionEditor').value);
-        await api('/api/motion/render', {nama: h.nama, naskah: $('#motionEditor').value});
+        if (!MOTION_DRAFT.adegan.length) return toast('Tambahkan minimal satu adegan.', true);
+        await api('/api/motion/render', {nama: h.nama, naskah: JSON.stringify(MOTION_DRAFT)});
         mulaiPantau('motion');
       } catch (e) { toast(e.message, true); }
     };
-    $('#mSalinDraft').onclick = () => salin($('#motionEditor').value);
     $('#mFolder').onclick = () => api('/api/buka-folder', {jenis: 'motion', nama: h.nama});
     return;
   }
