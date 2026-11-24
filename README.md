@@ -2,7 +2,7 @@
 
 Aplikasi desktop untuk:
 - **Klip**: memotong video panjang (link YouTube atau file) jadi klip 9:16 dengan subtitle karaoke, bingkai mengikuti wajah, skor, judul, dan caption.
-- **Motion**: membuat video motion graphic 9:16 dari satu topik (naskah → suara → animasi → MP4).
+- **Motion**: membuat video animasi storytelling 2D vertikal 9:16 dari satu topik (storyboard karakter & lingkungan → suara → animasi → MP4).
 
 Semua diproses di laptopmu: tanpa watermark, tanpa kuota, dan video tidak diunggah ke mana pun.
 AI-nya pakai milikmu sendiri (BYOK): Lokal (gratis tanpa kunci), Gemini (ada kuota gratis), Ollama (gratis, offline), atau langganan Claude/ChatGPT lewat Claude Code, Codex, OpenCode.
@@ -43,7 +43,7 @@ Hasil kerja tersimpan di folder `~/Studio Maliki` (Windows: `C:\Users\<nama>\Stu
 |---|---|
 | **Klip** | **1. Analisis:** tempel link/seret video → AI, durasi, jumlah (1–30), momen yang dicari, rentang khusus, atau unggah .srt → **Cari momen**. Hasil: pemutar sumber + linimasa (heatmap/energi), ringkasan + hashtag, kartu klip (skor viral, waktu, hook, kutipan, judul yang bisa diubah, caption), cari/filter/urut, salin timestamp/MD, unduh JSON/SRT. **2. Render:** centang klip → studio render (rasio 9:16/1:1/4:3/16:9, latar hitam/blur, fokus otomatis/kiri/tengah/kanan, layout facecam atau PiP, banner hook + awalan/akhiran, subtitle sorot/kotak/garis + font/ukuran/huruf/posisi/warna, musik latar, SFX hook, penguat suara) dengan pratinjau langsung → **Render klip terpilih** |
 | **Beranda** | Mulai cepat (Klip/Motion), proyek terakhir bergambar, status AI & suara, tips |
-| **Motion** | Tulis topik (butuh AI) atau tempel naskah JSON → pilih satu dari **14 gaya** (Garis, Neon, Kertas + 11 gaya dari template video /kode: Panggung Sinematik, Kata Kunci Minimal, Kolase Kertas, Editorial Hangat, UI Aplikasi Kaca, Bicara + Sisipan, Dokumenter Retro, Tekno Gelap Oranye, Iklan Jasa Krem, Grid Lampu Sorot, Daftar Sumber) → **Buat video** |
+| **Motion** | Tulis topik (butuh AI) atau tempel naskah JSON → buat storyboard **2D Animated Storytelling** berisi karakter, lingkungan, properti, aksi, dan kamera → tinjau/edit adegan → **Buat video** |
 | **Riwayat** | Semua proyek lama |
 | **Pengaturan AI** | Pilih penyedia AI dan tempel kuncinya |
 
