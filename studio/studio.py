@@ -618,8 +618,10 @@ def render_motion(d: dict) -> dict:
         perintah.append("--suara=voxcpm")
 
     def setelah(k: Kerja):
-        for hasil in (MOTION / "hasil").glob(f"{nama}-*.mp4"):
-            shutil.move(str(hasil), folder / "video.mp4")
+        hasil = MOTION / "hasil" / f"{nama}-{gaya}.mp4"
+        if not hasil.exists():
+            raise RuntimeError("File MP4 hasil render tidak ditemukan.")
+        shutil.move(str(hasil), folder / "video.mp4")
         data["_draft_dirty"] = False
         naskah_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
         shutil.copy(naskah_path, MOTION / "naskah" / f"{nama}.json")
