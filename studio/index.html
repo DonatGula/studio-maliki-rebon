@@ -1579,6 +1579,27 @@ segarkanG();
 
 function hasilMotion(h) {
   const el = $('#hasilMotion'); const n = h.naskah || {};
+  if (h.tahap === 'review') {
+    el.innerHTML = `<div class="kartu" style="margin-top:18px"><div class="eyebrow">Tahap 1 selesai · periksa sebelum render</div>
+      <h2 style="margin:6px 0 8px">${esc(n.judul || 'Naskah video')}</h2>
+      <p class="catatan">Periksa dan edit JSON naskah di bawah. Perubahan disimpan ke proyek saat kamu menekan Render video.</p>
+      <div class="bidang"><label for="motionEditor">Naskah JSON · ${(n.adegan || []).length} adegan</label>
+        <textarea class="input" id="motionEditor" spellcheck="false" style="min-height:360px;font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace">${esc(JSON.stringify(n, null, 2))}</textarea></div>
+      <div class="aksi" style="margin-top:14px"><button class="tombol utama" id="mRender">Render video</button><button class="tombol kedua kecil" id="mSalinDraft">Salin JSON</button><button class="tombol kedua kecil" id="mFolder">Buka folder</button></div>
+      <div class="catatan" style="margin-top:10px">Rendering dapat memerlukan waktu. Naskah tetap tersimpan walau browser ditutup.</div></div>`;
+    el.classList.add('tampil');
+    $('#mRender').onclick = async () => {
+      if (SIBUK) return toast('Tunggu proses yang sedang berjalan selesai.', true);
+      try {
+        JSON.parse($('#motionEditor').value);
+        await api('/api/motion/render', {nama: h.nama, naskah: $('#motionEditor').value});
+        mulaiPantau('motion');
+      } catch (e) { toast(e.message, true); }
+    };
+    $('#mSalinDraft').onclick = () => salin($('#motionEditor').value);
+    $('#mFolder').onclick = () => api('/api/buka-folder', {jenis: 'motion', nama: h.nama});
+    return;
+  }
   el.innerHTML = `<div class="kartu video-besar"><video src="${h.video}" controls playsinline></video><div>
     <div class="eyebrow">Selesai · gaya ${esc(n.gaya || '')}</div><h2 style="margin:6px 0 14px;letter-spacing:-.4px">${esc(n.judul || 'Video')}</h2>
     <div class="daftar-adegan">${(n.adegan || []).map((a, i) => `<div class="adegan"><em>${esc(a.ikon || '▶️')}</em><div><b>${String(i + 1).padStart(2, '0')} · ${esc(a.judul)}</b><small>${esc(a.teks || (a.video ? 'klip video' : ''))}${a.durasi ? ' · ' + a.durasi + ' dtk' : ''}</small></div></div>`).join('')}</div>
