@@ -211,9 +211,9 @@ Tahap setelah rancangan mulai diterapkan pada branch `feat/lemo-opuscar-foundati
 
 ### Belum boleh dianggap selesai
 
-- **Tahap 6 — Scene Editor:** belum ada kontrol UI khusus untuk mengedit Character Bible, lingkungan, properti, aksi, dan kamera. Data JSON dapat dibaca oleh renderer, tetapi pengalaman edit visual belum selesai.
-- **Tahap 7 — Batch Production:** jalur batch yang memakai generator dan `buat.mjs` secara desain membawa metadata baru bersama JSON; perlu uji batch nyata untuk memastikan semua worker/proses dan penyimpanan proyek mempertahankannya.
-- **Tahap 8 — pengujian dan optimasi:** belum ada hasil build TypeScript/Remotion atau render MP4 yang dijalankan pada Windows. Perlu uji dengan `npm install`, pemeriksaan TypeScript, preview, render satu video, proyek lama, klip asli, dan batch. Jangan menghapus template lama sebelum pengujian regresi lulus.
+- **Tahap 6 — Scene Editor:** kontrol UI sudah ditambahkan untuk memilih mode visual, mengedit Character Bible, lingkungan, ID karakter, properti, aksi JSON, kamera JSON, dan arahan visual tambahan. Field ikon diberi label sebagai opsi kompatibilitas proyek lama. Perlu uji interaksi UI dan validasi JSON saat dipakai.
+- **Tahap 7 — Batch Production:** jalur batch yang memakai generator dan `buat.mjs` membawa metadata baru bersama JSON; generator kini meminta `storytelling-2d` secara default. Uji batch nyata tetap diperlukan untuk memastikan seluruh proyek mempertahankan Character Bible.
+- **Tahap 8 — pengujian dan optimasi:** belum ada hasil build TypeScript/Remotion atau render MP4 yang dijalankan pada Windows. Perlu uji dengan `npm install`, pemeriksaan TypeScript, preview, render satu video, proyek lama, klip asli, dan batch. Jangan menghapus template lama dari kode renderer sebelum pengujian regresi lulus.
 
 ### Kriteria rilis
 
@@ -224,4 +224,4 @@ Tahap setelah rancangan mulai diterapkan pada branch `feat/lemo-opuscar-foundati
 5. Editor dan batch mempertahankan field baru saat menyimpan/memuat.
 6. Build bersih dan uji regresi lulus di Windows.
 
-Sampai kriteria di atas terpenuhi, integrasi berstatus **implementasi awal / perlu validasi**, bukan rilis final.
+Sampai kriteria di atas terpenuhi, integrasi berstatus **implementasi fitur / perlu validasi runtime**, bukan rilis final.
