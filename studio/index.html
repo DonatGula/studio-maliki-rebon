@@ -1606,7 +1606,9 @@ function gambarMotionScene() {
   el.innerHTML = MOTION_DRAFT.adegan.map((a, i) => `<article class="kartu motion-scene" data-index="${i}" style="margin:12px 0;padding:16px">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px">
       <b>Adegan ${String(i + 1).padStart(2, '0')}</b>
-      <div class="aksi"><button class="tombol kedua kecil" data-scene-up="${i}" ${i === 0 ? 'disabled' : ''} title="Pindah ke atas">↑</button>
+      <div class="aksi"><button class="tombol kedua kecil" data-scene-preview="${i}" title="Render preview adegan">▶ Preview</button>
+      <button class="tombol kedua kecil" data-scene-regen="${i}" title="Buat ulang adegan dengan AI">↻ AI</button>
+      <button class="tombol kedua kecil" data-scene-up="${i}" ${i === 0 ? 'disabled' : ''} title="Pindah ke atas">↑</button>
       <button class="tombol kedua kecil" data-scene-down="${i}" ${i === MOTION_DRAFT.adegan.length - 1 ? 'disabled' : ''} title="Pindah ke bawah">↓</button>
       <button class="tombol kedua kecil" data-scene-delete="${i}" title="Hapus adegan">Hapus</button></div>
     </div>
@@ -1620,6 +1622,7 @@ function gambarMotionScene() {
     <div class="bidang"><label>Arah visual</label><textarea class="input" data-key="visual" rows="2" placeholder="Apa yang terlihat di adegan ini">${esc(a.visual || '')}</textarea></div>
     <div class="bidang"><label>Gerakan / animasi</label><textarea class="input" data-key="gerak" rows="2" placeholder="Bagaimana elemen bergerak">${esc(a.gerak || '')}</textarea></div>
     <div class="bidang"><label>Transisi</label><input class="input" data-key="transisi" value="${esc(a.transisi || '')}" placeholder="Cara masuk dan keluar adegan"></div>
+    ${a.preview ? `<div class="bidang"><label>Preview adegan</label><video src="${esc(a.preview)}?v=${Date.now()}" controls playsinline style="width:100%;max-height:360px;background:#000;border-radius:12px"></video></div>` : ''}
   </article>`).join('');
 }
 
@@ -1643,10 +1646,22 @@ function hasilMotion(h) {
       gambarMotionScene();
     };
     $('#motionSceneList').onclick = (e) => {
+      const preview = e.target.closest('[data-scene-preview]'), regen = e.target.closest('[data-scene-regen]');
       const up = e.target.closest('[data-scene-up]'), down = e.target.closest('[data-scene-down]'), del = e.target.closest('[data-scene-delete]');
-      if (!up && !down && !del) return;
+      if (!up && !down && !del && !preview && !regen) return;
       sinkronMotionScene();
-      const i = Number((up || down || del).dataset.sceneUp ?? (up || down || del).dataset.sceneDown ?? (up || down || del).dataset.sceneDelete);
+      const target = up || down || del || preview || regen;
+      const i = Number(target.dataset.sceneUp ?? target.dataset.sceneDown ?? target.dataset.sceneDelete ?? target.dataset.scenePreview ?? target.dataset.sceneRegen);
+      if (preview || regen) {
+        if (SIBUK) return toast('Tunggu proses yang sedang berjalan selesai.', true);
+        try {
+          await api('/api/motion/save', {nama: h.nama, naskah: JSON.stringify(MOTION_DRAFT)});
+          const endpoint = preview ? '/api/motion/preview-scene' : '/api/motion/regenerate';
+          await api(endpoint, {nama: h.nama, indice: i, ai: PENG.AI || 'lokal'});
+          mulaiPantau('motion');
+        } catch (err) { toast(err.message, true); }
+        return;
+      }
       if (del) {
         if (MOTION_DRAFT.adegan.length <= 1) return toast('Minimal harus ada satu adegan.', true);
         MOTION_DRAFT.adegan.splice(i, 1);
