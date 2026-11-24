@@ -1707,7 +1707,7 @@ function hasilMotion(h) {
     $('#motionTimeline').onclick = (e) => {
       const btn = e.target.closest('[data-timeline-scene]');
       if (!btn) return;
-      $('#motionSceneList .motion-scene')?.[Number(btn.dataset.timelineScene)]?.scrollIntoView({behavior: 'smooth', block: 'center'});
+      document.querySelectorAll('#motionSceneList .motion-scene')[Number(btn.dataset.timelineScene)]?.scrollIntoView({behavior: 'smooth', block: 'center'});
     };
     $('#motionSceneList').onchange = () => { sinkronMotionScene(); gambarMotionTimeline(); };
     $('#motionSceneList').onclick = async (e) => {
