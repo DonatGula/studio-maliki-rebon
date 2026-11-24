@@ -541,6 +541,38 @@ def mulai_motion(d: dict) -> dict:
     return {"proyek": nama, "tahap": "review"}
 
 
+
+def simpan_motion_draft(d: dict) -> dict:
+    """Simpan hasil edit storyboard tanpa memulai rendering."""
+    nama = re.sub(r"[^\\w-]", "", d.get("nama", ""))
+    if not nama:
+        raise ValueError("Nama proyek tidak valid.")
+    folder = (DATA / "motion" / nama).resolve()
+    if DATA.resolve() not in folder.parents or not folder.is_dir():
+        raise ValueError("Proyek Motion tidak ditemukan.")
+    teks = d.get("naskah")
+    if not isinstance(teks, str) or not teks.strip():
+        raise ValueError("Naskah kosong.")
+    try:
+        data = json.loads(teks)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"JSON naskah tidak valid: {e.msg} (baris {e.lineno}).") from e
+    if not isinstance(data, dict) or not isinstance(data.get("adegan"), list) or not data["adegan"]:
+        raise ValueError('Naskah harus memiliki daftar "adegan" yang tidak kosong.')
+    for i, adegan in enumerate(data["adegan"], 1):
+        if not isinstance(adegan, dict) or not isinstance(adegan.get("teks", ""), str):
+            raise ValueError(f"Adegan {i} tidak valid: setiap adegan harus berupa objek dengan teks.")
+    gaya = str(data.get("gaya") or "garis")
+    if not re.fullmatch(r"[a-z0-9_-]+", gaya):
+        raise ValueError("Nama gaya tidak valid.")
+    data["gaya"] = gaya
+    naskah_path = MOTION / "naskah" / f"{nama}.json"
+    naskah_path.parent.mkdir(parents=True, exist_ok=True)
+    naskah_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    shutil.copy(naskah_path, folder / "naskah.json")
+    return {"ok": True, "nama": nama}
+
+
 def render_motion(d: dict) -> dict:
     """Tahap 2: render hanya setelah naskah disetujui/diedit pengguna."""
     nama = re.sub(r"[^\w-]", "", d.get("nama", ""))
@@ -822,6 +854,8 @@ class H(BaseHTTPRequestHandler):
                 return self._json(mulai_klip(d))
             if jalur == "/api/motion":
                 return self._json(mulai_motion(d))
+            if jalur == "/api/motion/save":
+                return self._json(simpan_motion_draft(d))
             if jalur == "/api/motion/render":
                 return self._json(render_motion(d))
             if jalur == "/api/unduh":
