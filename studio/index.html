@@ -495,7 +495,7 @@ main{position:relative;z-index:1}
         <div class="kartu b-aksi" data-buka="klip" style="--w:#22d3ee">
           <div class="b-kepala"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12"/></svg><h2>Potong video jadi klip</h2></div><p>Tempel link YouTube atau seret video. AI memilih momen terbaik, lalu render 9:16 dengan subtitle.</p><span class="panah">buka klip →</span></div>
         <div class="kartu b-aksi" data-buka="motion" style="--w:#818cf8">
-          <div class="b-kepala"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m10 8 6 4-6 4z"/></svg><h2>Topik jadi video animasi</h2></div><p>Naskah per adegan, suara narator, 24 gaya template, render MP4 1080×1920.</p><span class="panah">buka motion →</span></div>
+          <div class="b-kepala"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m10 8 6 4-6 4z"/></svg><h2>Topik jadi video animasi</h2></div><p>Storyboard karakter dan lingkungan 2D, suara narator, render MP4 1080×1920.</p><span class="panah">buka motion →</span></div>
         <div class="kartu b-terbaru"><h2 class="judul-kartu"><i></i>proyek terakhir</h2><div class="mini-proyek" id="miniProyek"></div></div>
         <div class="kartu b-status"><h2 class="judul-kartu"><i style="background:var(--hijau)"></i>status</h2><div id="statusBeranda"></div></div>
         <div class="kartu b-angka"><div><b id="nKlip">0</b><small>proyek klip</small></div><div><b id="nMotion">0</b><small>video motion</small></div></div>
@@ -635,7 +635,7 @@ main{position:relative;z-index:1}
           <div class="pil" id="pilIsi" style="margin-bottom:12px"><button data-v="topik" class="aktif">Dari topik (AI)</button><button data-v="naskah">Tempel naskah JSON</button></div>
           <div id="isiTopik"><textarea class="input" id="topik" placeholder="mis. 3 kebiasaan pagi yang bikin produktif"></textarea>
             <div class="catatan">Butuh AI di Pengaturan (Gemini gratis cukup). Tanpa kunci? Pakai tab <b>Tempel naskah JSON</b> — minta naskahnya di Claude/Gemini gratis dengan <button type="button" class="tautan" id="salinPrompt" style="padding:4px 2px">prompt ini</button>.</div></div>
-          <div id="isiNaskah" hidden><textarea class="input" id="naskahJSON" style="min-height:180px;font-family:var(--mono);font-size:12px" placeholder='{"judul":"...","adegan":[{"judul":"...","teks":"...","kunci":["..."],"ikon":"🔥"}]}'></textarea></div>
+          <div id="isiNaskah" hidden><textarea class="input" id="naskahJSON" style="min-height:180px;font-family:var(--mono);font-size:12px" placeholder='{"judul":"...","motion":{"styleId":"storytelling-2d"},"karakter":[...],"adegan":[{"judul":"...","teks":"...","lingkungan":"kamar","karakter":["tokoh-utama"],"aksi":[],"kamera":{}}]}'></textarea></div>
         </div>
         <div class="kartu">
           <h2 class="judul-kartu"><i style="background:var(--hijau)"></i>Visual utama · 2D Animated Storytelling</h2>
