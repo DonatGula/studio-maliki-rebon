@@ -1990,6 +1990,13 @@ async function muatRiwayat() {
     }
     if (antre.length && !jadwal) jadwal = requestAnimationFrame(munculkan);
   }).observe(document.querySelector('main'), {childList: true, subtree: true});
+  document.querySelectorAll('.motion-skill').forEach((input) => input.addEventListener('change', () => {
+    const dipilih = document.querySelectorAll('.motion-skill:checked').length;
+    if (dipilih > 5) {
+      input.checked = false;
+      alert('Maksimal lima Motion Skills dapat dipilih sekaligus.');
+    }
+  }));
   document.querySelectorAll(SELEKTOR).forEach((el) => sudah.add(el));
 })();
 </script>
