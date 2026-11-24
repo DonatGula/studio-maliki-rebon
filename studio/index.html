@@ -684,6 +684,17 @@ main{position:relative;z-index:1}
           <div class="aksi" style="margin-top:16px"><button class="tombol utama" id="tblMotion"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z"/></svg>Buat naskah</button></div>
         </div>
       </div>
+      <div class="kartu" style="margin-top:16px">
+        <div class="eyebrow">produksi massal · maksimal 5 video</div>
+        <h2 style="margin:4px 0 8px">Batch Production</h2>
+        <p class="catatan">Masukkan satu topik per baris. AI akan membuat naskah dan merender setiap video secara berurutan ke proyek terpisah. Pastikan AI sudah aktif di Pengaturan.</p>
+        <div class="bidang"><label>Daftar topik</label><textarea class="input" id="motionBatchTopics" rows="4" placeholder="Fakta unik tentang laut dalam&#10;Sejarah singkat kopi&#10;Cara kerja aurora"></textarea></div>
+        <div class="grid2" style="margin:0">
+          <div class="bidang"><label>Preset batch</label><select class="input" id="motionBatchPreset"><option value="shorts">YouTube Shorts · 1080×1920</option><option value="tiktok">TikTok · 1080×1920</option><option value="reels">Reels · 1080×1920</option><option value="draft">Draft cepat · 540×960</option><option value="high">Kualitas tinggi · 1350×2400</option></select></div>
+          <div class="bidang"><label>Jumlah video</label><div class="input" id="motionBatchCount" style="display:flex;align-items:center">0 / 5 topik</div></div>
+        </div>
+        <div class="aksi"><button class="tombol utama" id="motionBatchRun">Mulai batch</button></div>
+      </div>
       <div class="kartu proses" id="prosesMotion">
         <div class="langkah" id="lkMotion"></div>
         <div class="batang"><i id="batangMotion"></i></div>
@@ -1235,6 +1246,22 @@ $('#tblKlip').onclick = async () => {
     mulaiPantau('klip');
   } catch (e) { toast(e.message, true); }
 };
+$('#motionBatchTopics').oninput = () => {
+  const n = $('#motionBatchTopics').value.split(/\\r?\\n/).filter((x) => x.trim()).length;
+  $('#motionBatchCount').textContent = `${n} / 5 topik`;
+};
+$('#motionBatchRun').onclick = async () => {
+  if (SIBUK) return toast('Tunggu proses yang sedang berjalan selesai.', true);
+  const topics = $('#motionBatchTopics').value.split(/\\r?\\n/).map((x) => x.trim()).filter(Boolean);
+  if (!topics.length || topics.length > 5) return toast('Masukkan 1 sampai 5 topik, satu topik per baris.', true);
+  if (!confirm(`Buat ${topics.length} video secara berurutan? Proses dapat memerlukan waktu cukup lama.`)) return;
+  try {
+    await api('/api/motion/batch', {topik: topics, gaya: $('#pilGaya .aktif').dataset.v,
+      ai: PENG.AI || 'lokal', skills: [...document.querySelectorAll('.motion-skill:checked')].map((x) => x.value),
+      preset: $('#motionBatchPreset').value});
+    mulaiPantau('motion');
+  } catch (e) { toast(e.message, true); }
+};
 $('#tblMotion').onclick = async () => {
   if (SIBUK) return toast(`Masih memproses ${SIBUK === 'motion' ? 'Motion' : 'klip'} — tunggu selesai atau tekan Batalkan dulu.`, true);
   try {
@@ -1248,7 +1275,24 @@ $('#tblMotion').onclick = async () => {
 $('#salinPrompt').onclick = (e) => { e.preventDefault(); salin(`Kamu penulis naskah video pendek berbahasa Indonesia. Topik: [TOPIK]. Tulis 4–7 adegan; adegan 1 hook; satu kalimat narasi per adegan maks 14 kata; judul layar 2–5 kata; jangan mengarang angka; adegan terakhir ajakan. Balas HANYA JSON: {"judul":"...","adegan":[{"judul":"2-5 kata","teks":"kalimat narasi","kunci":["kata"],"ikon":"🔥"}]}`); };
 
 // hasil
-function tampilHasil(h) { if (!h) return; if (h.jenis === 'motion') return hasilMotion(h); hasilKlip(h); }
+function tampilHasil(h) {
+  if (!h) return;
+  if (h.jenis === 'motion') return hasilMotion(h);
+  if (h.jenis === 'motion-batch') {
+    const el = $('#hasilMotion'), hasil = h.hasil || [], berhasil = hasil.filter((x) => x.ok).length;
+    el.innerHTML = `<div class="kartu" style="margin-top:18px"><div class="eyebrow">batch selesai · ${berhasil}/${hasil.length} berhasil</div>
+      <h2>Hasil produksi batch</h2>
+      ${hasil.map((x) => `<div class="adegan" style="margin:10px 0"><em>${x.ok ? '✓' : '!'}</em><div><b>${esc(x.topic)}</b><small>${x.ok ? 'Video berhasil dirender' : esc(x.error || 'Gagal') }</small></div>${x.ok ? `<a class="tombol utama kecil" href="${esc(x.video)}" download>Unduh MP4</a><button class="tombol kedua kecil" data-batch-project="${esc(x.name)}">Buka proyek</button>` : ''}</div>`).join('')}
+    </div>`;
+    el.classList.add('tampil');
+    $('[data-batch-project]', el).forEach((b) => b.onclick = async () => {
+      const h = await api(`/api/proyek/motion/${b.dataset.batchProject}`);
+      tampilHasil(h);
+    });
+    return;
+  }
+  hasilKlip(h);
+}
 // ── Klip: hasil analisis (kiri pemutar & ringkasan, kanan kartu klip) ──
 const KLIP = {h: null, pilih: new Set(), cari: '', filter: 0, urut: 'skor', judul: {}, aktif: null};
 const pct = (x) => Math.round((x || 0) <= 1 ? (x || 0) * 100 : x);
