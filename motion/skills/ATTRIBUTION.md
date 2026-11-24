@@ -13,8 +13,10 @@ Studio Maliki Reborn mengintegrasikan panduan dari proyek [iart-ai/motion-skills
 - [b-roll-skills](https://github.com/iart-ai/b-roll-skills) — talking-head-b-roll
 - [data-animation-skills](https://github.com/iart-ai/data-animation-skills) — animated-infographic
 - [map-animation-skills](https://github.com/iart-ai/map-animation-skills) — map-animation
+- [ecommerce-video-skills](https://github.com/iart-ai/ecommerce-video-skills) — photo-slideshow, product-demo-video, promo-video
+- [ad-video-skills](https://github.com/iart-ai/ad-video-skills) — ad-creative-video
 
-Dua belas file `SKILL.md` dari sembilan pack saat ini disertakan secara lokal: enam pack berstatus partial dan tiga pack sudah lengkap. Status tersebut juga dicatat pada `packs.json`.
+Enam belas file `SKILL.md` dari sebelas pack saat ini disertakan secara lokal: tujuh pack berstatus partial dan empat pack sudah lengkap. Status tersebut juga dicatat pada `packs.json`.
 
 ## Katalog lengkap
 
