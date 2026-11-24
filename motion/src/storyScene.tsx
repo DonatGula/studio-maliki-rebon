@@ -85,7 +85,7 @@ export const StoryScene: React.FC<Props> = ({adegan, karakter = []}) => {
   const enter = spring({frame, fps, config: {damping: 18, stiffness: 90}});
   const actionText = (adegan.aksi ?? []).map((a) => typeof a === 'string' ? a : a?.gerakan ?? '').join(' ');
   const ids = adegan.karakter?.length ? adegan.karakter : [karakter[0]?.id ?? 'tokoh-utama'];
-  const selected = ids.map((id) => karakter.find((c) => c.id === id) ?? {id});
+  const selected: KarakterStory[] = ids.map((id) => karakter.find((c) => c.id === id) ?? {id, warna: []});
   const kind = adegan.lingkungan ?? adegan.visual ?? 'ruangan sederhana';
   const framing = adegan.kamera?.framing ?? 'medium';
   const scale = framing === 'close-up' || framing === 'closeup' ? 1.22 : framing === 'wide' ? .88 : 1;
