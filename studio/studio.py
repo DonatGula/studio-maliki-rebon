@@ -566,6 +566,7 @@ def simpan_motion_draft(d: dict) -> dict:
     if not re.fullmatch(r"[a-z0-9_-]+", gaya):
         raise ValueError("Nama gaya tidak valid.")
     data["gaya"] = gaya
+    data["_draft_dirty"] = True
     naskah_path = MOTION / "naskah" / f"{nama}.json"
     naskah_path.parent.mkdir(parents=True, exist_ok=True)
     naskah_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -598,6 +599,7 @@ def render_motion(d: dict) -> dict:
     if not re.fullmatch(r"[a-z0-9_-]+", gaya):
         raise ValueError("Nama gaya tidak valid.")
     data["gaya"] = gaya
+    data["_draft_dirty"] = True
     naskah_path = MOTION / "naskah" / f"{nama}.json"
     naskah_path.parent.mkdir(parents=True, exist_ok=True)
     naskah_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -618,6 +620,9 @@ def render_motion(d: dict) -> dict:
     def setelah(k: Kerja):
         for hasil in (MOTION / "hasil").glob(f"{nama}-*.mp4"):
             shutil.move(str(hasil), folder / "video.mp4")
+        data["_draft_dirty"] = False
+        naskah_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        shutil.copy(naskah_path, MOTION / "naskah" / f"{nama}.json")
         k.hasil = muat_proyek("motion", nama)
 
     langkah = []
@@ -722,6 +727,7 @@ def regenerar_motion_adegan(d: dict) -> dict:
         lama = data["adegan"][index]
         lama.update(baru)
         lama.pop("preview", None)
+        data["_draft_dirty"] = True
         naskah_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
         shutil.copy(naskah_path, MOTION / "naskah" / f"{nome}.json")
         sumber.unlink(missing_ok=True); keluaran.unlink(missing_ok=True)
@@ -764,6 +770,7 @@ def pratinjau_motion_adegan(d: dict) -> dict:
         tujuan = folder / f"preview-{index + 1:02d}.mp4"
         shutil.move(str(hasil), tujuan)
         data["adegan"][index]["preview"] = f"/berkas/motion/{nama}/preview-{index + 1:02d}.mp4"
+        data["_draft_dirty"] = True
         naskah_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
         shutil.copy(naskah_path, MOTION / "naskah" / f"{nama}.json")
         sumber.unlink(missing_ok=True)
@@ -779,7 +786,9 @@ def muat_proyek(jenis: str, nama: str) -> dict:
         p = f / berkas
         if p.exists():
             out[berkas.split(".")[0]] = json.loads(p.read_text(encoding="utf-8"))
-    if (jenis == "motion" and (f / "naskah.json").exists() and not (f / "video.mp4").exists()):
+    if jenis == "motion" and (out.get("naskah") or {}).get("_draft_dirty", False):
+        out["tahap"] = "review"
+    elif jenis == "motion" and (f / "naskah.json").exists() and not (f / "video.mp4").exists():
         out["tahap"] = "review"
     if (f / "video.mp4").exists():
         out["video"] = f"/berkas/{jenis}/{nama}/video.mp4"
