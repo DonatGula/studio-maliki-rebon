@@ -601,6 +601,8 @@ def muat_proyek(jenis: str, nama: str) -> dict:
         p = f / berkas
         if p.exists():
             out[berkas.split(".")[0]] = json.loads(p.read_text(encoding="utf-8"))
+    if (jenis == "motion" and (f / "naskah.json").exists() and not (f / "video.mp4").exists()):
+        out["tahap"] = "review"
     if (f / "video.mp4").exists():
         out["video"] = f"/berkas/{jenis}/{nama}/video.mp4"
     if (f / "gambar.jpg").exists():
@@ -636,11 +638,11 @@ def daftar_proyek() -> list[dict]:
     for jenis in ("klip", "motion"):
         for f in sorted((DATA / jenis).glob("*"), reverse=True) if (DATA / jenis).exists() else []:
             p = muat_proyek(jenis, f.name)
-            if (jenis == "klip" and "info" not in p) or (jenis == "motion" and "video" not in p):
-                continue  # proyek gagal/terputus tidak ditampilkan (berkasnya tetap ada di disk)
+            if (jenis == "klip" and "info" not in p) or (jenis == "motion" and "video" not in p and "naskah" not in p):
+                continue  # proyek gagal/terputus tanpa naskah tidak ditampilkan
             judul = (p.get("info") or {}).get("judul") or (p.get("naskah") or {}).get("judul") or \
                 (p.get("permintaan") or {}).get("sumber") or (p.get("permintaan") or {}).get("topik") or f.name
-            jumlah = len(p.get("klip") or []) or (1 if p.get("video") else 0)
+            jumlah = len(p.get("klip") or []) or len((p.get("naskah") or {}).get("adegan") or []) or (1 if p.get("video") else 0)
             out.append({"jenis": jenis, "nama": f.name, "judul": judul, "jumlah": jumlah,
                         "gambar": p.get("gambar", ""), "durasi": (p.get("info") or {}).get("durasi"),
                         "ai": (p.get("info") or {}).get("ai", "")})
