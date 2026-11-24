@@ -225,3 +225,34 @@ Tahap setelah rancangan mulai diterapkan pada branch `feat/lemo-opuscar-foundati
 6. Build bersih dan uji regresi lulus di Windows.
 
 Sampai kriteria di atas terpenuhi, integrasi berstatus **implementasi fitur / perlu validasi runtime**, bukan rilis final.
+
+
+## 10. Tahap 3 — fondasi karakter dan lingkungan (dikerjakan ulang)
+
+Status: implementasi fondasi pada branch `feat/lemo-opuscar-foundation`.
+
+### Struktur komponen
+
+- `src/storyAssets.tsx` menjadi katalog komponen SVG reusable:
+  - `StoryCharacter`: figur karakter dengan warna kulit, rambut, baju, celana, dan aksesoris yang dapat ditentukan melalui Character Bible.
+  - `StoryEnvironment`: latar dasar indoor, dapur, malam, dan outdoor dengan warna latar opsional.
+  - `StoryProp`: properti reusable untuk ponsel, buku, gelas, laptop, bola, pintu, dan fallback objek umum.
+- `src/storyScene.tsx` menghubungkan aset-aset tersebut ke komposisi satu adegan dan mengambil karakter berdasarkan ID dari Character Bible.
+- `src/Video.tsx` tetap mempertahankan komposisi Remotion lama dan hanya mengaktifkan StoryScene ketika profil storytelling dipilih atau data adegan baru tersedia.
+
+### Batas tahap ini
+
+- Ini adalah fondasi ilustrasi SVG prosedural, bukan animasi karakter profesional berbasis skeleton/rig.
+- Bentuk karakter masih satu desain dasar; variasi identitas dijaga melalui data warna dan aksesoris. Variasi bentuk tubuh, usia, ekspresi, dan pakaian yang lebih luas belum tersedia.
+- Properti saat ini diposisikan secara sederhana; interaksi tangan dengan properti belum menjadi bagian Tahap 3.
+- Tahap 3 tidak menghapus tema/ikon lama dan tidak mengubah pipeline suara, klip, batch, maupun ekspor.
+
+### Kriteria penerimaan Tahap 3
+
+1. Data karakter dari Character Bible dapat dirujuk melalui ID.
+2. Warna dan tampilan karakter dapat diatur tanpa mengubah komponen renderer.
+3. Lingkungan dan properti ditampilkan sebagai elemen SVG terpisah, bukan emoji besar.
+4. Naskah lama tanpa field baru tetap memakai renderer lama.
+5. Tidak ada dependency baru.
+
+Catatan verifikasi: perubahan kode telah dikirim ke GitHub, tetapi build TypeScript dan render video belum dapat dijalankan dari lingkungan GitHub API. Karena itu Tahap 3 belum dinyatakan lulus uji runtime; perlu diuji di folder lokal sebelum melanjutkan ke Tahap 4.
