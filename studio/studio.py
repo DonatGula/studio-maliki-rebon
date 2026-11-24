@@ -710,6 +710,11 @@ def regenerar_motion_adegan(d: dict) -> dict:
     sumber.parent.mkdir(parents=True, exist_ok=True)
     sumber.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     cmd = [node, "adegan.mjs", f"naskah/{token}.json", str(index + 1), ai, str(keluaran)]
+    langkah = []
+    if not (MOTION / "node_modules").exists():
+        npm = shutil.which("npm") or ("npm" if os.name == "nt" else "/usr/bin/npm")
+        langkah.append(([npm, "install", "--silent"], MOTION))
+    langkah.append((cmd, MOTION))
     def setelah(k: Kerja):
         baru = json.loads(keluaran.read_text(encoding="utf-8"))
         lama = data["adegan"][index]
@@ -719,7 +724,7 @@ def regenerar_motion_adegan(d: dict) -> dict:
         shutil.copy(naskah_path, MOTION / "naskah" / f"{nome}.json")
         sumber.unlink(missing_ok=True); keluaran.unlink(missing_ok=True)
         k.hasil = {"jenis": "motion", "nama": nome, "tahap": "review", "naskah": data}
-    KERJA.jalankan("motion", [(cmd, MOTION)], folder, setelah)
+    KERJA.jalankan("motion", langkah, folder, setelah)
     return {"ok": True, "proyek": nome, "adegan": index + 1}
 
 
@@ -745,6 +750,11 @@ def pratinjau_motion_adegan(d: dict) -> dict:
     sumber.write_text(json.dumps(satu, ensure_ascii=False, indent=2), encoding="utf-8")
     gaya = str(data.get("gaya") or "garis")
     perintah = [node, "buat.mjs", f"naskah/{token}.json", f"--gaya={gaya}", "--suara=tanpa", "--preset=preview"]
+    langkah = []
+    if not (MOTION / "node_modules").exists():
+        npm = shutil.which("npm") or ("npm" if os.name == "nt" else "/usr/bin/npm")
+        langkah.append(([npm, "install", "--silent"], MOTION))
+    langkah.append((perintah, MOTION))
     def setelah(k: Kerja):
         hasil = MOTION / "hasil" / f"{token}-{gaya}.mp4"
         if not hasil.exists():
@@ -756,7 +766,7 @@ def pratinjau_motion_adegan(d: dict) -> dict:
         shutil.copy(naskah_path, MOTION / "naskah" / f"{nama}.json")
         sumber.unlink(missing_ok=True)
         k.hasil = {"jenis": "motion", "nama": nama, "tahap": "review", "naskah": data}
-    KERJA.jalankan("motion", [(perintah, MOTION)], folder, setelah)
+    KERJA.jalankan("motion", langkah, folder, setelah)
     return {"ok": True, "proyek": nama, "adegan": index + 1}
 
 
