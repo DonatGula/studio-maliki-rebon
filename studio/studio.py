@@ -513,7 +513,10 @@ def mulai_motion(d: dict) -> dict:
         (MOTION / "naskah").mkdir(exist_ok=True)
         (MOTION / "naskah" / f"{nama}.json").write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     else:
-        langkah.append(([node, "naskah.mjs", topik, f"--ai={ai}", f"--gaya={gaya}", f"--nama={nama}"], MOTION))
+        skills = d.get("skills") or []
+        skill_arg = ",".join(str(x) for x in skills if isinstance(x, str) and re.fullmatch(r"[a-z0-9-]+", x))
+        langkah.append(([node, "naskah.mjs", topik, f"--ai={ai}", f"--gaya={gaya}", f"--nama={nama}",
+                         f"--skills={skill_arg or 'auto'}"], MOTION))
     if d.get("gambar") and ai != "lokal":
         # AI menggambar objek SVG per adegan (gagal → video tetap jadi dengan emoji)
         langkah.append(([node, "gambar.mjs", f"naskah/{nama}.json", f"--ai={ai}"], MOTION))
