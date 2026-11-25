@@ -495,7 +495,7 @@ main{position:relative;z-index:1}
         <div class="kartu b-aksi" data-buka="klip" style="--w:#22d3ee">
           <div class="b-kepala"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12"/></svg><h2>Potong video jadi klip</h2></div><p>Tempel link YouTube atau seret video. AI memilih momen terbaik, lalu render 9:16 dengan subtitle.</p><span class="panah">buka klip →</span></div>
         <div class="kartu b-aksi" data-buka="motion" style="--w:#818cf8">
-          <div class="b-kepala"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m10 8 6 4-6 4z"/></svg><h2>Topik jadi video animasi</h2></div><p>Naskah per adegan, suara narator, 24 gaya template, render MP4 1080×1920.</p><span class="panah">buka motion →</span></div>
+          <div class="b-kepala"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m10 8 6 4-6 4z"/></svg><h2>Topik jadi video animasi</h2></div><p>Storyboard karakter dan lingkungan 2D, suara narator, render MP4 1080×1920.</p><span class="panah">buka motion →</span></div>
         <div class="kartu b-terbaru"><h2 class="judul-kartu"><i></i>proyek terakhir</h2><div class="mini-proyek" id="miniProyek"></div></div>
         <div class="kartu b-status"><h2 class="judul-kartu"><i style="background:var(--hijau)"></i>status</h2><div id="statusBeranda"></div></div>
         <div class="kartu b-angka"><div><b id="nKlip">0</b><small>proyek klip</small></div><div><b id="nMotion">0</b><small>video motion</small></div></div>
@@ -635,37 +635,16 @@ main{position:relative;z-index:1}
           <div class="pil" id="pilIsi" style="margin-bottom:12px"><button data-v="topik" class="aktif">Dari topik (AI)</button><button data-v="naskah">Tempel naskah JSON</button></div>
           <div id="isiTopik"><textarea class="input" id="topik" placeholder="mis. 3 kebiasaan pagi yang bikin produktif"></textarea>
             <div class="catatan">Butuh AI di Pengaturan (Gemini gratis cukup). Tanpa kunci? Pakai tab <b>Tempel naskah JSON</b> — minta naskahnya di Claude/Gemini gratis dengan <button type="button" class="tautan" id="salinPrompt" style="padding:4px 2px">prompt ini</button>.</div></div>
-          <div id="isiNaskah" hidden><textarea class="input" id="naskahJSON" style="min-height:180px;font-family:var(--mono);font-size:12px" placeholder='{"judul":"...","adegan":[{"judul":"...","teks":"...","kunci":["..."],"ikon":"🔥"}]}'></textarea></div>
+          <div id="isiNaskah" hidden><textarea class="input" id="naskahJSON" style="min-height:180px;font-family:var(--mono);font-size:12px" placeholder='{"judul":"...","motion":{"styleId":"storytelling-2d"},"karakter":[...],"adegan":[{"judul":"...","teks":"...","lingkungan":"kamar","karakter":["tokoh-utama"],"aksi":[],"kamera":{}}]}'></textarea></div>
         </div>
         <div class="kartu">
-          <h2 class="judul-kartu"><i style="background:var(--hijau)"></i>Gaya · 24 template</h2>
+          <h2 class="judul-kartu"><i style="background:var(--hijau)"></i>Visual utama · 2D Animated Storytelling</h2>
           <div class="gaya-pilih" id="pilGaya">
-            <button class="gaya" data-v="piksel" title="Pixel Art"><img src="/aset/gaya/piksel.jpg" alt="" loading="lazy"><div class="nama"><b>Pixel Art</b><span>ilustrasi</span></div></button>
-            <button class="gaya" data-v="kapur" title="Papan Kapur"><img src="/aset/gaya/kapur.jpg" alt="" loading="lazy"><div class="nama"><b>Papan Kapur</b><span>ilustrasi</span></div></button>
-            <button class="gaya" data-v="emas" title="Sketsa Emas"><img src="/aset/gaya/emas.jpg" alt="" loading="lazy"><div class="nama"><b>Sketsa Emas</b><span>ilustrasi</span></div></button>
-            <button class="gaya" data-v="ps2" title="Low-poly PS2"><img src="/aset/gaya/ps2.jpg" alt="" loading="lazy"><div class="nama"><b>Low-poly PS2</b><span>ilustrasi</span></div></button>
-            <button class="gaya" data-v="komik" title="Komik"><img src="/aset/gaya/komik.jpg" alt="" loading="lazy"><div class="nama"><b>Komik</b><span>ilustrasi</span></div></button>
-            <button class="gaya" data-v="flat" title="Flat Vector"><img src="/aset/gaya/flat.jpg" alt="" loading="lazy"><div class="nama"><b>Flat Vector</b><span>ilustrasi</span></div></button>
-            <button class="gaya" data-v="stickman" title="Stickman Minimalis"><img src="/aset/gaya/stickman.jpg" alt="" loading="lazy"><div class="nama"><b>Stickman Minimalis</b><span>ilustrasi</span></div></button>
-            <button class="gaya" data-v="cgi" title="CGI Mengilap"><img src="/aset/gaya/cgi.jpg" alt="" loading="lazy"><div class="nama"><b>CGI Mengilap</b><span>ilustrasi</span></div></button>
-            <button class="gaya" data-v="bata" title="Bata Mainan"><img src="/aset/gaya/bata.jpg" alt="" loading="lazy"><div class="nama"><b>Bata Mainan</b><span>ilustrasi</span></div></button>
-            <button class="gaya" data-v="clay" title="Clay 3D"><img src="/aset/gaya/clay.jpg" alt="" loading="lazy"><div class="nama"><b>Clay 3D</b><span>ilustrasi</span></div></button>
-            <button class="gaya aktif" data-v="garis" title="Garis"><img src="/aset/gaya/garis.jpg" alt="" loading="lazy"><div class="nama"><b>Garis</b><span>awal</span></div></button>
-            <button class="gaya" data-v="neon" title="Neon"><img src="/aset/gaya/neon.jpg" alt="" loading="lazy"><div class="nama"><b>Neon</b><span>awal</span></div></button>
-            <button class="gaya" data-v="kertas" title="Kertas"><img src="/aset/gaya/kertas.jpg" alt="" loading="lazy"><div class="nama"><b>Kertas</b><span>awal</span></div></button>
-            <button class="gaya" data-v="sinematik" title="Panggung Sinematik"><img src="/aset/gaya/sinematik.jpg" alt="" loading="lazy"><div class="nama"><b>Panggung Sinematik</b><span>T01</span></div></button>
-            <button class="gaya" data-v="minimal" title="Kata Kunci Minimal"><img src="/aset/gaya/minimal.jpg" alt="" loading="lazy"><div class="nama"><b>Kata Kunci Minimal</b><span>T02</span></div></button>
-            <button class="gaya" data-v="kolase" title="Kolase Kertas"><img src="/aset/gaya/kolase.jpg" alt="" loading="lazy"><div class="nama"><b>Kolase Kertas</b><span>T03</span></div></button>
-            <button class="gaya" data-v="hangat" title="Editorial Hangat"><img src="/aset/gaya/hangat.jpg" alt="" loading="lazy"><div class="nama"><b>Editorial Hangat</b><span>T04</span></div></button>
-            <button class="gaya" data-v="kaca" title="UI Aplikasi Kaca"><img src="/aset/gaya/kaca.jpg" alt="" loading="lazy"><div class="nama"><b>UI Aplikasi Kaca</b><span>T05</span></div></button>
-            <button class="gaya" data-v="bicara" title="Bicara + Sisipan"><img src="/aset/gaya/bicara.jpg" alt="" loading="lazy"><div class="nama"><b>Bicara + Sisipan</b><span>T06</span></div></button>
-            <button class="gaya" data-v="retro" title="Dokumenter Retro"><img src="/aset/gaya/retro.jpg" alt="" loading="lazy"><div class="nama"><b>Dokumenter Retro</b><span>T07</span></div></button>
-            <button class="gaya" data-v="tekno" title="Tekno Gelap Oranye"><img src="/aset/gaya/tekno.jpg" alt="" loading="lazy"><div class="nama"><b>Tekno Gelap Oranye</b><span>T08</span></div></button>
-            <button class="gaya" data-v="iklan" title="Iklan Jasa Krem"><img src="/aset/gaya/iklan.jpg" alt="" loading="lazy"><div class="nama"><b>Iklan Jasa Krem</b><span>T09</span></div></button>
-            <button class="gaya" data-v="sorot" title="Grid Lampu Sorot"><img src="/aset/gaya/sorot.jpg" alt="" loading="lazy"><div class="nama"><b>Grid Lampu Sorot</b><span>T10</span></div></button>
-            <button class="gaya" data-v="daftar" title="Daftar Sumber"><img src="/aset/gaya/daftar.jpg" alt="" loading="lazy"><div class="nama"><b>Daftar Sumber</b><span>T11</span></div></button>
+            <button class="gaya aktif" data-v="garis" title="2D Animated Storytelling">
+              <div class="nama"><b>2D Animated Storytelling</b><span>Karakter · lingkungan · aksi · kamera</span></div>
+            </button>
           </div>
-          <label class="saklar" style="margin-top:14px">AI menggambar objek tiap adegan <em style="font-style:normal;color:var(--redup);font-size:12px">&nbsp;SVG, menggantikan emoji · butuh AI di Pengaturan</em><input type="checkbox" id="gGambarAI" checked></label>
+          <p class="catatan" style="margin-top:14px">Visual dibuat dari karakter manusia ilustratif, lingkungan, properti, aksi, dan gerak kamera. Emoji bukan lagi visual utama. Gaya alternatif terinspirasi Lemo-Opuscar akan ditambahkan setelah renderer dasar tervalidasi.</p>
           <div style="margin-top:16px;padding:12px;border:1px solid var(--garis);border-radius:12px;background:var(--bg)">
             <div style="font-size:13px;font-weight:700;margin-bottom:6px">Motion Skills <span style="color:var(--redup);font-weight:400">· AI memilih otomatis jika tidak ada yang dicentang</span></div>
             <div style="display:flex;flex-wrap:wrap;gap:10px 14px;font-size:12px;color:var(--redup)">
@@ -1280,12 +1259,12 @@ $('#tblMotion').onclick = async () => {
   try {
     const isi = nilaiPil('#pilIsi');
     await api('/api/motion', {topik: isi === 'topik' ? $('#topik').value : '', naskah: isi === 'naskah' ? $('#naskahJSON').value : '',
-      gaya: $('#pilGaya .aktif').dataset.v, ai: PENG.AI || 'lokal', gambar: $('#gGambarAI').checked,
+      gaya: $('#pilGaya .aktif').dataset.v, ai: PENG.AI || 'lokal', gambar: false,
       skills: [...document.querySelectorAll('.motion-skill:checked')].map((x) => x.value)});
     mulaiPantau('motion');
   } catch (e) { toast(e.message, true); }
 };
-$('#salinPrompt').onclick = (e) => { e.preventDefault(); salin(`Kamu penulis naskah video pendek berbahasa Indonesia. Topik: [TOPIK]. Tulis 4–7 adegan; adegan 1 hook; satu kalimat narasi per adegan maks 14 kata; judul layar 2–5 kata; jangan mengarang angka; adegan terakhir ajakan. Balas HANYA JSON: {"judul":"...","adegan":[{"judul":"2-5 kata","teks":"kalimat narasi","kunci":["kata"],"ikon":"🔥"}]}`); };
+$('#salinPrompt').onclick = (e) => { e.preventDefault(); salin(`Kamu penulis naskah sekaligus sutradara video pendek berbahasa Indonesia. Topik: [TOPIK]. Tulis 4–7 adegan, hook di awal, narasi tiap adegan maksimal 14 kata, judul 2–5 kata, jangan mengarang klaim, CTA di akhir. Buat 1–2 karakter konsisten dalam Character Bible. Visual utama adalah 2D Animated Storytelling: manusia ilustratif, lingkungan, properti, aksi yang terlihat, dan arahan kamera. Jangan gunakan emoji/ikon sebagai visual utama. Balas HANYA JSON valid: {"judul":"...","gaya":"garis","motion":{"styleId":"storytelling-2d","aspectRatio":"9:16"},"karakter":[{"id":"tokoh-utama","nama":"Tokoh utama","deskripsi":"remaja berambut hitam memakai kaus biru","warna":["#4f86b7"],"ciriTetap":["kaus biru","rambut hitam"]}],"adegan":[{"judul":"Mulai merasa lelah","teks":"Tubuh mulai memberi tanda ketika energi semakin menurun.","kunci":["energi"],"visual":"Kamar tidur pada malam hari dengan lampu hangat.","lingkungan":"kamar tidur malam","karakter":["tokoh-utama"],"objek":["ponsel","buku"],"aksi":[{"subjek":"tokoh-utama","gerakan":"duduk lalu mengambil ponsel"}],"kamera":{"framing":"medium","angle":"eye-level","gerak":"slow-push"},"durasi":4}]}`); };
 
 // hasil
 function tampilHasil(h) {
@@ -1640,6 +1619,10 @@ function sinkronMotionScene() {
   if (!MOTION_DRAFT) return;
   MOTION_DRAFT.judul = $('#motionJudulDraft')?.value ?? MOTION_DRAFT.judul ?? '';
   MOTION_DRAFT.preset = $('#motionPreset')?.value ?? MOTION_DRAFT.preset ?? 'shorts';
+  const styleId = $('#motionStyleId')?.value;
+  MOTION_DRAFT.motion = {...(MOTION_DRAFT.motion || {}), styleId: styleId === 'storytelling-2d' ? 'storytelling-2d' : undefined, aspectRatio: '9:16'};
+  const bible = $('#motionCharacters')?.value;
+  if (bible !== undefined) { try { MOTION_DRAFT.karakter = JSON.parse(bible || '[]'); } catch { /* pertahankan Character Bible terakhir yang valid */ } }
   document.querySelectorAll('.motion-scene').forEach((card) => {
     const i = Number(card.dataset.index), a = MOTION_DRAFT.adegan[i];
     if (!a) return;
@@ -1648,9 +1631,12 @@ function sinkronMotionScene() {
       if (key === 'durasi') {
         const v = field.value.trim();
         if (v) a.durasi = Number(v); else delete a.durasi;
-      } else if (key === 'kunci') {
+      } else if (['kunci', 'karakter', 'objek'].includes(key)) {
         const v = field.value.split(',').map((x) => x.trim()).filter(Boolean);
-        if (v.length) a.kunci = v; else delete a.kunci;
+        if (v.length) a[key] = v; else delete a[key];
+      } else if (key === 'aksi' || key === 'kamera') {
+        try { a[key] = field.value.trim() ? JSON.parse(field.value) : (key === 'aksi' ? [] : undefined); }
+        catch { /* jangan timpa data terstruktur dengan JSON yang belum valid */ }
       } else {
         a[key] = field.value;
       }
@@ -1683,13 +1669,18 @@ function gambarMotionScene() {
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px">
       <div class="bidang"><label>Judul layar</label><input class="input" data-key="judul" value="${esc(a.judul || '')}" placeholder="Judul singkat"></div>
-      <div class="bidang"><label>Ikon / emoji</label><input class="input" data-key="ikon" value="${esc(a.ikon || '')}" placeholder="🎬"></div>
+      <div class="bidang"><label>Ikon lama (opsional)</label><input class="input" data-key="ikon" value="${esc(a.ikon || '')}" placeholder="Hanya untuk proyek lama"></div>
       <div class="bidang"><label>Durasi (detik)</label><input class="input" type="number" min="0.5" step="0.5" data-key="durasi" value="${esc(a.durasi ?? '')}" placeholder="otomatis"></div>
       <div class="bidang"><label>Kata kunci subtitle (pisahkan koma)</label><input class="input" data-key="kunci" value="${esc(Array.isArray(a.kunci) ? a.kunci.join(', ') : a.kunci || '')}" placeholder="kata penting, sorotan"></div>
     </div>
     <div class="bidang"><label>Narasi / teks subtitle</label><textarea class="input" data-key="teks" rows="2" placeholder="Kalimat narasi adegan">${esc(a.teks || '')}</textarea></div>
-    <div class="bidang"><label>Arah visual</label><textarea class="input" data-key="visual" rows="2" placeholder="Apa yang terlihat di adegan ini">${esc(a.visual || '')}</textarea></div>
-    <div class="bidang"><label>Gerakan / animasi</label><textarea class="input" data-key="gerak" rows="2" placeholder="Bagaimana elemen bergerak">${esc(a.gerak || '')}</textarea></div>
+    <div class="bidang"><label>Lingkungan / lokasi</label><input class="input" data-key="lingkungan" value="${esc(a.lingkungan || a.visual || '')}" placeholder="Kamar tidur malam, dapur, taman..."></div>
+    <div class="bidang"><label>Karakter · ID dipisahkan koma</label><input class="input" data-key="karakter" value="${esc(Array.isArray(a.karakter) ? a.karakter.join(', ') : '')}" placeholder="tokoh-utama, teman"></div>
+    <div class="bidang"><label>Properti · pisahkan koma</label><input class="input" data-key="objek" value="${esc(Array.isArray(a.objek) ? a.objek.join(', ') : '')}" placeholder="ponsel, buku, cangkir"></div>
+    <div class="bidang"><label>Aksi karakter · JSON</label><textarea class="input" data-key="aksi" rows="2" spellcheck="false" placeholder='[{"subjek":"tokoh-utama","gerakan":"mengambil ponsel"}]'>${esc(JSON.stringify(a.aksi || [], null, 2))}</textarea></div>
+    <div class="bidang"><label>Kamera · JSON</label><textarea class="input" data-key="kamera" rows="2" spellcheck="false" placeholder='{"framing":"medium","angle":"eye-level","gerak":"slow-push"}'>${esc(JSON.stringify(a.kamera || {framing:'medium',angle:'eye-level',gerak:'statis'}, null, 2))}</textarea></div>
+    <div class="bidang"><label>Arah visual tambahan</label><textarea class="input" data-key="visual" rows="2" placeholder="Detail suasana, pencahayaan, dan komposisi">${esc(a.visual || '')}</textarea></div>
+    <div class="bidang"><label>Gerakan / animasi tambahan</label><textarea class="input" data-key="gerak" rows="2" placeholder="Bagaimana elemen bergerak">${esc(a.gerak || '')}</textarea></div>
     <div class="bidang"><label>Transisi</label><input class="input" data-key="transisi" value="${esc(a.transisi || '')}" placeholder="Cara masuk dan keluar adegan"></div>
     ${a.preview ? `<div class="bidang"><label>Preview adegan</label><video src="${esc(a.preview)}?v=${Date.now()}" controls playsinline style="width:100%;max-height:360px;background:#000;border-radius:12px"></video></div>` : ''}
   </article>`).join('');
@@ -1704,6 +1695,8 @@ function hasilMotion(h) {
       <h2 style="margin:6px 0 8px">Tinjau setiap adegan</h2>
       <p class="catatan">Ubah narasi, visual, gerakan, durasi, dan transisi. Kamu juga bisa mengubah urutan atau menambah/menghapus adegan. Semua perubahan diterapkan sebelum video dirender.</p>
       <div class="bidang"><label>Judul video</label><input class="input" id="motionJudulDraft" value="${esc(MOTION_DRAFT.judul || '')}"></div>
+      <div class="bidang"><label>Mode visual</label><select class="input" id="motionStyleId"><option value="storytelling-2d">2D Animated Storytelling · karakter & lingkungan</option><option value="legacy">Mode lama · kompatibilitas proyek terdahulu</option></select><small class="catatan">Mode utama menggambar karakter dan lingkungan 2D. Proyek lama tetap dapat memakai renderer sebelumnya.</small></div>
+      <div class="bidang"><label>Character Bible · JSON karakter</label><textarea class="input" id="motionCharacters" rows="5" spellcheck="false" placeholder='[{"id":"tokoh-utama","nama":"Tokoh utama","warna":["#4f86b7"],"ciriTetap":["kaus biru","rambut hitam"]}]'>${esc(JSON.stringify(MOTION_DRAFT.karakter || [], null, 2))}</textarea><small class="catatan">Gunakan ID karakter yang sama pada semua adegan agar penampilannya konsisten.</small></div>
       <div class="bidang"><label>Preset ekspor</label><select class="input" id="motionPreset"><option value="shorts">YouTube Shorts · 1080×1920</option><option value="tiktok">TikTok · 1080×1920</option><option value="reels">Instagram/Facebook Reels · 1080×1920</option><option value="draft">Draft cepat · 540×960</option><option value="high">Kualitas tinggi · 1350×2400</option></select><small class="catatan">Shorts, TikTok, dan Reels memakai kanvas vertikal 9:16. Preset mengatur kualitas/ukuran render.</small></div>
       <div id="motionTimeline" class="kartu" style="padding:14px;margin:14px 0;overflow:hidden"></div>
       <div id="motionSceneList"></div>
@@ -1712,9 +1705,10 @@ function hasilMotion(h) {
     el.classList.add('tampil');
     gambarMotionScene();
     $('#motionPreset').value = ['shorts','tiktok','reels','draft','high'].includes(MOTION_DRAFT.preset) ? MOTION_DRAFT.preset : 'shorts';
+    $('#motionStyleId').value = MOTION_DRAFT.motion?.styleId === 'storytelling-2d' ? 'storytelling-2d' : 'legacy';
     $('#motionAddScene').onclick = () => {
       sinkronMotionScene();
-      MOTION_DRAFT.adegan.push({judul: '', teks: '', ikon: '✨', visual: '', gerak: '', transisi: ''});
+      MOTION_DRAFT.adegan.push({judul: '', teks: '', visual: '', lingkungan: 'ruangan sederhana', karakter: [], objek: [], aksi: [], kamera: {framing: 'medium', angle: 'eye-level', gerak: 'statis'}, gerak: '', transisi: ''});
       gambarMotionScene();
     };
     $('#motionTimeline').onclick = (e) => {

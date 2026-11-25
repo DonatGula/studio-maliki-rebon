@@ -1,0 +1,50 @@
+name: Motion Storytelling 2D Checks
+
+on:
+  push:
+    branches:
+      - feat/lemo-opuscar-foundation
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: motion
+
+jobs:
+  windows-build-and-render:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: motion/package-lock.json
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: TypeScript check
+        run: npx tsc --noEmit
+
+      - name: Remotion composition check
+        run: npx remotion compositions src/index.ts
+
+      - name: Render smoke test
+        run: npx remotion render src/index.ts Motion smoke-storytelling.mp4 --frames=0-30 --codec=h264
+
+      - name: Upload smoke-test video
+        if: always() && hashFiles('motion/smoke-storytelling.mp4') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: motion-storytelling-smoke-test
+          path: motion/smoke-storytelling.mp4
+          if-no-files-found: ignore

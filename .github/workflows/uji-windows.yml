@@ -124,6 +124,29 @@ jobs:
           Copy-Item $mp4.FullName motion.mp4
           Stop-Process $p.Id -Force
 
+      - name: Motion 2D Animated Storytelling (karakter, lingkungan, aksi, kamera)
+        shell: pwsh
+        run: |
+          $m = "$env:USERPROFILE\Studio Maliki\.mesin\motion"
+          Set-Location $m
+          $story = @{
+            judul = 'UJI STORYTELLING 2D'
+            gaya = 'garis'
+            motion = @{ styleId = 'storytelling-2d'; aspectRatio = '9:16' }
+            karakter = @(@{ id = 'tokoh-utama'; nama = 'Tokoh utama'; deskripsi = 'remaja berkaus biru'; warna = @('#4f86b7'); ciriTetap = @('kaus biru','rambut hitam') })
+            adegan = @(
+              @{ judul = 'Malam mulai larut'; teks = 'Saat malam tiba, tubuh mulai meminta waktu istirahat.'; kunci = @('malam'); durasi = 3; visual = 'Kamar tidur malam dengan lampu hangat.'; lingkungan = 'kamar tidur malam'; karakter = @('tokoh-utama'); objek = @('ponsel','buku'); aksi = @(@{ subjek = 'tokoh-utama'; gerakan = 'duduk lalu mengambil ponsel' }); kamera = @{ framing = 'medium'; angle = 'eye-level'; gerak = 'slow-push' } }
+            )
+          }
+          $story | ConvertTo-Json -Depth 10 | Out-File -Encoding utf8NoBOM naskah\ujistorytelling.json
+          node buat.mjs naskah/ujistorytelling.json --suara=tanpa --preset=draft 2>&1 | Tee-Object "$env:GITHUB_WORKSPACE\motion-story-log.txt" | Select-String -Pattern 'Adegan|Render|Selesai|GAGAL|Error' | Select-Object -First 30
+          if ($LASTEXITCODE -ne 0) { throw "Render storytelling 2D gagal" }
+          $out = Get-ChildItem hasil -Filter 'ujistorytelling-*.mp4' | Select-Object -First 1
+          if (-not $out -or $out.Length -lt 100000) { throw "MP4 storytelling 2D tidak terbentuk" }
+          $ff = & "$env:APP\python\python.exe" -c "import imageio_ffmpeg;print(imageio_ffmpeg.get_ffmpeg_exe())"
+          & $ff -v error -y -ss 1 -i $out.FullName -frames:v 1 "$env:GITHUB_WORKSPACE\motion-story.png"
+          Copy-Item $out.FullName "$env:GITHUB_WORKSPACE\motion-story.mp4"
+
       - name: Motion saat VoxCPM crash (harus beralih ke suara Windows, bukan gagal)
         shell: pwsh
         run: |
@@ -160,7 +183,7 @@ jobs:
             motion.mp4
             motion-log.txt
             motion-judul*
-            motion-vox*
+            motion-vox*\n            motion-story*
             pemasang/hasil/Pasang-Studio-Maliki-*-windows.exe
             studio2.*
             studio.out

@@ -22,6 +22,22 @@ Hasilnya `hasil/contoh-garis.mp4`. Coba gaya lain:
 node buat.mjs naskah/contoh.json --gaya=neon
 ```
 
+## Mode visual baru: 2D Animated Storytelling
+
+Storyboard baru dapat memakai renderer karakter dan lingkungan 2D berbasis React/SVG. Mode ini menjadi visual utama, bukan emoji/ikon. Remotion tetap menjadi renderer video; proyek lama yang tidak memiliki `motion.styleId` tetap memakai jalur visual lama.
+
+Format minimum:
+- `motion.styleId`: `storytelling-2d`
+- `motion.aspectRatio`: `9:16`
+- `karakter[]`: Character Bible sederhana dengan `id`, `warna`, `deskripsi`, dan `ciriTetap`.
+- `adegan[].lingkungan`: lokasi adegan (misalnya kamar malam, dapur, taman).
+- `adegan[].karakter`: daftar ID karakter yang tampil.
+- `adegan[].aksi`: aksi yang terlihat, misalnya berjalan, duduk, menunjuk, atau mengambil benda.
+- `adegan[].objek`: daftar properti adegan.
+- `adegan[].kamera`: framing (wide/medium/close-up) dan gerak (statis/pan/slow-push).
+
+Generator naskah menggunakan format ini sebagai default. Ikon dan gambar lama tetap didukung untuk menjaga kompatibilitas proyek sebelumnya. Renderer 2D saat ini adalah fondasi awal dengan karakter, beberapa lingkungan, gerak sederhana, dan kamera dasar; belum merupakan rig karakter penuh atau katalog gaya Lemo-Opuscar.
+
 ## Opsi A — Gratis
 1. Buka Claude (akun gratis), salin isi `PROMPT-NASKAH.md`, lalu ganti `[TOPIK]` dengan topikmu.
 2. Simpan balasan JSON dari Claude sebagai `naskah/topikku.json`.
