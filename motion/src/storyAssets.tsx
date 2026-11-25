@@ -32,21 +32,47 @@ const Figure: React.FC<{design: CharacterDesign; x: number; y: number; frame: nu
   const raise = /lamba|menyapa|menunjuk|angkat|mengambil/i.test(action);
   const swing = walk ? Math.sin(frame / 3) * 22 : 0;
   const bob = walk ? Math.abs(Math.sin(frame / 3)) * -10 : Math.sin(frame / 12) * 2;
+  const headBob = walk ? Math.sin(frame / 3) * 2 : Math.sin(frame / 12) * 1;
+  const armSwing = walk ? Math.sin(frame / 3) * 30 : raise ? -60 : 0;
+  const legSwing = walk ? Math.sin(frame / 3) * 25 : 0;
   return (
     <g transform={`translate(${x} ${y + bob})`}>
       <ellipse cx="0" cy="315" rx="82" ry="17" fill="#1e293b" opacity=".15" />
       <g transform={sit ? 'translate(0 75) rotate(-10)' : undefined}>
-        <path d="M-38 190 L-52 292 Q-58 315 -38 318 L-5 318 L8 225 L20 318 L53 318 Q68 314 60 292 L40 190Z" fill={pants} />
-        <path d={`M-58 112 Q-73 102 -84 124 L-111 190 Q-119 210 -100 217 Q-82 222 -74 201 L-40 150`} fill={shirt} stroke="#26364a" strokeWidth="12" strokeLinecap="round" />
-        <path d={`M58 112 Q73 102 84 124 L${raise ? 104 : 116} ${raise ? 35 : 190} Q${raise ? 112 : 126} ${raise ? 18 : 210} ${raise ? 94 : 98} ${raise ? 12 : 217} Q${raise ? 78 : 80} ${raise ? 8 : 220} 74 201 L40 150`} fill={shirt} stroke="#26364a" strokeWidth="12" strokeLinecap="round" />
-        <path d="M-58 90 Q-72 120 -58 200 Q0 225 58 200 Q72 120 58 90 Q0 65 -58 90Z" fill={shirt} stroke="#26364a" strokeWidth="8" />
+        {/* Hair back (behind head) */}
+        <path d="M-62 -10 Q-80 -68 -24 -88 Q38 -112 65 -50 L58 -8 Q28 -42 0 -48 Q-30 -18 -62 -10Z" fill={hair} />
+        {/* Neck */}
+        <path d="M-18 60 Q-20 72 -16 82 L16 82 Q20 72 18 60 Z" fill={skin} stroke="#26364a" strokeWidth="4" />
+        {/* Body torso */}
+        <path d="M-58 82 Q-72 90 -58 190 Q0 215 58 190 Q72 90 58 82 Q0 70 -58 82Z" fill={shirt} stroke="#26364a" strokeWidth="8" />
+        {/* Left arm (behind body when not raised) */}
+        <path d={`M-58 88 Q-73 98 -84 130 L-111 190 Q-119 210 -100 217 Q-82 222 -74 201 L-40 150`} fill={shirt} stroke="#26364a" strokeWidth="12" strokeLinecap="round" transform={raise ? `translate(0 0) rotate(-40)` : walk ? `translate(${armSwing / 2} 0) rotate(${armSwing / 4})` : ''} />
+        {/* Right arm (behind body when not raised) */}
+        <path d={`M58 88 Q73 98 84 130 L${raise ? 104 : 116} ${raise ? 35 : 190} Q${raise ? 112 : 126} ${raise ? 18 : 210} ${raise ? 94 : 98} ${raise ? 12 : 217} Q${raise ? 78 : 80} ${raise ? 8 : 220} 74 201 L40 150`} fill={shirt} stroke="#26364a" strokeWidth="12" strokeLinecap="round" transform={raise ? `translate(0 0) rotate(40)` : walk ? `translate(${-armSwing / 2} 0) rotate(${-armSwing / 4})` : ''} />
+        {/* Pants / legs */}
+        <path d="M-38 190 L-52 292 Q-58 315 -38 318 L-5 318 L8 225 L20 318 L53 318 Q68 314 60 292 L40 190Z" fill={pants} transform={walk ? `translate(0 0) rotate(${legSwing / 10})` : sit ? 'translate(0 0)' : ''} />
+        {/* Left leg (for walking) */}
+        {walk && <path d="M-22 190 L-30 290 Q-32 315 -20 318 L-8 318 L0 230 L10 318 L28 318 Q35 314 32 290 L20 190Z" fill={pants} transform={`translate(${legSwing / 2} 0) rotate(${legSwing / 10})`} />}
+        {/* Right leg (for walking) */}
+        {walk && <path d="M10 190 L2 290 Q0 315 12 318 L24 318 L16 230 L26 318 L44 318 Q51 314 48 290 L36 190Z" fill={pants} transform={`translate(${-legSwing / 2} 0) rotate(${-legSwing / 10})`} />}
+        {/* Head */}
+        <path d="M-58 8 Q-60 -72 0 -78 Q62 -72 58 8 L48 60 Q0 88 -48 60Z" fill={skin} stroke="#26364a" strokeWidth="8" transform={`translate(0 ${headBob})`} />
+        {/* Hair front */}
+        <path d="M-62 -10 Q-80 -68 -24 -88 Q38 -112 65 -50 L58 -8 Q28 -42 0 -48 Q-30 -18 -62 -10Z" fill={hair} transform={`translate(0 ${headBob * 0.5})`} />
+        {/* Ears */}
+        <circle cx="-58" cy="28" r="6" fill={skin} stroke="#26364a" strokeWidth="4" transform={`translate(0 ${headBob})`} />
+        <circle cx="58" cy="28" r="6" fill={skin} stroke="#26364a" strokeWidth="4" transform={`translate(0 ${headBob})`} />
+        {/* Eyes */}
+        <circle cx="-22" cy="18" r="5" fill="#20242b" transform={`translate(0 ${headBob})`} />
+        <circle cx="22" cy="18" r="5" fill="#20242b" transform={`translate(0 ${headBob})`} />
+        {/* Eyebrows */}
+        <path d="M-32 8 Q-22 4 -12 8" fill="none" stroke={hair} strokeWidth="4" strokeLinecap="round" transform={`translate(0 ${headBob})`} />
+        <path d="M12 8 Q22 4 32 8" fill="none" stroke={hair} strokeWidth="4" strokeLinecap="round" transform={`translate(0 ${headBob})`} />
+        {/* Mouth */}
+        <path d="M-12 43 Q0 52 12 43" fill="none" stroke="#9a5148" strokeWidth="5" strokeLinecap="round" transform={`translate(0 ${headBob})`} />
+        {/* Accessory */}
+        {colors.aksesoris ? <path d="M-44 5 Q0 -12 44 5" fill="none" stroke={colors.aksesoris} strokeWidth="9" transform={`translate(0 ${headBob})`} /> : null}
       </g>
-      <path d="M-58 8 Q-60 -72 0 -78 Q62 -72 58 8 L48 60 Q0 88 -48 60Z" fill={skin} stroke="#26364a" strokeWidth="8" />
-      <path d="M-62 0 Q-80 -68 -24 -88 Q38 -112 65 -50 L58 -8 Q28 -42 0 -48 Q-30 -18 -62 0Z" fill={hair} />
-      <circle cx="-22" cy="18" r="5" fill="#20242b" /><circle cx="22" cy="18" r="5" fill="#20242b" />
-      <path d="M-12 43 Q0 52 12 43" fill="none" stroke="#9a5148" strokeWidth="5" strokeLinecap="round" />
-      {colors.aksesoris ? <path d="M-44 5 Q0 -12 44 5" fill="none" stroke={colors.aksesoris} strokeWidth="9" /> : null}
-      {walk ? <g transform={`translate(0 0) rotate(${swing / 4})`} /> : null}
     </g>
   );
 };
