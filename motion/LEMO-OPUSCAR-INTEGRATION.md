@@ -256,3 +256,14 @@ Status: implementasi fondasi pada branch `feat/lemo-opuscar-foundation`.
 5. Tidak ada dependency baru.
 
 Catatan verifikasi: perubahan kode telah dikirim ke GitHub, tetapi build TypeScript dan render video belum dapat dijalankan dari lingkungan GitHub API. Karena itu Tahap 3 belum dinyatakan lulus uji runtime; perlu diuji di folder lokal sebelum melanjutkan ke Tahap 4.
+
+
+## 11. Arah pengembangan berikutnya — Universal Visual Animation Engine
+
+Arah produk diperluas: Studio Maliki Reborn tidak hanya berfokus pada animasi karakter. Sebuah adegan dapat berpusat pada karakter, objek, tipografi, grafis/ilustrasi, lingkungan, atau kombinasi beberapa lapisan.
+
+Proposal arsitektur, contoh bahasa visual, rancangan schema, dan roadmap implementasi dicatat di:
+
+- [Universal Visual Animation Engine](./UNIVERSAL-VISUAL-ANIMATION-ENGINE.md)
+
+Dokumen tersebut berstatus proposal, bukan implementasi. Tahap berikutnya adalah mengaudit kode aktual, menetapkan kontrak layer minimum, lalu membangun dan menguji prototipe secara bertahap. AI Storyboard baru diperluas setelah jenis layer yang dipilih memiliki dukungan renderer dan validasi visual.
